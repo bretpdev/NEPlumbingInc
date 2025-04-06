@@ -1,31 +1,76 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using NEPlumbingInc.UI.Data;
-
 var builder = WebApplication.CreateBuilder(args);
+
+// Add SQLite database service
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=appdata.db")); // Database file will be named 'appdata.db'
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+
+// Configure authentication (using cookie authentication in this case)
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/admin-login"; // Redirect to this path for login
+        options.LogoutPath = "/admin-logout"; // Redirect to this path for logout
+        options.SlidingExpiration = true; // Optional: allows session to expire after some idle time
+        options.ExpireTimeSpan = TimeSpan.FromHours(1); // Session expiration
+    });
+
+// Configure authorization (for example, protecting admin pages)
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+});
+
+// Register services without circular dependencies
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
+    provider.GetRequiredService<CustomAuthenticationStateProvider>());
+
+// Register IAuthenticationService
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ICookieStorageService, CookieStorageService>();
 
 var app = builder.Build();
+
+// Ensure database and apply migrations
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    await context.Database.MigrateAsync();
+    await SeedData.Initialize(services, context);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseRouting();
 
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 
-app.UseRouting();
+// Enable authentication and authorization
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapGet("/debug/users", async (AppDbContext db) =>
+    {
+        var users = await db.AdminUsers.ToListAsync();
+        return users.Select(u => new { u.Username, u.Password });
+    });
+}
 
 app.Run();

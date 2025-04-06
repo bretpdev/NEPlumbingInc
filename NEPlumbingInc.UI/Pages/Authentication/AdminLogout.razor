@@ -1,0 +1,14 @@
+﻿@page "/admin-logout"
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAuthenticationService AuthenticationService // Assume you've set up a service to handle logout
+
+<h3>Logging out...</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthenticationService.LogoutAsync();
+        NavigationManager.NavigateTo("/admin-login");
+    }
+}
