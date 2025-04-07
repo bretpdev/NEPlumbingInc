@@ -7,23 +7,47 @@
 
 <PageTitle>Admin Dashboard</PageTitle>
 
-<script>
+<style>
     .card {
         margin - bottom: 1.5rem;
     }
 
-.table th {
+    .table th {
         border - top: none;
     }
 
-.badge {
+    .badge {
         font - weight: 500;
     }
 
-.btn - sm {
+    .btn - sm {
         padding: .25rem .5rem;
     }
-</script>
+
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+        .placeholder-image {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+
+    .placeholder-image i {
+        font-size: 1.5rem;
+        opacity: 0.5;
+    }
+
+    .table.align-middle td {
+        vertical-align: middle;
+    }
+</style>
 
 <div class="container py-4">
     <div class="row mb-4">
@@ -51,13 +75,18 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="servicePrice" class="form-label">Starting Price</label>
+                            <InputNumber id="servicePrice" @bind-Value="newService.Price" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
                             <label for="serviceDescription" class="form-label">Description</label>
                             <InputTextArea id="serviceDescription" @bind-Value="newService.ServiceDescription"
                                 class="form-control" rows="3" />
                         </div>
 
                         <div class="mb-3">
-                            <UploadImage @bind-ImagePath="UploadImage" />
+                            <UploadImage @bind-ImagePath="@newService.ServiceImage" Label="Service Image" />
                         </div>
 
                         <div class="mb-3 form-check">
@@ -103,8 +132,10 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
+                                        <th style="width: 100px">Image</th>
                                         <th>Name</th>
                                         <th>Description</th>
+                                        <th>Price</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -113,8 +144,22 @@
                                     @foreach (var service in services)
                                     {
                                         <tr>
+                                            <td>
+                                            @if (!string.IsNullOrEmpty(service.ServiceImage))
+                                            {
+                                                <img src="@service.ServiceImage" alt="@service.ServiceName" class="img-thumbnail"
+                                                    style="height: 50px; width: 50px; object-fit: cover;" />
+                                            }
+                                            else
+                                            {
+                                                <div class="placeholder-image">
+                                                    <i class="oi oi-image text-muted"></i>
+                                                </div>
+                                            }
+                                            </td>
                                             <td>@service.ServiceName</td>
                                             <td>@service.ServiceDescription</td>
+                                            <td>@service.Price.ToString("C")</td>
                                             <td>
                                                 <span class="badge bg-@(service.IsActive ? "success" : "secondary")">
                                                     @(service.IsActive ? "Active" : "Inactive")
@@ -140,12 +185,69 @@
         </div>
     </div>
 </div>
+<div class="modal @(_isEditing ? "show d-block" : "d-none")" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Service</h5>
+                <button type="button" class="btn-close" @onclick="CancelEdit"></button>
+            </div>
+            <div class="modal-body">
+                @if (editingService != null)
+                {
+                    <EditForm Model="editingService" OnValidSubmit="HandleEditSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label for="editServiceName" class="form-label">Service Name</label>
+                            <InputText id="editServiceName" @bind-Value="editingService.ServiceName" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editServicePrice" class="form-label">Starting Price</label>
+                            <InputNumber id="editServicePrice" @bind-Value="editingService.Price" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editServiceDescription" class="form-label">Description</label>
+                            <InputTextArea id="editServiceDescription" @bind-Value="editingService.ServiceDescription"
+                                class="form-control" rows="3" />
+                        </div>
+
+                        <div class="mb-3">
+                            <UploadImage @bind-ImagePath="@editingService.ServiceImage" Label="Service Image" />
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <InputCheckbox id="editIsActive" @bind-Value="editingService.IsActive"
+                                class="form-check-input" />
+                            <label class="form-check-label" for="editIsActive">Active</label>
+                        </div>
+
+                        <div class="modal-footer px-0 pb-0">
+                            <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </EditForm>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (_isEditing)
+{
+    <div class="modal-backdrop show"></div>
+}
 
 @code {
     private string? userName;
     private List<Services>? services;
     private Services newService = new() { IsActive = true, ServiceName = "" };
     private string? uploadedImagePath;
+    private bool _isEditing = false;
+    private Services? editingService;
 
     // Property to bind with ImageUpload component
     private string? UploadImage
@@ -161,6 +263,18 @@
         }
     }
 
+    private string? EditingImagePath
+    {
+        get => editingService?.ServiceImage;
+        set
+        {
+            if (editingService != null && value != null)
+            {
+                editingService.ServiceImage = value;
+            }
+        }
+    }
+
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationState { get; set; }
 
@@ -170,7 +284,7 @@
         userName = authState.User.Identity?.Name;
         await LoadServices();
     }
-    
+
     protected override void OnInitialized()
     {
         // Ensure the uploads directory exists
@@ -226,7 +340,60 @@
 
     private void EditService(Services service)
     {
-        // TODO: Implement edit functionality
-        // Could navigate to an edit page or show a modal
+        editingService = new Services
+        {
+            Id = service.Id,
+            ServiceName = service.ServiceName,
+            ServiceDescription = service.ServiceDescription,
+            ServiceImage = service.ServiceImage,
+            Price = service.Price,
+            IsActive = service.IsActive,
+            CreatedAt = service.CreatedAt
+        };
+        _isEditing = true;
+        StateHasChanged();
+    }
+
+    private async Task HandleEditSubmit()
+    {
+        if (editingService != null)
+        {
+            var service = await DbContext.Services.FindAsync(editingService.Id);
+            if (service != null)
+            {
+                // Update the service properties
+                service.ServiceName = editingService.ServiceName;
+                service.ServiceDescription = editingService.ServiceDescription;
+                service.Price = editingService.Price;
+                service.IsActive = editingService.IsActive;
+
+                // Update image if changed
+                if (editingService.ServiceImage != service.ServiceImage)
+                {
+                    // Delete old image if it exists
+                    if (!string.IsNullOrEmpty(service.ServiceImage))
+                    {
+                        var oldImagePath = Path.Combine(Environment.WebRootPath, service.ServiceImage.TrimStart('/'));
+                        if (File.Exists(oldImagePath))
+                        {
+                            File.Delete(oldImagePath);
+                        }
+                    }
+                    service.ServiceImage = editingService.ServiceImage;
+                }
+
+                await DbContext.SaveChangesAsync();
+                await LoadServices();
+            }
+        }
+
+        CancelEdit();
+    }
+
+    private void CancelEdit()
+    {
+        _isEditing = false;
+        editingService = null;
+        EditingImagePath = null;
     }
 }

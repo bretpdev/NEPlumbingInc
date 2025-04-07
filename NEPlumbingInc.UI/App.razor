@@ -1,4 +1,6 @@
-﻿<script>
+﻿@inject CustomAuthenticationStateProvider AuthStateProvider
+
+<script>
 .loading-state {
     display: flex;
     flex-direction: column;
@@ -46,7 +48,7 @@
                                                 <a href="admin-login" class="btn btn-warning">
                                                     <i class="oi oi-account-login me-2"></i>Login
                                                 </a>
-                                                <a href="" class="btn btn-outline-secondary">
+                                                <a href="/" class="btn btn-outline-secondary">
                                                     <i class="oi oi-home me-2"></i>Return Home
                                                 </a>
                                             </div>

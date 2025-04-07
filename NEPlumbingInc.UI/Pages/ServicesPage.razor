@@ -5,44 +5,52 @@
 
 <script>
     .card {
-    transition: transform 0.2s ease-in-out;
-    border: none;
-}
+        transition: transform 0.2s ease-in-out;
+        border: none;
+    }
 
-.card:hover {
-    transform: translateY(-5px);
-}
+    .card:hover {
+        transform: translateY(-5px);
+    }
 
-.card-img-top {
-    height: 200px;
-    object-fit: cover;
-}
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
 
-.card-title {
-    color: var(--bs-primary);
-    margin-bottom: 1rem;
-}
+    .card-title {
+        color: var(--bs-primary);
+        margin-bottom: 1rem;
+    }
 
-.card-text {
-    color: var(--bs-secondary);
-}
+    .card-text {
+        color: var(--bs-secondary);
+    }
 
-h1 {
-    color: var(--bs-primary);
-    position: relative;
-    padding-bottom: 1rem;
-}
+    h1 {
+        color: var(--bs-primary);
+        position: relative;
+        padding-bottom: 1rem;
+    }
 
-h1::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 3px;
-    background-color: var(--bs-primary);
-}
+    h1::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background-color: var(--bs-primary);
+    }    
+    .pricing-info {
+        border-top: 1px solid rgba(0,0,0,0.1);
+        padding-top: 1rem;
+    }
+
+    .text-primary {
+        color: var(--bs-primary) !important;
+    }
 </script>
 
 <div class="container py-5">
@@ -68,7 +76,7 @@ h1::after {
             @foreach (var service in services)
             {
                 <div class="col">
-                    <div class="card h-100 shadow-sm">
+                   <div class="card h-100 shadow-sm">
                         @if (!string.IsNullOrEmpty(service.ServiceImage))
                         {
                             <img src="@service.ServiceImage" class="card-img-top" alt="@service.ServiceName">
@@ -76,6 +84,10 @@ h1::after {
                         <div class="card-body">
                             <h5 class="card-title">@service.ServiceName</h5>
                             <p class="card-text">@service.ServiceDescription</p>
+                            <div class="pricing-info mt-3">
+                                <p class="text-muted mb-0">Starting at:</p>
+                                <h4 class="text-primary mb-3">@service.Price.ToString("C")</h4>
+                            </div>
                         </div>
                         <div class="card-footer bg-transparent">
                             <button class="btn btn-primary w-100" @onclick="() => RequestService(service)">

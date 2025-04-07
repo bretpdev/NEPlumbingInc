@@ -1,8 +1,39 @@
 ﻿@inject AuthenticationStateProvider AuthStateProvider
 
+<style>
+    .navbar-dark {
+        background-color: #cc0000;
+    }
+
+    .nav-scrollable {
+        background-color: #990000;
+    }
+
+    .nav-item ::deep .nav-link {
+        color: #ffffff !important;
+        transition: all 0.3s ease;
+    }
+
+    .nav-item ::deep .nav-link:hover {
+        background-color: rgba(255,255,255,0.1);
+    }
+
+    .nav-item ::deep .nav-link.active {
+        background-color: rgba(255,255,255,0.2);
+    }
+
+    .navbar-brand {
+        color: #ffffff !important;
+    }
+
+    .navbar-toggler {
+        border-color: rgba(255,255,255,0.5);
+    }
+</style>
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">NEPlumbingInc.UI</a>
+        <a class="navbar-brand" href="">NE Plumbing Inc</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -24,6 +55,11 @@
 
         <AuthorizeView>
             <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="admin-dashboard">
+                        <span class="oi oi-dashboard" aria-hidden="true"></span> Admin Dashboard
+                    </NavLink>
+                </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="admin-logout">
                         <span class="oi oi-account-logout" aria-hidden="true"></span> Logout

@@ -23,7 +23,7 @@ public class AuthenticationService : IAuthenticationService
         await _cookieStorageService.StoreAuthenticatedUser(user);
 
         // Mark the user as authenticated
-        _authenticationStateProvider.MarkUserAsAuthenticated(user);
+        await _authenticationStateProvider.MarkUserAsAuthenticated(user);
 
         return user;  // Return the authenticated user (or null if authentication fails)
     }
@@ -32,6 +32,6 @@ public class AuthenticationService : IAuthenticationService
     {
         // Clear the user's authentication state and remove the cookie
         await _cookieStorageService.ClearAuthenticatedUser();
-        _authenticationStateProvider.MarkUserAsLoggedOut();
+        await _authenticationStateProvider.MarkUserAsLoggedOut();
     }
 }

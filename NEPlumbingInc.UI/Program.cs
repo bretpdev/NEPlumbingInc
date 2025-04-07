@@ -12,10 +12,15 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/admin-login"; // Redirect to this path for login
-        options.LogoutPath = "/admin-logout"; // Redirect to this path for logout
-        options.SlidingExpiration = true; // Optional: allows session to expire after some idle time
-        options.ExpireTimeSpan = TimeSpan.FromHours(1); // Session expiration
+        options.LoginPath = "/admin-login";
+        options.LogoutPath = "/admin-logout";
+        options.AccessDeniedPath = "/access-denied";
+        options.Cookie.Name = ".NEPlumbing.Auth";
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
+        options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
     });
 
 // Configure authorization (for example, protecting admin pages)
@@ -32,6 +37,7 @@ builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
 // Register IAuthenticationService
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ICookieStorageService, CookieStorageService>();
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
@@ -52,9 +58,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
-
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 
 // Enable authentication and authorization
