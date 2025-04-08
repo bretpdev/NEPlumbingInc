@@ -2,31 +2,64 @@
 
 <PageTitle>NEPlumbingInc.UI</PageTitle>
 
-<script>
-    .admin-login-link a {
-        font-size: 16px;
-        font-weight: bold;
-        color: #007bff;
-        text-decoration: none;
+<style>
+    :root {
+        --navbar-height: 64px;
     }
 
-    .admin-login-link a:hover {
-        color: #0056b3;
-        text-decoration: underline;
+    .page {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        padding-top: var(--navbar-height);  /* Add padding to account for fixed navbar */
     }
 
-</script>
+    main {
+        flex: 1;
+        /* Remove margin-top since we're using padding on .page */
+    }
+
+    .content {
+        padding-top: 2rem;  /* Increased padding for better spacing */
+    }
+
+    .page {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    main {
+        margin-top: var(--navbar-height);
+        flex: 1;
+    }
+
+    .content {
+        padding-top: 1.1rem;
+    }
+
+    :deep .container-fluid {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    :deep .nav-links {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        gap: 1rem;
+    }
+
+    :deep .auth-links {
+        margin-left: auto;
+    }
+</style>
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
+    <NavMenu />
     <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
         <article class="content px-4">
             @Body
         </article>

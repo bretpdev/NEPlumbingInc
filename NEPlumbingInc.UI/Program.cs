@@ -34,6 +34,8 @@ builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
     provider.GetRequiredService<CustomAuthenticationStateProvider>());
 
+builder.Services.AddScoped<IProjectService, ProjectService>();
+
 // Register IAuthenticationService
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ICookieStorageService, CookieStorageService>();

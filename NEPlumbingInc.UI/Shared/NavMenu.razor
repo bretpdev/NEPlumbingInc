@@ -2,80 +2,130 @@
 
 <style>
     .navbar-dark {
-        background-color: #cc0000;
+        background-color: #770000 !important;
+        padding: 0.5rem 1rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
     }
 
-    .nav-scrollable {
-        background-color: #990000;
+    .container-fluid {
+        display: flex;
+        align-items: center;
+        min-height: 64px;
     }
 
-    .nav-item ::deep .nav-link {
+    .nav-links {
+        display: flex;
+        align-items: stretch;
+        /* Changed from center */
+        gap: 1rem;
+        margin: 0 auto;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        margin: 0;
+    }
+
+    .nav-link {
+        display: inline-flex;
+        /* Changed from flex */
+        align-items: center;
+        justify-content: center;
         color: #ffffff !important;
         transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        white-space: nowrap;
+        line-height: 1.5;
+        /* Added for consistent text height */
     }
 
-    .nav-item ::deep .nav-link:hover {
-        background-color: rgba(255,255,255,0.1);
+    .nav-link span {
+        margin-right: 0.5rem;
+        display: inline-flex;
+        /* Added */
+        align-items: center;
+        /* Added */
     }
 
-    .nav-item ::deep .nav-link.active {
-        background-color: rgba(255,255,255,0.2);
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+
+    .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
     }
 
     .navbar-brand {
         color: #ffffff !important;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        font-size: 1.25rem;
+        margin-right: 2rem;
     }
 
-    .navbar-toggler {
-        border-color: rgba(255,255,255,0.5);
+    .auth-links {
+        display: flex;
+        gap: 1rem;
+        margin-left: auto;
     }
 </style>
 
-<div class="top-row ps-3 navbar navbar-dark">
+<nav class="navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">NE Plumbing Inc</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="services">
-                <span class="oi oi-plus" aria-hidden="true"></span> Services
-            </NavLink>
+        <div class="nav-links">
+            <div class="nav-item">
+                <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="services">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Services
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="projects">
+                    <span class="oi oi-image" aria-hidden="true"></span> Our Work
+                </NavLink>
+            </div>
         </div>
 
         <AuthorizeView>
             <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="admin-dashboard">
-                        <span class="oi oi-dashboard" aria-hidden="true"></span> Admin Dashboard
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="admin-logout">
-                        <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
-                    </NavLink>
+                <div class="auth-links">
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="admin-dashboard">
+                            <span class="oi oi-dashboard" aria-hidden="true"></span> Admin
+                        </NavLink>
+                    </div>
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="admin-logout">
+                            <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                        </NavLink>
+                    </div>
                 </div>
             </Authorized>
             <NotAuthorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="admin-login">
-                        <span class="oi oi-account-login" aria-hidden="true"></span> Admin Login
-                    </NavLink>
+                <div class="auth-links">
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="admin-login">
+                            <span class="oi oi-account-login" aria-hidden="true"></span> Login
+                        </NavLink>
+                    </div>
                 </div>
             </NotAuthorized>
         </AuthorizeView>
-    </nav>
-</div>
+    </div>
+</nav>
 
 @code {
     private bool collapseNavMenu = true;

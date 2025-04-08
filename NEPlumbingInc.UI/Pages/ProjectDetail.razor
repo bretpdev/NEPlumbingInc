@@ -1,0 +1,115 @@
+﻿@page "/project-detail/{projectId:int}"
+
+<PageTitle>@project?.Title - NE Plumbing Inc</PageTitle>
+
+<div class="container py-4" style="max-width: 80%;">
+    @if (project != null)
+    {
+        <div class="row mb-4">
+            <div class="col">
+                <h1 class="display-4">@project.Title</h1>
+                <p class="lead text-muted">@project.Description</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            @foreach (var image in project.Images)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm">
+                        <img src="@image.Url" class="card-img-top" alt="@image.Caption"
+                             style="height: 300px; object-fit: cover; cursor: pointer;"
+                             @onclick="() => ShowImageModal(image)" />
+                        @if (!string.IsNullOrEmpty(image.Caption))
+                        {
+                            <div class="card-body">
+                                <p class="card-text">@image.Caption</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="mt-4">
+            <a href="/projects" class="btn btn-outline-primary">
+                <span class="oi oi-arrow-left"></span> Back to Projects
+            </a>
+        </div>
+    }
+</div>
+
+<div class="modal fade @(_showModal ? "show" : "")" style="display: @(_showModal ? "block" : "none")" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@_selectedImage?.Caption</h5>
+                <button type="button" class="btn-close" @onclick="CloseModal"></button>
+            </div>
+            <div class="modal-body p-0">
+                @if (_selectedImage != null)
+                {
+                    <img src="@_selectedImage.Url" class="img-fluid" alt="@_selectedImage.Caption" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (_showModal)
+{
+    <div class="modal-backdrop fade show" @onclick="CloseModal"></div>
+}
+
+@code {
+    [Parameter]
+    public int ProjectId { get; set; }
+
+    private ProjectDetails? project;
+
+    private bool _showModal;
+    private ProjectImage? _selectedImage;
+
+    protected override void OnInitialized()
+    {
+        // Sample data - replace with your actual project details
+        project = new ProjectDetails
+        {
+            Title = "Luxury Home Installation",
+            Description = "Complete plumbing installation for a new construction luxury home in Edina.",
+            Images = new List<ProjectImage>
+            {
+                new() { Url = "images/portfolio/luxury-home-1.jpg", Caption = "Master bathroom installation" },
+                new() { Url = "images/portfolio/luxury-home-2.jpg", Caption = "Kitchen plumbing setup" },
+                new() { Url = "images/portfolio/luxury-home-3.jpg", Caption = "Basement utility room" },
+            }
+        };
+    }
+
+    private class ProjectDetails
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public List<ProjectImage> Images { get; set; } = new();
+    }
+
+    private class ProjectImage
+    {
+        public string Url { get; set; } = string.Empty;
+        public string Caption { get; set; } = string.Empty;
+    }    
+    
+    private void ShowImageModal(ProjectImage image)
+    {
+        _selectedImage = image;
+        _showModal = true;
+        StateHasChanged();
+    }
+
+    private void CloseModal()
+    {
+        _showModal = false;
+        _selectedImage = null;
+        StateHasChanged();
+    }
+}

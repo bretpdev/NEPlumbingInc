@@ -8,3 +8,4 @@ global using NEPlumbingInc.UI.Components;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.JSInterop;
 global using System.Text.Json;
+global using System.ComponentModel.DataAnnotations;
