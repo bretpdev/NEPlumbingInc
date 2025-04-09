@@ -75,7 +75,7 @@ if (app.Environment.IsDevelopment())
     app.MapGet("/debug/users", async (AppDbContext db) =>
     {
         var users = await db.AdminUsers.ToListAsync();
-        return users.Select(u => new { u.Username, u.Password });
+        return users.Select(u => new { u.Username, u.PasswordHash });
     });
 }
 

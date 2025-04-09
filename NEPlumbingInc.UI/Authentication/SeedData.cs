@@ -14,7 +14,7 @@ public class SeedData
             context.AdminUsers.Add(new AdminUser
             {
                 Username = "bret",
-                Password = hashedPassword
+                PasswordHash = hashedPassword
             });
             await context.SaveChangesAsync();
             logger.LogInformation("Admin user seeded successfully");
