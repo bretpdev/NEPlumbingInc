@@ -2,30 +2,43 @@ public class AuthenticationService : IAuthenticationService
 {
     private readonly ICookieStorageService _cookieStorageService;
     private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
+    private readonly AppDbContext _context;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public AuthenticationService(ICookieStorageService cookieStorageService, CustomAuthenticationStateProvider authenticationStateProvider)
+    public AuthenticationService(
+        ICookieStorageService cookieStorageService,
+        CustomAuthenticationStateProvider authenticationStateProvider,
+        AppDbContext context,
+        IPasswordHasher passwordHasher)
     {
         _cookieStorageService = cookieStorageService;
         _authenticationStateProvider = authenticationStateProvider;
+        _context = context;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<AdminUser?> LoginAsync(string username, string password)
     {
-        // Replace this with actual authentication logic (e.g., calling an API)
-        // For now, we're assuming "admin" has a role of "Admin" and any other user has a default role.
-        var user = new AdminUser
+        // Find user in database
+        var user = await _context.AdminUsers
+            .FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
+
+        // Verify user exists and password matches
+        if (user != null && _passwordHasher.VerifyPassword(password, user.PasswordHash))
         {
-            Username = username,
-            Role = username.ToLower() == "admin" ? "Admin" : "User"  // Example of role assignment
-        };
+            user.IsAuthenticated = true;
+            await _context.SaveChangesAsync();
 
-        // Store the user in cookies
-        await _cookieStorageService.StoreAuthenticatedUser(user);
+            // Store the authenticated user in cookies
+            await _cookieStorageService.StoreAuthenticatedUser(user);
 
-        // Mark the user as authenticated
-        await _authenticationStateProvider.MarkUserAsAuthenticated(user);
+            // Mark the user as authenticated
+            await _authenticationStateProvider.MarkUserAsAuthenticated(user);
 
-        return user;  // Return the authenticated user (or null if authentication fails)
+            return user;
+        }
+
+        return null;
     }
 
     public async Task LogoutAsync()

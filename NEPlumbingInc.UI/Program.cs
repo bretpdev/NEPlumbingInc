@@ -1,5 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 // Add SQLite database service
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=appdata.db")); // Database file will be named 'appdata.db'
