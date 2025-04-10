@@ -5,4 +5,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Services> Services { get; set; }
 
     public DbSet<Project> Projects { get; set; }
+    public DbSet<ProjectImage> ProjectImages { get; set; }
+
 }

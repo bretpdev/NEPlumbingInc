@@ -1,9 +1,29 @@
-﻿@page "/project-detail/{projectId:int}"
+﻿@page "/projects/{projectId:int}"
+@inject IProjectService ProjectService
 
 <PageTitle>@project?.Title - NE Plumbing Inc</PageTitle>
 
 <div class="container py-4" style="max-width: 80%;">
-    @if (project != null)
+    @if (_isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading project details...</p>
+        </div>
+    }
+    else if (project == null)
+    {
+        <div class="alert alert-warning">
+            <h4>Project Not Found</h4>
+            <p>The requested project could not be found.</p>
+            <a href="/projects" class="btn btn-primary">
+                <span class="oi oi-arrow-left"></span> Back to Projects
+            </a>
+        </div>
+    }
+    else
     {
         <div class="row mb-4">
             <div class="col">
@@ -12,24 +32,37 @@
             </div>
         </div>
 
-        <div class="row g-4">
-            @foreach (var image in project.Images)
-            {
-                <div class="col-md-6 col-lg-4">
-                    <div class="card shadow-sm">
-                        <img src="@image.Url" class="card-img-top" alt="@image.Caption"
-                             style="height: 300px; object-fit: cover; cursor: pointer;"
-                             @onclick="() => ShowImageModal(image)" />
-                        @if (!string.IsNullOrEmpty(image.Caption))
-                        {
-                            <div class="card-body">
-                                <p class="card-text">@image.Caption</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
+        <!-- Main Project Image -->
+        <div class="row mb-4">
+            <div class="col">
+                <img src="@project.ImageUrl" class="img-fluid rounded shadow-sm" 
+                     alt="@project.Title" style="max-height: 500px; width: 100%; object-fit: cover;" />
+            </div>
         </div>
+
+        <!-- Additional Project Images -->
+        @if (project.ProjectImages?.Any() == true)
+        {
+            <div class="row g-4">
+                @foreach (var image in project.ProjectImages.OrderBy(pi => pi.DisplayOrder))
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-sm">
+                            <img src="@image.ImageUrl" class="card-img-top" 
+                                 alt="@(image.Caption ?? project.Title)"
+                                 style="height: 300px; object-fit: cover; cursor: pointer;"
+                                 @onclick="() => ShowImageModal(image)" />
+                            @if (!string.IsNullOrEmpty(image.Caption))
+                            {
+                                <div class="card-body">
+                                    <p class="card-text">@image.Caption</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
 
         <div class="mt-4">
             <a href="/projects" class="btn btn-outline-primary">
@@ -39,6 +72,7 @@
     }
 </div>
 
+<!-- Image Modal -->
 <div class="modal fade @(_showModal ? "show" : "")" style="display: @(_showModal ? "block" : "none")" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
@@ -49,7 +83,7 @@
             <div class="modal-body p-0">
                 @if (_selectedImage != null)
                 {
-                    <img src="@_selectedImage.Url" class="img-fluid" alt="@_selectedImage.Caption" />
+                    <img src="@_selectedImage.ImageUrl" class="img-fluid" alt="@_selectedImage.Caption" />
                 }
             </div>
         </div>
@@ -65,40 +99,44 @@
     [Parameter]
     public int ProjectId { get; set; }
 
-    private ProjectDetails? project;
-
+    private Project? project;
     private bool _showModal;
     private ProjectImage? _selectedImage;
+    private bool _isLoading = true;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // Sample data - replace with your actual project details
-        project = new ProjectDetails
+        await LoadProjectData();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (project?.Id != ProjectId)
         {
-            Title = "Luxury Home Installation",
-            Description = "Complete plumbing installation for a new construction luxury home in Edina.",
-            Images = new List<ProjectImage>
-            {
-                new() { Url = "images/portfolio/luxury-home-1.jpg", Caption = "Master bathroom installation" },
-                new() { Url = "images/portfolio/luxury-home-2.jpg", Caption = "Kitchen plumbing setup" },
-                new() { Url = "images/portfolio/luxury-home-3.jpg", Caption = "Basement utility room" },
-            }
-        };
+            await LoadProjectData();
+        }
     }
 
-    private class ProjectDetails
+    private async Task LoadProjectData()
     {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public List<ProjectImage> Images { get; set; } = new();
+        try
+        {
+            _isLoading = true;
+            StateHasChanged();
+            
+            project = await ProjectService.GetProjectByIdAsync(ProjectId);
+            
+            _isLoading = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading project: {ex.Message}");
+            _isLoading = false;
+            StateHasChanged();
+        }
     }
 
-    private class ProjectImage
-    {
-        public string Url { get; set; } = string.Empty;
-        public string Caption { get; set; } = string.Empty;
-    }    
-    
     private void ShowImageModal(ProjectImage image)
     {
         _selectedImage = image;

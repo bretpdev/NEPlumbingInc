@@ -263,7 +263,7 @@
 
 <!-- Add Project Modal -->
 <div class="modal @(_isEditingProject ? "show d-block" : "d-none")" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg"> <!-- Changed to modal-lg for more space -->
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">@(editingProject?.Id == 0 ? "Add New" : "Edit") Project</h5>
@@ -276,6 +276,7 @@
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
+                        <!-- Existing project fields -->
                         <div class="mb-3">
                             <label class="form-label">Title</label>
                             <InputText @bind-Value="editingProject.Title" class="form-control" />
@@ -287,32 +288,59 @@
                         </div>
 
                         <div class="mb-3">
-                            <UploadImage @bind-ImagePath="@editingProject.ImageUrl" Label="Project Image" />
+                            <label class="form-label">Main Project Image</label>
+                            <UploadImage @bind-ImagePath="@editingProject.ImageUrl" Label="Main Image" />
                         </div>
 
+                        <!-- Updated project images section -->
                         <div class="mb-3">
-                            <label class="form-label">Project Images (Max 20)</label>
-                            <div class="d-flex flex-wrap gap-2 mb-2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label mb-0">Additional Project Images (@projectImages.Count/20)</label>
+                                @if (projectImages.Count < 20)
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="AddNewImageUpload">
+                                        <i class="oi oi-plus me-1"></i>Add Image
+                                    </button>
+                                }
+                            </div>
+                            
+                            <div class="row g-3">
                                 @foreach (var image in projectImages)
                                 {
-                                    <div class="position-relative">
-                                        <img src="@image.ImageUrl" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;" />
-                                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
-                                                @onclick="() => RemoveProjectImage(image)">
-                                            <i class="oi oi-x"></i>
-                                        </button>
-                                        <input type="text" class="form-control form-control-sm mt-1" 
-                                               placeholder="Caption" 
-                                               @bind="image.Caption" />
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="position-relative">
+                                                <img src="@image.ImageUrl" class="card-img-top" 
+                                                     style="height: 150px; object-fit: cover;" />
+                                                <button type="button" 
+                                                        class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                                                        @onclick="() => RemoveProjectImage(image)">
+                                                    <i class="oi oi-x"></i>
+                                                </button>
+                                            </div>
+                                            <div class="card-body p-2">
+                                                <input type="text" 
+                                                       class="form-control form-control-sm" 
+                                                       placeholder="Add caption" 
+                                                       @bind="image.Caption" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <!-- Replace the existing image upload card section -->
+                                @if (showNewImageUpload && projectImages.Count < 20)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <UploadImage @bind-ImagePath="@newProjectImagePath" 
+                                                            Label="Upload Image" 
+                                                            OnUploadComplete="@((path) => OnNewImageUploaded(path))" />
+                                            </div>
+                                        </div>
                                     </div>
                                 }
                             </div>
-                            @if (projectImages.Count < 20)
-                            {
-                                <div class="mb-2">
-                                    <UploadImage @bind-ImagePath="@newProjectImagePath" Label="Add Image" />
-                                </div>
-                            }
                         </div>
 
                         <div class="modal-footer px-0 pb-0">
@@ -399,6 +427,7 @@
     private Project? editingProject;
     private List<ProjectImage> projectImages = new();
     private string? newProjectImagePath;
+    private bool showNewImageUpload;
 
     // Property to bind with ImageUpload component
     private string? UploadImage
@@ -555,13 +584,39 @@
 
     private async Task LoadProjects()
     {
-        projects = await ProjectService.GetProjectsAsync();
+        try
+        {
+            projects = await ProjectService.GetProjectsAsync();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading projects: {ex.Message}");
+            await JSRuntime.InvokeVoidAsync("alert", "Error loading projects. Please try again.");
+        }
     }
 
     private void ShowProjectModal(Project project)
     {
-        editingProject = project;
-        projectImages = project.ProjectImages?.OrderBy(x => x.DisplayOrder).ToList() ?? new();
+        editingProject = new Project
+        {
+            Id = project.Id,
+            Title = project.Title,
+            Description = project.Description,
+            ImageUrl = project.ImageUrl,
+            CreatedDate = project.CreatedDate
+        };
+        
+        // Load existing project images
+        projectImages = project.ProjectImages?.Select(pi => new ProjectImage
+        {
+            Id = pi.Id,
+            ProjectId = pi.ProjectId,
+            ImageUrl = pi.ImageUrl,
+            Caption = pi.Caption,
+            DisplayOrder = pi.DisplayOrder
+        }).ToList() ?? new List<ProjectImage>();
+        
         _isEditingProject = true;
         StateHasChanged();
     }
@@ -570,25 +625,44 @@
     {
         if (editingProject != null)
         {
+            // Update display order for all images
+            for (int i = 0; i < projectImages.Count; i++)
+            {
+                projectImages[i].DisplayOrder = i;
+                projectImages[i].ProjectId = editingProject.Id;
+            }
+            
             editingProject.ProjectImages = projectImages;
             
-            if (editingProject.Id == 0)
+            try
             {
-                await ProjectService.AddProjectAsync(editingProject);
+                if (editingProject.Id == 0)
+                {
+                    editingProject.CreatedDate = DateTime.Now;
+                    await ProjectService.AddProjectAsync(editingProject);
+                }
+                else
+                {
+                    await ProjectService.UpdateProjectAsync(editingProject);
+                }
+                
+                await LoadProjects();
+                CancelProjectEdit();
             }
-            else
+            catch (Exception ex)
             {
-                await ProjectService.UpdateProjectAsync(editingProject);
+                Console.WriteLine($"Error saving project: {ex.Message}");
+                await JSRuntime.InvokeVoidAsync("alert", "Error saving project. Please try again.");
             }
-            await LoadProjects();
         }
-        CancelProjectEdit();
     }
 
     private void CancelProjectEdit()
     {
         _isEditingProject = false;
         editingProject = null;
+        showNewImageUpload = false;
+        projectImages.Clear();
     }
 
     private async Task DeleteProject(int projectId)
@@ -613,10 +687,23 @@
             projectImages.Add(new ProjectImage 
             { 
                 ImageUrl = path,
-                DisplayOrder = projectImages.Count
+                DisplayOrder = projectImages.Count,
+                Caption = string.Empty
             });
             newProjectImagePath = null;
+            showNewImageUpload = false;
             StateHasChanged();
+
+            // Log for debugging
+            Console.WriteLine($"Added new image: {path}");
+            Console.WriteLine($"Current image count: {projectImages.Count}");
         }
+    }
+
+    private void AddNewImageUpload()
+    {
+        Console.WriteLine("AddNewImageUpload called");
+        showNewImageUpload = true;
+        StateHasChanged();
     }
 }

@@ -19,13 +19,16 @@ public class ProjectService : IProjectService
     public async Task<List<Project>> GetProjectsAsync()
     {
         return await _context.Projects
+            .Include(p => p.ProjectImages)
             .OrderByDescending(p => p.CreatedDate)
             .ToListAsync();
     }
 
     public async Task<Project?> GetProjectByIdAsync(int id)
     {
-        return await _context.Projects.FindAsync(id);
+        return await _context.Projects
+            .Include(p => p.ProjectImages)
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<Project> AddProjectAsync(Project project)
@@ -38,13 +41,30 @@ public class ProjectService : IProjectService
 
     public async Task<Project> UpdateProjectAsync(Project project)
     {
-        var existingProject = await _context.Projects.FindAsync(project.Id);
+        var existingProject = await _context.Projects
+            .Include(p => p.ProjectImages)
+            .FirstOrDefaultAsync(p => p.Id == project.Id);
+
         if (existingProject == null)
             throw new KeyNotFoundException($"Project with ID {project.Id} not found.");
 
+        // Update main project properties
         existingProject.Title = project.Title;
         existingProject.Description = project.Description;
         existingProject.ImageUrl = project.ImageUrl;
+
+        // Remove existing images
+        _context.ProjectImages.RemoveRange(existingProject.ProjectImages);
+        
+        // Add new images
+        existingProject.ProjectImages = project.ProjectImages
+            .Select(pi => new ProjectImage
+            {
+                ImageUrl = pi.ImageUrl,
+                Caption = pi.Caption,
+                DisplayOrder = pi.DisplayOrder
+            })
+            .ToList();
 
         await _context.SaveChangesAsync();
         return existingProject;

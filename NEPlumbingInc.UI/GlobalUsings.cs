@@ -9,3 +9,6 @@ global using Microsoft.AspNetCore.Components;
 global using Microsoft.JSInterop;
 global using System.Text.Json;
 global using System.ComponentModel.DataAnnotations;
+global using SixLabors.ImageSharp;
+global using SixLabors.ImageSharp.Processing;
+global using SixLabors.ImageSharp.Formats.Jpeg;
