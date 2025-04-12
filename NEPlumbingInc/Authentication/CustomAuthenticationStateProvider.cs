@@ -1,57 +1,39 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using System.Security.Claims;
-
 public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly IAuthenticationService _authService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private AdminUser? _currentUser = null;
+    public AdminUser GetCurrentUser() => _currentUser ?? throw new InvalidOperationException("Current user is not set.");
 
-    public CustomAuthenticationStateProvider(
-        IAuthenticationService authService,
-        IHttpContextAccessor httpContextAccessor)
+    public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        _authService = authService;
-        _httpContextAccessor = httpContextAccessor;
-    }
+        // You can modify this logic to pull the current user from cookies or session
+        // For now, assume that the user is already logged in and stored in _currentUser
+        var identity = _currentUser != null 
+            ? new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, _currentUser.Username) }, "Cookies")
+            : new ClaimsIdentity();
 
-    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
-    {
-        var user = await _authService.GetCurrentUserAsync();
-        
-        if (user != null && user.IsAuthenticated)
-        {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, "Admin")
-            };
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
-            
-            return new AuthenticationState(principal);
-        }
-
-        return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-    }
-
-    public void MarkUserAsAuthenticated(string username)
-    {
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, "Admin")
-        };
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
 
+        return Task.FromResult(new AuthenticationState(principal));
+    }
+
+    public void MarkUserAsAuthenticated(AdminUser user)
+    {
+        _currentUser = user;
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, "Admin")  // Add role claim
+        };
+        var identity = new ClaimsIdentity(claims, "Cookies");
+        var principal = new ClaimsPrincipal(identity);
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
     }
 
     public void MarkUserAsLoggedOut()
     {
+        _currentUser = null;
         var identity = new ClaimsIdentity();
-        var user = new ClaimsPrincipal(identity);
-
-        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+        var principal = new ClaimsPrincipal(identity);
+        NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
     }
 }

@@ -1,5 +1,5 @@
 @page "/admin-dashboard"
-@attribute [Authorize]
+
 
 <h3>Admin Dashboard</h3>
 
@@ -12,6 +12,6 @@
 </div>
 
 @code {
-    [CascadingParameter]
+
     private Task<AuthenticationState> AuthState { get; set; } = default!;
 }

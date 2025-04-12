@@ -1,59 +1,63 @@
-namespace NEPlumbingInc.Authentication;
-
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly AppDbContext _context;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+ private readonly AppDbContext _dbContext;
+    private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
+    private readonly ILogger<AuthenticationService> _logger;
 
     public AuthenticationService(
-        AppDbContext context,
-        IHttpContextAccessor httpContextAccessor)
+        AppDbContext dbContext, 
+        CustomAuthenticationStateProvider authenticationStateProvider,
+        ILogger<AuthenticationService> logger)
     {
-        _context = context;
-        _httpContextAccessor = httpContextAccessor;
+        _dbContext = dbContext;
+        _authenticationStateProvider = authenticationStateProvider;
+        _logger = logger;
     }
 
     public async Task<AdminUser?> LoginAsync(string username, string password)
     {
-        var user = await _context.AdminUsers.FirstOrDefaultAsync(u => u.Username == username);
-
-        if (user != null && BCrypt.Net.BCrypt.Verify(password, user.Password))
+        try
         {
-            var claims = new List<Claim>
-                {
-                    new(ClaimTypes.Name, username),
-                    new(ClaimTypes.Role, "Admin")
-                };
+            _logger.LogInformation("Login attempt for user: {Username}", username);
 
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var authProperties = new AuthenticationProperties
+            var user = await _dbContext.AdminUsers
+                .FirstOrDefaultAsync(u => u.Username == username);
+
+            if (user == null)
             {
-                IsPersistent = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(24)
-            };
+                _logger.LogWarning("User not found: {Username}", username);
+                return null;
+            }
 
-            await _httpContextAccessor.HttpContext!.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
+            // Verify the hashed password
+            if (BCrypt.Net.BCrypt.Verify(password, user.Password))
+            {
+                _logger.LogInformation("Login successful for user: {Username}", username);
+                _authenticationStateProvider.MarkUserAsAuthenticated(user);
+                return user;
+            }
 
-            user.IsAuthenticated = true;
-            return user;
+            _logger.LogWarning("Invalid password for user: {Username}", username);
+            return null;
         }
-
-        return null;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during login for user: {Username}", username);
+            throw;
+        }
     }
 
-    public async Task LogoutAsync()
+    public Task LogoutAsync()
     {
-        await _httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        // Mark the user as logged out
+        _authenticationStateProvider.MarkUserAsLoggedOut();
+        return Task.CompletedTask;
     }
 
-    public async Task<AdminUser?> GetCurrentUserAsync()
+    public Task<AdminUser?> GetCurrentUserAsync()
     {
-        var username = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
-        if (string.IsNullOrEmpty(username)) return null;
-
-        return await _context.AdminUsers.FirstOrDefaultAsync(u => u.Username == username);
+        // You can retrieve the current user by querying the database using the claims in the identity.
+        // But since we are storing the user in the authentication state, we just need to return it here.
+        return Task.FromResult((AdminUser?)_authenticationStateProvider.GetCurrentUser());
     }
 }
