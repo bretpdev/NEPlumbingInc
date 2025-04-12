@@ -1,0 +1,17 @@
+@page "/admin-dashboard"
+@attribute [Authorize]
+
+<h3>Admin Dashboard</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h4>Welcome</h4>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = default!;
+}
