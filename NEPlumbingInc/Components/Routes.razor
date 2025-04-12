@@ -1,6 +1,81 @@
-﻿<Router AppAssembly="typeof(Program).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
-    </Found>
-</Router>
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(Program).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <Authorizing>
+                    <div class="loading-state">
+                        <p>Determining authorization...</p>
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </Authorizing>
+                <NotAuthorized Context="context">
+                    <div class="container py-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <div class="card border-warning shadow-sm">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h4 class="card-title mb-0">
+                                            <i class="oi oi-lock-locked me-2"></i>Access Restricted
+                                        </h4>
+                                    </div>
+                                    <div class="card-body">
+                                        @if (context.User?.Identity?.IsAuthenticated != true)
+                                        {
+                                            <div class="text-center mb-4">
+                                                <i class="oi oi-account-login display-4 text-warning mb-3"></i>
+                                                <h5>Authentication Required</h5>
+                                                <p class="text-muted">Please log in to access this page.</p>
+                                            </div>
+                                            <div class="d-grid gap-2">
+                                                <a href="admin-login" class="btn btn-warning">
+                                                    <i class="oi oi-account-login me-2"></i>Login
+                                                </a>
+                                                <a href="/" class="btn btn-outline-secondary">
+                                                    <i class="oi oi-home me-2"></i>Return Home
+                                                </a>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center mb-4">
+                                                <i class="oi oi-shield display-4 text-warning mb-3"></i>
+                                                <h5>Insufficient Permissions</h5>
+                                                <p class="text-muted">Your account doesn't have the required access level.
+                                                </p>
+                                            </div>
+                                            <div class="alert alert-info mb-4">
+                                                <small>
+                                                    <i class="oi oi-person me-2"></i>Logged in as:
+                                                    <strong>@context.User.Identity.Name</strong>
+                                                </small>
+                                            </div>
+                                            <div class="d-grid">
+                                                <a href="" class="btn btn-outline-secondary">
+                                                    <i class="oi oi-home me-2"></i>Return Home
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading">Page Not Found</h4>
+                    <p>Sorry, there's nothing at this address.</p>
+                    <hr>
+                    <p class="mb-0">
+                        <a href="" class="alert-link">Return to home page</a>
+                    </p>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
