@@ -1,30 +1,27 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Launch Chrome Server",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/NEPlumbingInc/bin/Debug/net8.0/NEPlumbingInc.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Users": "${workspaceFolder}"
-            }
-        }
-    ],
-    "env": {
-    "ASPNETCORE_ENVIRONMENT": "Development",
-    "ASPNETCORE_URLS": "https://localhost:7162",
-    "ASPNETCORE_BROWSER": "chrome"
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Chrome Server",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/NEPlumbingInc/bin/Debug/net8.0/NEPlumbingInc.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:7162",
+        "ASPNETCORE_BROWSER": "chrome"
+      },
+      "sourceFileMap": {
+        "/Users": "${workspaceFolder}"
+      }
     }
+  ]
 }
