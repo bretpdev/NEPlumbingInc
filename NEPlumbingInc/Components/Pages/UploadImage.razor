@@ -1,0 +1,94 @@
+﻿@inject IWebHostEnvironment Environment
+@inject IJSRuntime JSRuntime
+
+<div class="mb-3">
+    <label for="@inputId" class="form-label">@Label</label>
+    <div class="d-flex gap-2 align-items-start">
+        @if (!string.IsNullOrEmpty(ImagePath))
+        {
+            <img src="@ImagePath" alt="Preview" class="img-thumbnail" style="height: 100px;" />
+        }
+        <div class="flex-grow-1">
+            <InputFile OnChange="OnFileSelected" class="form-control" id="@inputId" accept=".jpg,.jpeg,.png" />
+            @if (!string.IsNullOrEmpty(ImagePath))
+            {
+                <button type="button" class="btn btn-sm btn-outline-danger mt-2" @onclick="ClearImage">
+                    <i class="oi oi-x me-2"></i>Remove Image
+                </button>
+            }
+        </div>
+    </div>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="text-danger mt-2">@errorMessage</div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Upload Image";
+    [Parameter] public string? ImagePath { get; set; }
+    [Parameter] public EventCallback<string> ImagePathChanged { get; set; }
+    [Parameter] public long MaxFileSizeBytes { get; set; } = 5 * 1024 * 1024; // 5MB default
+
+    private string inputId = $"fileInput_{Guid.NewGuid()}";
+    private string? errorMessage;
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        errorMessage = null;
+        var file = e.File;
+
+        try
+        {
+            if (file.Size > MaxFileSizeBytes)
+            {
+                errorMessage = $"File size exceeds {MaxFileSizeBytes / 1024 / 1024}MB limit.";
+                return;
+            }
+
+            // Create uploads directory if it doesn't exist
+            var uploadsPath = Path.Combine(Environment.WebRootPath, "uploads");
+            Directory.CreateDirectory(uploadsPath);
+
+            // Generate unique filename
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            // Save the file
+            await using var stream = file.OpenReadStream(MaxFileSizeBytes);
+            await using var fileStream = File.Create(filePath);
+            await stream.CopyToAsync(fileStream);
+
+            // Delete old file if exists
+            if (!string.IsNullOrEmpty(ImagePath))
+            {
+                var oldPath = Path.Combine(Environment.WebRootPath, ImagePath.TrimStart('/'));
+                if (File.Exists(oldPath))
+                {
+                    File.Delete(oldPath);
+                }
+            }
+
+            // Update the image path
+            var newPath = $"/uploads/{fileName}";
+            await ImagePathChanged.InvokeAsync(newPath);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error uploading file: {ex.Message}";
+        }
+    }
+
+    private async Task ClearImage()
+    {
+        if (!string.IsNullOrEmpty(ImagePath))
+        {
+            var path = Path.Combine(Environment.WebRootPath, ImagePath.TrimStart('/'));
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            await ImagePathChanged.InvokeAsync(null);
+        }
+    }
+}

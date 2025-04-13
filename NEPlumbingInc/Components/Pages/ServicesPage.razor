@@ -1,0 +1,108 @@
+﻿@page "/services"
+@inject AppDbContext DbContext
+
+<PageTitle>Services</PageTitle>
+
+<script>
+    .card {
+    transition: transform 0.2s ease-in-out;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-title {
+    color: var(--bs-primary);
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    color: var(--bs-secondary);
+}
+
+h1 {
+    color: var(--bs-primary);
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background-color: var(--bs-primary);
+}
+</script>
+
+<div class="container py-5">
+    <h1 class="text-center mb-5">Our Services</h1>
+
+    @if (services == null)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (!services.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            No services are currently available.
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var service in services)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        @if (!string.IsNullOrEmpty(service.ServiceImage))
+                        {
+                            <img src="@service.ServiceImage" class="card-img-top" alt="@service.ServiceName">
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@service.ServiceName</h5>
+                            <p class="card-text">@service.ServiceDescription</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <button class="btn btn-primary w-100" @onclick="() => RequestService(service)">
+                                <i class="oi oi-envelope-closed me-2"></i>Request Service
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Services>? services = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        services = await DbContext.Services
+            .Where(s => s.IsActive)
+            .OrderBy(s => s.ServiceName)
+            .ToListAsync();
+    }
+
+    private void RequestService(Services service)
+    {
+        // TODO: Implement service request functionality
+        // Could navigate to a contact form or open a modal
+    }
+}

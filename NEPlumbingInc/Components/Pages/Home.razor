@@ -1,7 +1,187 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>NE Plumbing Inc - Luxury Plumbing Solutions</PageTitle>
 
-<h1>Hello, world!</h1>
+<style>
+    .hero-section {
+        background-image: url('images/NEPlumbingInc.jpg');
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        height: 70vh; /* Reduced from 100vh to 70vh */
+    }
 
-Welcome to your new app.
+    .hero-section .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-content {
+        padding: 4rem 0;
+    }
+
+    .logo-container img {
+        max-height: 100px;
+        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+    }
+
+    .featured-services .card {
+        transition: transform 0.3s ease;
+    }
+
+    .featured-services .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .testimonials {
+        background-color: #f8f9fa;
+    }
+
+    .hero-container {
+        position: relative;
+        background: linear-gradient(to right, #1a1a1a, #363636);
+        overflow: hidden;
+    }
+
+    .hero-image {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 60%;
+        height: 100%;
+        background-image: url('images/NEPlumbingInc.jpg');
+        background-size: cover;
+        background-position: center;
+        clip-path: polygon(100px 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .hero-content {
+        position: relative;
+        padding: 6rem 0;
+        z-index: 1;
+    }
+
+    .hero-text {
+        max-width: 600px;
+        padding: 2rem;
+        background: rgba(0, 0, 0, 0.7);
+        border-left: 4px solid #007bff;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .cta-container {
+        margin-top: 2rem;
+    }
+
+    .feature-badge {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        margin: 0.5rem;
+        color: #fff;
+    }
+
+    .feature-badge i {
+        margin-right: 0.5rem;
+    }
+</style>
+
+<div class="hero-container">
+    <div class="hero-image"></div>
+    <div class="container hero-content">
+        <div class="hero-text">
+            <span class="hero-badge">Serving Park City Since 2004</span>
+            <h1 class="display-4 text-white fw-bold mb-3">Luxury Plumbing Solutions</h1>
+            <p class="lead text-light mb-4">Bringing exceptional craftsmanship and innovative solutions to high-end residential properties</p>
+            
+            <div class="d-flex flex-wrap mb-4">
+                <span class="feature-badge">
+                    <i class="bi bi-shield-check"></i> Licensed & Insured
+                </span>
+                <span class="feature-badge">
+                    <i class="bi bi-trophy"></i> Award-Winning Service
+                </span>
+                <span class="feature-badge">
+                    <i class="bi bi-clock"></i> 24/7 Emergency Service
+                </span>
+            </div>
+
+            <div class="cta-container d-flex gap-3">
+                <a href="/contact" class="btn btn-primary btn-lg">
+                    <i class="bi bi-calendar-check me-2"></i>Schedule Consultation
+                </a>
+                <a href="/services" class="btn btn-outline-light btn-lg">
+                    <i class="bi bi-grid me-2"></i>View Services
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="featured-services py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Premium Plumbing Services</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <i class="bi bi-droplet-fill display-4 text-primary mb-3"></i>
+                        <h3 class="h4">Luxury Fixtures</h3>
+                        <p>High-end bathroom and kitchen fixtures installation with meticulous attention to detail.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <i class="bi bi-snow display-4 text-primary mb-3"></i>
+                        <h3 class="h4">Heated Driveways</h3>
+                        <p>Specialized installation of snow-melting systems for driveways and walkways.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <i class="bi bi-water display-4 text-primary mb-3"></i>
+                        <h3 class="h4">On-Demand Water</h3>
+                        <p>Energy-efficient tankless water heater solutions for unlimited hot water.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="testimonials bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">What Our Clients Say</h2>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="testimonial-carousel">
+                    <div class="text-center">
+                        <p class="lead mb-4">"Outstanding craftsmanship and attention to detail. NE Plumbing transformed
+                            our master bathroom into a luxury spa experience."</p>
+                        <p class="fw-bold mb-0">- John D., Park City</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
