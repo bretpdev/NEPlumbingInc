@@ -1,9 +1,12 @@
 global using NEPlumbingInc.Components;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Design;
-global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authentication.Cookies;
 global using System.Security.Claims;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using System.ComponentModel.DataAnnotations;
 global using NEPlumbingInc.Models;
+global using System.Net;
+global using System.Net.Mail;
+global using System.Threading.Tasks;
+global using Microsoft.Extensions.Options;

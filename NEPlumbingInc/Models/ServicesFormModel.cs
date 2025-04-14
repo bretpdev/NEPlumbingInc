@@ -1,4 +1,4 @@
-public class Services
+public class ServicesFormModel
 {
     public int Id { get; set; }
     public required string ServiceName { get; set; }

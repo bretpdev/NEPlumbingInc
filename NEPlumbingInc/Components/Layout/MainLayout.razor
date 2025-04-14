@@ -12,7 +12,9 @@
 
     .nav-link {
         font-size: 1rem;
-    }ß
+    }
+
+    ß
 </style>
 
 <header class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
@@ -50,4 +52,59 @@
 
 <main class="container my-4">
     @Body
-</main
+</main>
+
+<footer class="bg-dark text-white py-4 mt-auto">
+    <div class="container">
+        <div class="row text-center text-md-start">
+            <!-- About -->
+            <div class="col-md-4 mb-3">
+                <h5>About Us</h5>
+                <p class="mb-0">N.E. Plumbing Inc. brings 20+ years of experience in residential, commercial, and luxury
+                    plumbing. We’re proud to serve New England with expert service and professionalism.</p>
+            </div>
+
+            <!-- Now Hiring -->
+            <div class="col-md-4 mb-3">
+                <h5>Now Hiring</h5>
+                <p class="mb-1">We're looking for skilled plumbers to join our team!</p>
+                <a href="/contact" class="btn btn-outline-light btn-sm">Apply Now</a>
+            </div>
+
+            <!-- Connect -->
+            <div class="col-md-4 mb-3">
+                <h5>Connect With Us</h5>
+
+                <p class="mb-1">
+                    <a href="https://www.instagram.com/YOUR_INSTAGRAM_HANDLE" target="_blank" rel="noopener noreferrer"
+                        class="text-white text-decoration-none">
+                        <i class="fab fa-instagram fa-lg me-2"></i>Instagram
+                    </a>
+                </p>
+
+                <p class="mb-1">
+                    <a href="tel:8016413246" class="text-white text-decoration-none">
+                        <i class="fas fa-phone fa-sm me-2"></i>(801) 641-3246
+                    </a>
+                </p>
+
+                <p class="mb-0">
+                    <a href="mailto:neplumbinginc@gmail.com" class="text-white text-decoration-none">
+                        <i class="fas fa-envelope fa-sm me-2"></i>neplumbinginc@gmail.com
+                    </a>
+                </p>
+
+                <!-- Added Contact Us Link -->
+                <p class="mt-3">
+                    <a href="/contact" class="btn btn-outline-light btn-sm">Contact Us</a>
+                </p>
+            </div>
+        </div>
+
+        <hr class="border-secondary" />
+
+        <div class="text-center small">
+            &copy; @(DateTime.Now.Year) N.E. Plumbing Inc. All rights reserved.
+        </div>
+    </div>
+</footer>

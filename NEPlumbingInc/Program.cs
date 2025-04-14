@@ -22,12 +22,13 @@ builder.Services.AddAuthorization();
 // Register authentication services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();  // Add this line
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("Email"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
-// Add authentication core
 builder.Services.AddAuthenticationCore();
 
-// Add Razor Components
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 

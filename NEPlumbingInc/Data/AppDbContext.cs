@@ -4,5 +4,5 @@ public class AppDbContext : DbContext
 
     public DbSet<AdminUser> AdminUsers { get; set; }
 
-    public DbSet<Services> Services { get; set; }
+    public DbSet<ServicesFormModel> Services { get; set; }
 }

@@ -1,0 +1,82 @@
+﻿@page "/contact"
+@inject IEmailService EmailService
+
+<PageTitle>Contact Us - NE Plumbing Inc.</PageTitle>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4">Get In Touch</h2>
+                    <p class="text-center text-muted mb-4">
+                        We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.
+                    </p>
+
+                    <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <InputText class="form-control" @bind-Value="formModel.Name" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <InputText class="form-control" @bind-Value="formModel.Email" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone (optional)</label>
+                            <InputText class="form-control" @bind-Value="formModel.Phone" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <InputTextArea class="form-control" rows="5" @bind-Value="formModel.Message" />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send me-2"></i>Send Message
+                            </button>
+                        </div>
+                    </EditForm>
+
+                    @if (successMessage != null)
+                    {
+                        <div class="alert alert-success mt-4 text-center">@successMessage</div>
+                    }
+
+                    @if (errorMessage != null)
+                    {
+                        <div class="alert alert-danger mt-4 text-center">@errorMessage</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ContactFormModel formModel = new();
+    private string? successMessage;
+    private string? errorMessage;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await EmailService.SendContactEmail(formModel);
+            successMessage = "Thanks! Your message has been sent.";
+            errorMessage = null;
+            formModel = new(); // clear the form
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Something went wrong while sending your message.";
+            Console.Error.WriteLine(ex.Message);
+        }
+    }
+}

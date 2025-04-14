@@ -90,7 +90,7 @@ h1::after {
 </div>
 
 @code {
-    private List<Services>? services = new();
+    private List<ServicesFormModel>? services = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,7 +100,7 @@ h1::after {
             .ToListAsync();
     }
 
-    private void RequestService(Services service)
+    private void RequestService(ServicesFormModel service)
     {
         // TODO: Implement service request functionality
         // Could navigate to a contact form or open a modal
