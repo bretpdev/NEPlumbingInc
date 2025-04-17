@@ -10,3 +10,5 @@ global using System.Net;
 global using System.Net.Mail;
 global using System.Threading.Tasks;
 global using Microsoft.Extensions.Options;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Authentication;
