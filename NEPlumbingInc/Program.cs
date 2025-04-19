@@ -14,10 +14,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/admin-login";
         options.LogoutPath = "/admin-logout";
         options.AccessDeniedPath = "/access-denied";
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.SlidingExpiration = true;
     });
 
 // Add authorization
 builder.Services.AddAuthorization();
+builder.Services.AddCascadingAuthenticationState();
 
 // Register authentication services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
