@@ -14,7 +14,7 @@
             Regular maintenance like this keeps your system running efficiently and extends its lifespan.
         </p>
 
-        <EditForm Model="@submission" OnValidSubmit="HandleSubmit">
+        <EditForm Model="@submission" OnValidSubmit="HandleSubmit" FormName="neUndergroundForm">
             <DataAnnotationsValidator />
             <ValidationSummary />
             <div class="mb-3">
