@@ -5,30 +5,90 @@
 <PageTitle>NE Plumbing Inc - Luxury Plumbing Solutions</PageTitle>
 
 <style>
-    .hero-section {
-        background-image: url('images/NEPlumbingInc.jpg');
-        background-size: cover;
-        background-position: center;
-        position: relative;
-        height: 70vh; /* Reduced from 100vh to 70vh */
+    body {
+        font-family: 'Segoe UI', sans-serif;
     }
 
-    .hero-section .overlay {
+    .hero-section {
+        padding: 4rem 0;
+    }
+
+    .hero-badge {
+        background-color: #0056b3;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.9rem;
+    }
+
+    .hero-title {
+        font-size: 2.75rem;
+        font-weight: bold;
+    }
+
+    .hero-image {
+        max-height: 600px;
+        width: 100%;
+        object-fit: contain;
+        border-radius: 1rem;
+        border: 3px solid rgba(0, 0, 0, 0.2);
+        /* Darker semi-transparent border */
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.35);
+        /* Deeper shadow */
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+        background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
+        cursor: pointer;
+        transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .hero-image:hover {
+        transform: scale(1.05);
+        /* Slight zoom for effect */
+    }
+
+    .hidden-overlay {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease, pointer-events 0s 0.3s;
     }
 
-    .hero-content {
-        padding: 4rem 0;
+    .overlay-content {
+        text-align: center;
+        color: #fff;
+        padding: 2rem;
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 1rem;
+        box-shadow: 0 0 1rem rgba(0, 0, 0, 0.4);
     }
 
-    .logo-container img {
-        max-height: 100px;
-        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+    .hidden-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+
+    .feature-badge {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.05);
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        margin: 0.5rem;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .feature-badge i {
+        margin-right: 0.5rem;
     }
 
     .featured-services .card {
@@ -43,75 +103,23 @@
         background-color: #f8f9fa;
     }
 
-    .hero-container {
-        position: relative;
-        background: linear-gradient(to right, #1a1a1a, #363636);
-        overflow: hidden;
-    }
-
-    .hero-image {
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 60%;
-        height: 100%;
-        background-image: url('images/NEPlumbingInc.jpg');
-        background-size: cover;
-        background-position: center;
-        clip-path: polygon(100px 0, 100% 0, 100% 100%, 0 100%);
-    }
-
-    .hero-content {
-        position: relative;
-        padding: 6rem 0;
-        z-index: 1;
-    }
-
-    .hero-text {
-        max-width: 600px;
+    .col-lg-6.text-center {
         padding: 2rem;
-        background: rgba(0, 0, 0, 0.7);
-        border-left: 4px solid #007bff;
-    }
-
-    .hero-badge {
-        display: inline-block;
-        background: #007bff;
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-    }
-
-    .cta-container {
-        margin-top: 2rem;
-    }
-
-    .feature-badge {
-        display: inline-flex;
-        align-items: center;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
-        margin: 0.5rem;
-        color: #fff;
-    }
-
-    .feature-badge i {
-        margin-right: 0.5rem;
     }
 </style>
 
-<div class="hero-container">
-    <div class="hero-image"></div>
-    <div class="container hero-content">
-        <div class="hero-text">
-            <span class="hero-badge">Serving Park City Since 2004</span>
-            <h1 class="display-4 text-white fw-bold mb-3">Luxury Plumbing Solutions</h1>
-            <p class="lead text-light mb-4">Bringing exceptional craftsmanship and innovative solutions to high-end residential properties</p>
-            
-            <div class="d-flex flex-wrap mb-4">
+<!-- HERO SECTION -->
+<div class="container hero-section">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <span class="hero-badge">Serving Norther Utah and Park City Since 2004</span>
+            <h1 class="hero-title mt-3">Elevated Plumbing for Elevated Living</h1>
+            <p class="lead text-muted mt-3">
+                From heated driveways to tankless water systems and high-end fixtures,
+                we deliver unmatched craftsmanship to the most discerning homeowners.
+            </p>
+
+            <div class="d-flex flex-wrap mt-3">
                 <span class="feature-badge">
                     <i class="bi bi-shield-check"></i> Licensed & Insured
                 </span>
@@ -123,19 +131,31 @@
                 </span>
             </div>
 
-            <div class="cta-container d-flex gap-2">
+            <div class="d-flex gap-3 mt-4">
                 <a href="/contact" class="btn btn-primary btn-lg">
                     <i class="bi bi-calendar-check me-2"></i>Schedule Consultation
                 </a>
-                <a href="/services" class="btn btn-outline-light btn-lg">
+                <a href="/services" class="btn btn-outline-secondary btn-lg">
                     <i class="bi bi-grid me-2"></i>View Services
                 </a>
             </div>
         </div>
+        <div class="col-lg-6 text-center" onclick="revealSpeakeasy()">
+            <img src="images/NEPlumbingInc.jpg" alt="Luxury Plumbing Work" class="hero-image" />
+            <!-- Hidden overlay that will be shown after clicking -->
+            <div class="hidden-overlay">
+                <div class="overlay-content">
+                    <h2>Welcome to the Hidden World of NE Plumbing</h2>
+                    <p>Discover our most exclusive services and hidden offers!</p>
+                    <a href="/contact" class="btn btn-light">Request a Hidden Consultation</a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-
+<!-- FEATURED SERVICES -->
 <div class="featured-services py-5">
     <div class="container">
         <h2 class="text-center mb-5">Premium Plumbing Services</h2>
@@ -145,7 +165,7 @@
                     <div class="card-body">
                         <i class="bi bi-droplet-fill display-4 text-primary mb-3"></i>
                         <h3 class="h4">Luxury Fixtures</h3>
-                        <p>High-end bathroom and kitchen fixtures installation with meticulous attention to detail.</p>
+                        <p>High-end bathroom and kitchen fixtures installed with precision and care.</p>
                     </div>
                 </div>
             </div>
@@ -154,7 +174,7 @@
                     <div class="card-body">
                         <i class="bi bi-snow display-4 text-primary mb-3"></i>
                         <h3 class="h4">Heated Driveways</h3>
-                        <p>Specialized installation of snow-melting systems for driveways and walkways.</p>
+                        <p>Specialized snow-melting systems for driveways and walkways.</p>
                     </div>
                 </div>
             </div>
@@ -163,7 +183,7 @@
                     <div class="card-body">
                         <i class="bi bi-water display-4 text-primary mb-3"></i>
                         <h3 class="h4">On-Demand Water Heaters</h3>
-                        <p>Energy-efficient tankless water heater solutions for unlimited hot water.</p>
+                        <p>Efficient tankless water heaters for continuous, energy-saving hot water.</p>
                     </div>
                 </div>
             </div>
@@ -171,7 +191,8 @@
     </div>
 </div>
 
-<div class="testimonials bg-light py-5">
+<!-- TESTIMONIALS -->
+<div class="testimonials py-5">
     <div class="container">
         <h2 class="text-center mb-5">What Our Clients Say</h2>
         <div class="row justify-content-center">

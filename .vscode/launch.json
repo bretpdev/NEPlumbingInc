@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Chrome Server",
+      "name": "Launch Blazor App",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
@@ -16,11 +16,7 @@
       },
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:7162",
-        "ASPNETCORE_BROWSER": "chrome"
-      },
-      "sourceFileMap": {
-        "/Users": "${workspaceFolder}"
+        "ASPNETCORE_URLS": "https://localhost:7162"
       }
     }
   ]

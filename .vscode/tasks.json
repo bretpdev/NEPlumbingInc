@@ -3,8 +3,8 @@
     "tasks": [
         {
             "label": "build",
-            "command": "dotnet",
             "type": "process",
+            "command": "dotnet",
             "args": [
                 "build",
                 "${workspaceFolder}"
@@ -12,11 +12,15 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "type": "dotnet",
-            "task": "clean",
-            "group": "clean",
+            "label": "clean",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "clean",
+                "${workspaceFolder}"
+            ],
             "problemMatcher": [],
-            "label": "dotnet: clean"
+            "group": "build"
         }
     ]
 }
