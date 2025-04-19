@@ -10,25 +10,40 @@
     <div class="card shadow p-4">
         <h4>Spring 2025 Offer: Complimentary Tankless Flush</h4>
         <p>
-            We're offering a complimentary tankless water heater flush to the first 25 homeowners who sign up through NE Underground.
+            We're offering a complimentary tankless water heater flush to the first 25 homeowners who sign up through NE
+            Underground.
             Regular maintenance like this keeps your system running efficiently and extends its lifespan.
         </p>
 
         <EditForm Model="@submission" OnValidSubmit="HandleSubmit" FormName="neUndergroundForm">
             <DataAnnotationsValidator />
             <ValidationSummary />
+
             <div class="mb-3">
                 <label for="name" class="form-label">Full Name</label>
                 <InputText id="name" class="form-control" @bind-Value="submission.FullName" />
             </div>
+
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <InputText id="email" class="form-control" @bind-Value="submission.Email" />
             </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <InputText id="phone" class="form-control" @bind-Value="submission.Phone" />
+            </div>
+
             <div class="mb-3">
                 <label for="zip" class="form-label">ZIP Code</label>
                 <InputText id="zip" class="form-control" @bind-Value="submission.ZipCode" />
             </div>
+
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notes</label>
+                <InputTextArea id="notes" class="form-control" @bind-Value="submission.Notes" />
+            </div>
+
             <button type="submit" class="btn btn-primary">Get My Code</button>
         </EditForm>
 
@@ -43,11 +58,22 @@
     private UndergroundSubmission submission = new();
     private string? successMessage;
 
+    private const int OfferLimit = 25;
+
     private async Task HandleSubmit()
     {
         using var db = await DbFactory.CreateDbContextAsync();
+
+        int currentCount = await db.UndergroundSubmissions.CountAsync();
+        if (currentCount >= OfferLimit)
+        {
+            successMessage = "We're sorry — this exclusive offer has already been claimed.";
+            return;
+        }
+
         db.UndergroundSubmissions.Add(submission);
         await db.SaveChangesAsync();
+
         successMessage = "Thanks for joining NE Underground! We'll email your code shortly.";
     }
 }
