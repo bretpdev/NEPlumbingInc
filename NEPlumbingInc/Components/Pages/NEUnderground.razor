@@ -1,0 +1,53 @@
+﻿@page "/ne-underground"
+@inject NavigationManager NavManager
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<PageTitle>NE Underground Offer</PageTitle>
+
+<h2 class="text-center my-5">NE Underground: Seasonal Offer</h2>
+
+<div class="container">
+    <div class="card shadow p-4">
+        <h4>Spring 2025 Offer: Complimentary Tankless Flush</h4>
+        <p>
+            We're offering a complimentary tankless water heater flush to the first 25 homeowners who sign up through NE Underground.
+            Regular maintenance like this keeps your system running efficiently and extends its lifespan.
+        </p>
+
+        <EditForm Model="@submission" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <InputText id="name" class="form-control" @bind-Value="submission.FullName" />
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="submission.Email" />
+            </div>
+            <div class="mb-3">
+                <label for="zip" class="form-label">ZIP Code</label>
+                <InputText id="zip" class="form-control" @bind-Value="submission.ZipCode" />
+            </div>
+            <button type="submit" class="btn btn-primary">Get My Code</button>
+        </EditForm>
+
+        @if (successMessage != null)
+        {
+            <div class="alert alert-success mt-3">@successMessage</div>
+        }
+    </div>
+</div>
+
+@code {
+    private UndergroundSubmission submission = new();
+    private string? successMessage;
+
+    private async Task HandleSubmit()
+    {
+        using var db = await DbFactory.CreateDbContextAsync();
+        db.UndergroundSubmissions.Add(submission);
+        await db.SaveChangesAsync();
+        successMessage = "Thanks for joining NE Underground! We'll email your code shortly.";
+    }
+}

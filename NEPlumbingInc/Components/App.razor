@@ -22,8 +22,37 @@
         function revealSpeakeasy() {
             const overlay = document.querySelector('.hidden-overlay');
             overlay.classList.add('active');
+
+            document.addEventListener('keydown', escHandler);
+
+            function escHandler(e) {
+                if (e.key === 'Escape') {
+                    closeSpeakeasy();
+                }
+            }
+
+            // Store to remove later (optional if you're toggling a lot)
+            overlay.dataset.escListener = 'true';
+        }
+
+        function closeSpeakeasy() {
+            const overlay = document.querySelector('.hidden-overlay');
+            overlay.classList.remove('active');
+
+            // Cleanup ESC listener
+            if (overlay.dataset.escListener) {
+                document.removeEventListener('keydown', escHandler);
+                delete overlay.dataset.escListener;
+            }
+        }
+
+        function escHandler(e) {
+            if (e.key === 'Escape') {
+                closeSpeakeasy();
+            }
         }
     </script>
+
 </body>
 
 </html>

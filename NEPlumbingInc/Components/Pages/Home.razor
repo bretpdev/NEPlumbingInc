@@ -64,7 +64,7 @@
     .overlay-content {
         text-align: center;
         color: #fff;
-        padding: 2rem;
+        padding: 4rem;
         background-color: rgba(0, 0, 0, 0.8);
         border-radius: 1rem;
         box-shadow: 0 0 1rem rgba(0, 0, 0, 0.4);
@@ -75,6 +75,27 @@
         pointer-events: all;
     }
 
+    .hidden-overlay.active .overlay-content {
+        transform: scale(1);
+    }
+
+    .close-button {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+        z-index: 10;
+    }
+
+    .close-button:hover {
+        color: #ccc;
+    }
 
     .feature-badge {
         display: inline-flex;
@@ -140,18 +161,20 @@
                 </a>
             </div>
         </div>
-        <div class="col-lg-6 text-center" onclick="revealSpeakeasy()">
-            <img src="images/NEPlumbingInc.jpg" alt="Luxury Plumbing Work" class="hero-image" />
-            <!-- Hidden overlay that will be shown after clicking -->
-            <div class="hidden-overlay">
-                <div class="overlay-content">
-                    <h2>Welcome to the Hidden World of NE Plumbing</h2>
-                    <p>Discover our most exclusive services and hidden offers!</p>
-                    <a href="/contact" class="btn btn-light">Request a Hidden Consultation</a>
-                </div>
-            </div>
+        <div class="col-lg-6 text-center">
+            <img src="images/NEPlumbingInc.jpg" alt="Luxury Plumbing Work" class="hero-image"
+                onclick="revealSpeakeasy()" />
         </div>
 
+        <!-- Hidden overlay that appears above everything -->
+        <div class="hidden-overlay">
+            <div class="overlay-content position-relative">
+                <button class="close-button" onclick="closeSpeakeasy()" aria-label="Close">&times;</button>
+                <h2>Welcome to the NE Underground</h2>
+                <p>Unlock this season’s exclusive homeowner offer.</p>
+                <a href="/ne-underground" class="btn btn-light">Reveal the Offer</a>
+            </div>
+        </div>
     </div>
 </div>
 
