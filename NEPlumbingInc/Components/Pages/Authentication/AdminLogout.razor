@@ -1,16 +1,15 @@
 ﻿@page "/admin-logout"
 @inject NavigationManager NavigationManager
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
-@inject IAuthenticationService AuthenticationService // Assume you've set up a service to handle logout
+@inject IAuthenticationService AuthenticationService
 
 <h3>Logging out...</h3>
 
 @code {
     protected override Task OnInitializedAsync()
     {
-        // Mark the user as logged out and clear the cookie
         ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
-        NavigationManager.NavigateTo("/admin-login"); // Redirect to the login page after logout
+        NavigationManager.NavigateTo("/admin-login", forceLoad: true);
         return Task.CompletedTask;
     }
 }

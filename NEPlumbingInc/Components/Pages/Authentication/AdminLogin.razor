@@ -1,7 +1,6 @@
 ﻿@rendermode InteractiveServer
 @page "/admin-login"
-@attribute [AllowAnonymous]
-@inject IAuthenticationService AuthenticationService
+@inject ICustomAuthenticationService AuthService
 @inject NavigationManager NavigationManager
 
 <div class="row justify-content-center">
@@ -11,17 +10,17 @@
                 <h3 class="card-title mb-0">Admin Login</h3>
             </div>
             <div class="card-body">
-                <EditForm Model="loginModel" OnValidSubmit="HandleLogin" FormName="adminLoginForm">
+                <EditForm Model="@model" OnValidSubmit="HandleLogin" FormName="adminLoginForm">
                     <DataAnnotationsValidator />
                     <ValidationSummary class="text-danger mb-3" />
 
                     <div class="form-group mb-3">
                         <label for="username" class="form-label">Username:</label>
-                        <InputText id="username" @bind-Value="loginModel.Username" class="form-control" />
+                        <InputText id="username" @bind-Value="model.UserName" class="form-control" />
                     </div>
                     <div class="form-group mb-3">
                         <label for="password" class="form-label">Password:</label>
-                        <InputText id="password" @bind-Value="loginModel.Password" type="password" class="form-control" />
+                        <InputText id="password" @bind-Value="model.Password" type="password" class="form-control" />
                     </div>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">Login</button>
@@ -40,16 +39,15 @@
 </div>
 
 @code {
-    private AdminUser loginModel = new AdminUser();
+    private LoginViewModel model = new();
     private string? errorMessage;
 
     private async Task HandleLogin()
     {
-        var admin = await AuthenticationService.LoginAsync(loginModel.Username, loginModel.Password);
+        var user = await AuthService.LoginAsync(model.UserName, model.Password);
 
-        if (admin != null)
+        if (user is not null)
         {
-            errorMessage = null;
             NavigationManager.NavigateTo("/admin-dashboard");
         }
         else

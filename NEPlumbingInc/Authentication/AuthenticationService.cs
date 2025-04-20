@@ -1,20 +1,15 @@
-public class AuthenticationService : IAuthenticationService
+public class AuthenticationService(
+    AppDbContext dbContext,
+    CustomAuthenticationStateProvider authenticationStateProvider,
+    IHttpContextAccessor httpContextAccessor,
+    ILogger<AuthenticationService> logger) : ICustomAuthenticationService
 {
- private readonly AppDbContext _dbContext;
-    private readonly CustomAuthenticationStateProvider _authenticationStateProvider;
-    private readonly ILogger<AuthenticationService> _logger;
+    private readonly AppDbContext _dbContext = dbContext;
+    private readonly CustomAuthenticationStateProvider _authenticationStateProvider = authenticationStateProvider;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly ILogger<AuthenticationService> _logger = logger;
 
-    public AuthenticationService(
-        AppDbContext dbContext, 
-        CustomAuthenticationStateProvider authenticationStateProvider,
-        ILogger<AuthenticationService> logger)
-    {
-        _dbContext = dbContext;
-        _authenticationStateProvider = authenticationStateProvider;
-        _logger = logger;
-    }
-
-    public async Task<AdminUser?> LoginAsync(string username, string password)
+    public async Task<LoginViewModel?> LoginAsync(string username, string password)
     {
         try
         {
@@ -23,18 +18,32 @@ public class AuthenticationService : IAuthenticationService
             var user = await _dbContext.AdminUsers
                 .FirstOrDefaultAsync(u => u.Username == username);
 
-            if (user == null)
+            if (user is not null && BCrypt.Net.BCrypt.Verify(password, user.Password))
             {
-                _logger.LogWarning("User not found: {Username}", username);
-                return null;
-            }
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, "Admin")
+                };
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
 
-            // Verify the hashed password
-            if (BCrypt.Net.BCrypt.Verify(password, user.Password))
-            {
-                _logger.LogInformation("Login successful for user: {Username}", username);
-                _authenticationStateProvider.MarkUserAsAuthenticated(user);
-                return user;
+                var authProps = new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                };
+
+                var httpContext = _httpContextAccessor.HttpContext;
+                if (httpContext is not null)
+                {
+                    await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProps);
+                    _logger.LogInformation("Login successful for user: {Username}", username);
+                    return new LoginViewModel { UserName = user.Username };
+                }
+
+                _logger.LogError("HttpContext is null during login for user: {Username}", username);
+                return null;
             }
 
             _logger.LogWarning("Invalid password for user: {Username}", username);
@@ -47,17 +56,27 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
-    public Task LogoutAsync()
+    public async Task LogoutAsync()
     {
-        // Mark the user as logged out
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext is not null)
+        {
+            await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+
         _authenticationStateProvider.MarkUserAsLoggedOut();
-        return Task.CompletedTask;
     }
 
-    public Task<AdminUser?> GetCurrentUserAsync()
+
+    public Task<LoginViewModel?> GetCurrentUserAsync()
     {
-        // You can retrieve the current user by querying the database using the claims in the identity.
-        // But since we are storing the user in the authentication state, we just need to return it here.
-        return Task.FromResult((AdminUser?)_authenticationStateProvider.GetCurrentUser());
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (user?.Identity?.IsAuthenticated == true)
+        {
+            var username = user.Identity.Name ?? "Unknown";
+            return Task.FromResult<LoginViewModel?>(new LoginViewModel { UserName = username });
+        }
+
+        return Task.FromResult<LoginViewModel?>(null);
     }
 }

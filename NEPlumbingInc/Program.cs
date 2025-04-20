@@ -4,9 +4,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
 
-// Add HTTP context accessor
-builder.Services.AddHttpContextAccessor();
-
 // Add authentication services
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -15,23 +12,33 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/admin-login";
         options.LogoutPath = "/admin-logout";
         options.AccessDeniedPath = "/access-denied";
-        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.ExpireTimeSpan = TimeSpan.FromDays(1);
         options.SlidingExpiration = true;
+
+        options.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        };
     });
 
 // Add authorization
 builder.Services.AddAuthorization();
 builder.Services.AddCascadingAuthenticationState();
 
+builder.Services.AddHttpContextAccessor();
+
 // Register authentication services
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<ICustomAuthenticationService, AuthenticationService>();
+builder.Services.AddAuthenticationCore();
+builder.Services.AddAuthorizationCore();
+
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("Email"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-builder.Services.AddAuthenticationCore();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
