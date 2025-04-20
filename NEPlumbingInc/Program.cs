@@ -11,6 +11,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+        options.Cookie.Name = "AdminAuthCookie";
         options.LoginPath = "/admin-login";
         options.LogoutPath = "/admin-logout";
         options.AccessDeniedPath = "/access-denied";

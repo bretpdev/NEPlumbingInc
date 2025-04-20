@@ -1,6 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@inject AuthenticationStateProvider AuthStateProvider
-@inject CustomAuthenticationStateProvider CustomAuthStateProvider
 
 <PageTitle>N.E. Plumbing Inc.</PageTitle>
 
@@ -13,8 +11,6 @@
     .nav-link {
         font-size: 1rem;
     }
-
-    ß
 </style>
 
 <header class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
@@ -34,7 +30,12 @@
 
         <!-- Right Side Login/Logout -->
         <div>
-            <AuthorizeView>
+            <AuthorizeView Roles="Admin">
+                 <Authorized>
+                     <NavLink class="nav-link text-white" href="admin-dashboard">
+                         <span class="oi oi-account-logout" aria-hidden="true"></span> Admin Dashboard
+                     </NavLink>
+                 </Authorized>
                 <Authorized>
                     <NavLink class="nav-link text-white" href="admin-logout">
                         <span class="oi oi-account-logout" aria-hidden="true"></span> Logout

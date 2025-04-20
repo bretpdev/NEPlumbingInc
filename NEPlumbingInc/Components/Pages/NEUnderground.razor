@@ -22,21 +22,25 @@
             <div class="mb-3">
                 <label for="name" class="form-label">Full Name</label>
                 <InputText id="name" class="form-control" @bind-Value="submission.FullName" />
+                <ValidationMessage For="@(() => submission.FullName)" />
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <InputText id="email" class="form-control" @bind-Value="submission.Email" />
+                <ValidationMessage For="@(() => submission.Email)" />
             </div>
 
             <div class="mb-3">
                 <label for="phone" class="form-label">Phone</label>
                 <InputText id="phone" class="form-control" @bind-Value="submission.Phone" />
+                <ValidationMessage For="@(() => submission.Phone)" />
             </div>
 
             <div class="mb-3">
                 <label for="zip" class="form-label">ZIP Code</label>
                 <InputText id="zip" class="form-control" @bind-Value="submission.ZipCode" />
+                <ValidationMessage For="@(() => submission.ZipCode)" />
             </div>
 
             <div class="mb-3">
@@ -44,7 +48,7 @@
                 <InputTextArea id="notes" class="form-control" @bind-Value="submission.Notes" />
             </div>
 
-            <button type="submit" class="btn btn-primary">Get My Code</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
 
         @if (successMessage != null)
@@ -71,9 +75,12 @@
             return;
         }
 
+        submission.SubmittedAt = DateTime.UtcNow;
         db.UndergroundSubmissions.Add(submission);
         await db.SaveChangesAsync();
 
         successMessage = "Thanks for joining NE Underground! We'll email your code shortly.";
+        submission = new();
+        StateHasChanged();
     }
 }
