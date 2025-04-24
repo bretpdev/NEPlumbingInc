@@ -4,44 +4,29 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
 
+builder.Services.AddCascadingAuthenticationState();
+
 // Add authentication services
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.Cookie.Name = "AdminAuthCookie";
-        options.LoginPath = "/admin-login";
-        options.LogoutPath = "/admin-logout";
-        options.AccessDeniedPath = "/access-denied";
-        options.ExpireTimeSpan = TimeSpan.FromDays(1);
+        options.LoginPath = "/auth/login";
+        options.LogoutPath = "/auth/logout";
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
         options.SlidingExpiration = true;
-
-        options.Events.OnRedirectToLogin = context =>
-        {
-            context.Response.StatusCode = 401;
-            return Task.CompletedTask;
-        };
     });
 
-// Add authorization
 builder.Services.AddAuthorization();
-builder.Services.AddCascadingAuthenticationState();
-
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers();
 
-// Register authentication services
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<ICustomAuthenticationService, AuthenticationService>();
-builder.Services.AddAuthenticationCore();
-builder.Services.AddAuthorizationCore();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("Email"));
 builder.Services.AddScoped<IEmailService, EmailService>();
-
-
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
 
 var app = builder.Build();
 
@@ -61,14 +46,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.MapControllers();
+
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-// Add authentication middleware
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

@@ -129,7 +129,12 @@
     }
 </style>
 
-<!-- HERO SECTION -->
+<AuthorizeView>
+    <Authorized>
+        Welcome @context.User.Claims.FirstOrDefault(_=>_.Type == ClaimTypes.Name);
+    </Authorized>
+</AuthorizeView>
+
 <div class="container hero-section">
     <div class="row align-items-center">
         <div class="col-lg-6 mb-4 mb-lg-0">

@@ -1,6 +1,6 @@
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
-    public DbSet<AdminUser> AdminUsers { get; set; }
+    public DbSet<LoginViewModel> LoginUsers { get; set; }
 
     public DbSet<ServicesFormModel> Services { get; set; }
 

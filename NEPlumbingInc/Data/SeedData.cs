@@ -6,14 +6,14 @@ public class SeedData
         logger.LogInformation("Starting database initialization");
 
         await context.Database.EnsureCreatedAsync();
-        var user = await context.AdminUsers.AnyAsync();
+        var user = await context.LoginUsers.AnyAsync();
         if (!user)
         {
             logger.LogInformation("No users found, seeding admin user");
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword("bret");
-            context.AdminUsers.Add(new AdminUser
+            context.LoginUsers.Add(new LoginViewModel
             {
-                Username = "bret",
+                UserName = "bret",
                 Password = hashedPassword
             });
             await context.SaveChangesAsync();
