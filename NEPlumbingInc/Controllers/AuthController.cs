@@ -37,40 +37,13 @@ public class AuthController(AppDbContext context) : Controller
         }
 
         // Invalid login attempt
-        return Unauthorized();
-    }
-
-
-    [HttpGet("callback")]
-    public async Task<IActionResult> Callback([FromQuery] string returnUrl = "/")
-    {
-        if (User.Identity?.IsAuthenticated != true)
-        {
-            throw new Exception("User is not authenticated");
-        }
-
-        var loginId = GetUserLoginId();
-        if (string.IsNullOrEmpty(loginId))
-        {
-            throw new Exception("User login ID is not found");
-        }
-
-        var matches = await context.LoginUsers.Where(p => p.UserName == loginId).ToArrayAsync();
-        if (matches.Length != 1)
-            throw new Exception("User not found");
-
-        return Redirect(returnUrl);
+        return Redirect("/account/login?error=1");
     }
 
     [HttpGet("logout")]
-    public async Task<IActionResult> Logout(string returnUrl = "/")
+    public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Redirect(returnUrl);
-    }
-
-    private string? GetUserLoginId()
-    {
-        return User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        return Redirect("/account/logged-out");
     }
 }
