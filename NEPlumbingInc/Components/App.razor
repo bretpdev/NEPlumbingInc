@@ -10,49 +10,12 @@
     <link rel="stylesheet" href="NEPlumbingInc.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
     <HeadOutlet />
 </head>
 
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
-
-    <script>
-        function revealSpeakeasy() {
-            const overlay = document.querySelector('.hidden-overlay');
-            overlay.classList.add('active');
-
-            document.addEventListener('keydown', escHandler);
-
-            function escHandler(e) {
-                if (e.key === 'Escape') {
-                    closeSpeakeasy();
-                }
-            }
-
-            // Store to remove later (optional if you're toggling a lot)
-            overlay.dataset.escListener = 'true';
-        }
-
-        function closeSpeakeasy() {
-            const overlay = document.querySelector('.hidden-overlay');
-            overlay.classList.remove('active');
-
-            // Cleanup ESC listener
-            if (overlay.dataset.escListener) {
-                document.removeEventListener('keydown', escHandler);
-                delete overlay.dataset.escListener;
-            }
-        }
-
-        function escHandler(e) {
-            if (e.key === 'Escape') {
-                closeSpeakeasy();
-            }
-        }
-    </script>
-
 </body>
 
 </html>

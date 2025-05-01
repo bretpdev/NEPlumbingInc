@@ -1,9 +1,11 @@
 @page "/admin-dashboard"
 @attribute [Authorize(Roles = "Admin")]
-@inject AppDbContext Db
-@inject IWebHostEnvironment Env
+@rendermode InteractiveServer
 
-<h3 class="mb-4">Admin - Manage Site Settings</h3>
+<h3 class="mb-4">Admin Dashboard</h3>
 
-@code {
-}
+<div class="row">
+    <div class="col-12">
+        <ManageServices />
+    </div>
+</div>
