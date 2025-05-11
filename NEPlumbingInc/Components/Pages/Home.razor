@@ -161,16 +161,20 @@
             </div>
         </div>
         <div class="col-lg-6 text-center">
-            <img src="images/NEPlumbingInc.jpg" alt="Luxury Plumbing Work" class="hero-image"
-                onclick="revealSpeakeasy()" />
+            <img src="images/NEPlumbingInc.jpg" 
+                 alt="Luxury Plumbing Work" 
+                 class="hero-image"
+                 @onclick="RevealSpeakeasy" />
         </div>
 
         <!-- Hidden overlay that appears above everything -->
         <div class="hidden-overlay">
             <div class="overlay-content position-relative">
-                <button class="close-button" onclick="closeSpeakeasy()" aria-label="Close">&times;</button>
+                <button class="close-button" 
+                        @onclick="CloseSpeakeasy" 
+                        aria-label="Close">&times;</button>
                 <h2>Welcome to the NE Underground</h2>
-                <p>Unlock this season’s exclusive homeowner offer.</p>
+                <p>Unlock this season's exclusive homeowner offer.</p>
                 <a href="/ne-underground" class="btn btn-light">Reveal the Offer</a>
             </div>
         </div>
@@ -230,3 +234,21 @@
         </div>
     </div>
 </div>
+
+@inject IJSRuntime JSRuntime
+
+@code {
+    private async Task RevealSpeakeasy()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            document.querySelector('.hidden-overlay').classList.add('active');
+        ");
+    }
+
+    private async Task CloseSpeakeasy()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", @"
+            document.querySelector('.hidden-overlay').classList.remove('active');
+        ");
+    }
+}
