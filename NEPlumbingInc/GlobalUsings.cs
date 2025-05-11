@@ -15,3 +15,4 @@ global using System.ComponentModel.DataAnnotations;
 // NEPlumbingInc
 global using NEPlumbingInc.Models;
 global using NEPlumbingInc.Components;
+global using NEPlumbingInc.Services;

@@ -25,9 +25,14 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
+builder.Services.AddScoped<IFilePathService, FilePathService>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("Email"));
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpClient("LocalApi", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7162");
+});
 
 var app = builder.Build();
 
