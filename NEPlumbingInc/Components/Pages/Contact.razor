@@ -1,4 +1,5 @@
 ﻿@page "/contact"
+@rendermode InteractiveServer
 @inject IEmailService EmailService
 @inject IHttpContextAccessor HttpContextAccessor
 @inject ISpecialOfferService SpecialOfferService
@@ -16,7 +17,7 @@
                         We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.
                     </p>
 
-                    <EditForm Model="@form" OnValidSubmit="HandleSubmit">
+                    <EditForm Model="@form" OnValidSubmit="HandleSubmit" FormName="contactForm">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
@@ -80,22 +81,44 @@
 
     private async Task HandleSubmit()
     {
-        if (isSpecialOffer && !string.IsNullOrEmpty(ipAddress))
+        try
         {
-            await SpecialOfferService.RecordFormSubmissionAsync(ipAddress, form);
-        }
+            message = null;
+            errorMessage = null;
 
-        var httpContext = HttpContextAccessor.HttpContext;
-        ipAddress = httpContext?.Connection.RemoteIpAddress?.ToString();
-        
-        if (await SpecialOfferService.RecordFormSubmissionAsync(ipAddress, form))
-        {
-            message = "Thank you for your submission! We'll be in touch soon.";
-            form = new ContactFormModel();
+            // Get IP address from query string or current connection
+            var submissionIpAddress = ipAddress ?? 
+                HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+
+            if (string.IsNullOrEmpty(submissionIpAddress))
+            {
+                errorMessage = "Unable to process your submission. Please try again.";
+                return;
+            }
+
+            // Record form submission
+            var success = await SpecialOfferService.RecordFormSubmissionAsync(submissionIpAddress, form);
+            
+            if (success)
+            {
+                // Only clear form after successful submission
+                message = "Thank you for your submission! We'll be in touch soon.";
+                
+                // Send email or perform other actions here
+                //await EmailService.SendContactEmailAsync(form);
+                
+                // Clear form last
+                form = new ContactFormModel();
+            }
+            else
+            {
+                errorMessage = "Unable to process your submission. Please try again.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            errorMessage = "Unable to process your submission. Please try again.";
+            errorMessage = "An error occurred while processing your submission.";
+            Console.Error.WriteLine($"Form submission error: {ex}");
         }
     }
 }

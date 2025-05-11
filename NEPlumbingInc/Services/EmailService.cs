@@ -1,18 +1,13 @@
 public interface IEmailService
 {
-    Task SendContactEmail(ContactFormModel model);
+    Task SendContactEmailAsync(ContactFormModel model);
 }
 
-public class EmailService : IEmailService
+public class EmailService(IOptions<EmailSettings> options) : IEmailService
 {
-    private readonly EmailSettings _settings;
+    private readonly EmailSettings _settings = options.Value;
 
-    public EmailService(IOptions<EmailSettings> options)
-    {
-        _settings = options.Value;
-    }
-
-    public async Task SendContactEmail(ContactFormModel model)
+    public async Task SendContactEmailAsync(ContactFormModel model)
     {
         var smtpClient = new SmtpClient("smtp.gmail.com")
         {
