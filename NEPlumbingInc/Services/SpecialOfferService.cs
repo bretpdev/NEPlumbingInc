@@ -3,6 +3,8 @@ public interface ISpecialOfferService
     Task<bool> IsOfferAvailableAsync();
     Task<bool> RecordClickAsync(string? ipAddress);
     Task<bool> HasClickedBeforeAsync(string? ipAddress);
+    Task<bool> HasSubmittedFormAsync(string? ipAddress);
+    Task<bool> RecordFormSubmissionAsync(string? ipAddress, ContactFormModel form);
 }
 
 public class SpecialOfferService(AppDbContext context, IHttpContextAccessor httpContextAccessor) : ISpecialOfferService
@@ -43,6 +45,25 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
         };
 
         _context.SpecialOffers.Add(click);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> HasSubmittedFormAsync(string? ipAddress)
+    {
+        if (string.IsNullOrEmpty(ipAddress)) return false;
+        return await _context.SpecialOffers
+            .AnyAsync(o => o.IpAddress == ipAddress && o.FormSubmitted);
+    }
+
+    public async Task<bool> RecordFormSubmissionAsync(string? ipAddress, ContactFormModel form)
+    {
+        var offer = await _context.SpecialOffers
+            .FirstOrDefaultAsync(o => o.IpAddress == ipAddress && !o.FormSubmitted);
+
+        if (offer == null) return false;
+
+        offer.UpdateFromForm(form);
         await _context.SaveChangesAsync();
         return true;
     }

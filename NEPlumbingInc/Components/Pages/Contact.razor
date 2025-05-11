@@ -1,5 +1,7 @@
 ﻿@page "/contact"
 @inject IEmailService EmailService
+@inject IHttpContextAccessor HttpContextAccessor
+@inject ISpecialOfferService SpecialOfferService
 
 <PageTitle>Contact Us - NE Plumbing Inc.</PageTitle>
 
@@ -13,28 +15,28 @@
                         We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.
                     </p>
 
-                    <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
+                    <EditForm Model="@form" OnValidSubmit="HandleSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
                         <div class="mb-3">
                             <label class="form-label">Name</label>
-                            <InputText class="form-control" @bind-Value="formModel.Name" />
+                            <InputText class="form-control" @bind-Value="form.Name" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <InputText class="form-control" @bind-Value="formModel.Email" />
+                            <InputText class="form-control" @bind-Value="form.Email" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Phone (optional)</label>
-                            <InputText class="form-control" @bind-Value="formModel.Phone" />
+                            <InputText class="form-control" @bind-Value="form.Phone" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Message</label>
-                            <InputTextArea class="form-control" rows="5" @bind-Value="formModel.Message" />
+                            <InputTextArea class="form-control" rows="5" @bind-Value="form.Message" />
                         </div>
 
                         <div class="d-grid">
@@ -44,9 +46,9 @@
                         </div>
                     </EditForm>
 
-                    @if (successMessage != null)
+                    @if (message != null)
                     {
-                        <div class="alert alert-success mt-4 text-center">@successMessage</div>
+                        <div class="alert alert-success mt-4 text-center">@message</div>
                     }
 
                     @if (errorMessage != null)
@@ -60,23 +62,22 @@
 </div>
 
 @code {
-    private ContactFormModel formModel = new();
-    private string? successMessage;
+    private ContactFormModel form = new();
+    private string? message;
     private string? errorMessage;
 
-    private async Task HandleValidSubmit()
+    private async Task HandleSubmit()
     {
-        try
+        var ipAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+        
+        if (await SpecialOfferService.RecordFormSubmissionAsync(ipAddress, form))
         {
-            await EmailService.SendContactEmail(formModel);
-            successMessage = "Thanks! Your message has been sent.";
-            errorMessage = null;
-            formModel = new(); // clear the form
+            message = "Thank you for your submission! We'll be in touch soon.";
+            form = new ContactFormModel();
         }
-        catch (Exception ex)
+        else
         {
-            errorMessage = "Something went wrong while sending your message.";
-            Console.Error.WriteLine(ex.Message);
+            errorMessage = "Unable to process your submission. Please try again.";
         }
     }
 }

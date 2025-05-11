@@ -252,25 +252,27 @@
 
 @code {
     private bool offerAvailable;
+    private bool hasSubmittedForm;
     private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        var ipAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
         offerAvailable = await SpecialOfferService.IsOfferAvailableAsync();
+        hasSubmittedForm = await SpecialOfferService.HasSubmittedFormAsync(ipAddress);
     }
 
     private async Task RevealSpeakeasy()
     {
         var ipAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
-        if (await SpecialOfferService.HasClickedBeforeAsync(ipAddress))
+        if (await SpecialOfferService.HasSubmittedFormAsync(ipAddress))
         {
             errorMessage = "You've already claimed this offer!";
         }
-        else
+        else if (string.IsNullOrEmpty(ipAddress))
         {
-            var recorded = await SpecialOfferService.RecordClickAsync(ipAddress);
-            if (!recorded)
+            if (!await SpecialOfferService.RecordClickAsync(ipAddress))
             {
                 offerAvailable = false;
                 return;
