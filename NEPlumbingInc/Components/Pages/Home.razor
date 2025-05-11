@@ -171,17 +171,19 @@
                 <button class="close-button" @onclick="CloseSpeakeasy" aria-label="Close">&times;</button>
                 @if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    <div class="alert alert-warning" role="alert">
+                    <div class="alert @(offerAvailable ? "alert-info" : "alert-warning")" role="alert">
                         @errorMessage
                     </div>
                 }
-                else if (offerAvailable)
+                
+                @if (offerAvailable)
                 {
                     <h2>Welcome to the NE Underground</h2>
                     <p>Unlock this season's exclusive homeowner offer.</p>
-                    <a href="/ne-underground" class="btn btn-light">Reveal the Offer</a>
+                    <a href="@($"/contact?source=special-offer&ip={Uri.EscapeDataString(currentIpAddress)}")"
+                        class="btn btn-light">Reveal the Offer</a>
                 }
-                else
+                else if (string.IsNullOrEmpty(errorMessage))
                 {
                     <h2>Sorry, you missed it!</h2>
                     <p>Our exclusive offer has reached its limit.</p>
@@ -252,33 +254,44 @@
 
 @code {
     private bool offerAvailable;
-    private bool hasSubmittedForm;
     private string? errorMessage;
+    private string currentIpAddress = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        var ipAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+        currentIpAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
         offerAvailable = await SpecialOfferService.IsOfferAvailableAsync();
-        hasSubmittedForm = await SpecialOfferService.HasSubmittedFormAsync(ipAddress);
     }
 
     private async Task RevealSpeakeasy()
     {
         var ipAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+        var (hasAccess, message) = await SpecialOfferService.CheckOfferAccessAsync(ipAddress);
 
-        if (await SpecialOfferService.HasSubmittedFormAsync(ipAddress))
+        if (!hasAccess)
         {
-            errorMessage = "You've already claimed this offer!";
+            errorMessage = message;
+            offerAvailable = false;
         }
-        else if (string.IsNullOrEmpty(ipAddress))
+        else 
         {
-            if (!await SpecialOfferService.RecordClickAsync(ipAddress))
+            // Only try to record click if they have access
+            var clickRecorded = await SpecialOfferService.RecordClickAsync(ipAddress);
+            if (!clickRecorded && !await SpecialOfferService.HasClickedBeforeAsync(ipAddress))
             {
+                // Only show "no longer available" if they haven't clicked before
                 offerAvailable = false;
-                return;
+                errorMessage = "This offer is no longer available.";
+            }
+            else
+            {
+                // They either successfully recorded a click or have clicked before
+                offerAvailable = true;
+                errorMessage = message;  // Use the welcome/welcome back message
             }
         }
 
+        // Show overlay in all cases
         await JSRuntime.InvokeVoidAsync("eval", @"document.querySelector('.hidden-overlay').classList.add('active');");
     }
 

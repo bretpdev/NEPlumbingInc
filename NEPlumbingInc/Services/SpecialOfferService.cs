@@ -5,6 +5,7 @@ public interface ISpecialOfferService
     Task<bool> HasClickedBeforeAsync(string? ipAddress);
     Task<bool> HasSubmittedFormAsync(string? ipAddress);
     Task<bool> RecordFormSubmissionAsync(string? ipAddress, ContactFormModel form);
+    Task<(bool hasAccess, string message)> CheckOfferAccessAsync(string? ipAddress);
 }
 
 public class SpecialOfferService(AppDbContext context, IHttpContextAccessor httpContextAccessor) : ISpecialOfferService
@@ -21,7 +22,12 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
     public async Task<bool> HasClickedBeforeAsync(string? ipAddress)
     {
         if (string.IsNullOrEmpty(ipAddress)) return false;
-        return await _context.SpecialOffers.AnyAsync(o => o.IpAddress == ipAddress);
+        
+        // Check if they've not only clicked but also submitted the form
+        var offer = await _context.SpecialOffers
+            .FirstOrDefaultAsync(o => o.IpAddress == ipAddress);
+            
+        return offer != null;
     }
 
     public async Task<bool> RecordClickAsync(string? ipAddress)
@@ -66,5 +72,22 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
         offer.UpdateFromForm(form);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<(bool hasAccess, string message)> CheckOfferAccessAsync(string? ipAddress)
+    {
+        if (string.IsNullOrEmpty(ipAddress))
+            return (false, "Unable to determine your location");
+
+        var offer = await _context.SpecialOffers
+            .FirstOrDefaultAsync(o => o.IpAddress == ipAddress);
+
+        if (offer == null)
+            return (true, "Welcome to our special offer!");
+            
+        if (offer.FormSubmitted)
+            return (false, "You've already claimed this offer. Thank you!");
+            
+        return (true, "Welcome back! Please complete your form to claim your offer.");
     }
 }

@@ -2,6 +2,7 @@
 @inject IEmailService EmailService
 @inject IHttpContextAccessor HttpContextAccessor
 @inject ISpecialOfferService SpecialOfferService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Contact Us - NE Plumbing Inc.</PageTitle>
 
@@ -65,10 +66,27 @@
     private ContactFormModel form = new();
     private string? message;
     private string? errorMessage;
+    private string? ipAddress;
+    private bool isSpecialOffer;
+
+    protected override void OnInitialized()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        
+        ipAddress = query["ip"];
+        isSpecialOffer = query["source"] == "special-offer";
+    }
 
     private async Task HandleSubmit()
     {
-        var ipAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+        if (isSpecialOffer && !string.IsNullOrEmpty(ipAddress))
+        {
+            await SpecialOfferService.RecordFormSubmissionAsync(ipAddress, form);
+        }
+
+        var httpContext = HttpContextAccessor.HttpContext;
+        ipAddress = httpContext?.Connection.RemoteIpAddress?.ToString();
         
         if (await SpecialOfferService.RecordFormSubmissionAsync(ipAddress, form))
         {
