@@ -27,6 +27,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<IFilePathService, FilePathService>();
 builder.Services.AddScoped<ISpecialOfferService, SpecialOfferService>();
+builder.Services.AddScoped<IContactManager, ContactManager>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("Email"));
 builder.Services.AddScoped<IEmailService, EmailService>();

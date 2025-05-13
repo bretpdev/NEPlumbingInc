@@ -3,6 +3,7 @@ public class SpecialOffer
     public int Id { get; set; }
     public string? IpAddress { get; set; }
     public DateTime ClickedAt { get; set; }
+    public bool IsRead { get; set; }
     public bool FormSubmitted { get; set; }
     public DateTime? FormSubmittedAt { get; set; }
     public string? Name { get; set; }
