@@ -1,9 +1,10 @@
-﻿@page "/contact"
+﻿@page "/messages"
 @rendermode InteractiveServer
-@inject IEmailService EmailService
+@inject IMessageService MessageService
 @inject IHttpContextAccessor HttpContextAccessor
 @inject ISpecialOfferService SpecialOfferService
 @inject NavigationManager NavigationManager
+@inject IEmailService EmailService
 
 <PageTitle>Contact Us - NE Plumbing Inc.</PageTitle>
 
@@ -64,7 +65,7 @@
 </div>
 
 @code {
-    private ContactFormModel form = new();
+    private MessageFormModel form = new();
     private string? message;
     private string? errorMessage;
     private string? ipAddress;
@@ -86,34 +87,34 @@
             message = null;
             errorMessage = null;
 
-            // Get IP address from query string or current connection
-            var submissionIpAddress = ipAddress ?? 
-                HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+            // Create the message first
+            var savedMessage = await MessageService.CreateMessageAsync(form, isSpecialOffer);
 
-            if (string.IsNullOrEmpty(submissionIpAddress))
+            // Send email notification
+            //await EmailService.SendMessageEmailAsync(form);
+
+            // Handle special offer if present
+            if (isSpecialOffer)
             {
-                errorMessage = "Unable to process your submission. Please try again.";
-                return;
+                var submissionIpAddress = ipAddress ?? 
+                    HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+
+                if (string.IsNullOrEmpty(submissionIpAddress))
+                {
+                    errorMessage = "Unable to process special offer. Message saved.";
+                    return;
+                }
+
+                var success = await SpecialOfferService.RecordFormSubmissionAsync(submissionIpAddress, form);
+                if (!success)
+                {
+                    errorMessage = "Unable to process special offer. Message saved.";
+                    return;
+                }
             }
 
-            // Record form submission
-            var success = await SpecialOfferService.RecordFormSubmissionAsync(submissionIpAddress, form);
-            
-            if (success)
-            {
-                // Only clear form after successful submission
-                message = "Thank you for your submission! We'll be in touch soon.";
-                
-                // Send email or perform other actions here
-                //await EmailService.SendContactEmailAsync(form);
-                
-                // Clear form last
-                form = new ContactFormModel();
-            }
-            else
-            {
-                errorMessage = "Unable to process your submission. Please try again.";
-            }
+            message = "Thank you for your submission! We'll be in touch soon.";
+            form = new MessageFormModel();
         }
         catch (Exception ex)
         {

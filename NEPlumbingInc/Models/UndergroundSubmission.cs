@@ -1,3 +1,5 @@
+namespace NEPlumbingInc.Models;
+
 public class UndergroundSubmission
 {
     public int Id { get; set; }

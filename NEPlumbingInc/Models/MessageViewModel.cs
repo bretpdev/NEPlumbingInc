@@ -1,4 +1,6 @@
-public class ContactViewModel
+namespace NEPlumbingInc.Models;
+
+public class MessageViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

@@ -1,3 +1,5 @@
+namespace NEPlumbingInc.Models;
+
 public class ServicesFormModel
 {
     [Key]

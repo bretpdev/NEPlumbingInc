@@ -1,13 +1,15 @@
+namespace NEPlumbingInc.Services;
+
 public interface IEmailService
 {
-    Task SendContactEmailAsync(ContactFormModel model);
+    Task SendMessageEmailAsync(MessageFormModel model);
 }
 
 public class EmailService(IOptions<EmailSettings> options) : IEmailService
 {
     private readonly EmailSettings _settings = options.Value;
 
-    public async Task SendContactEmailAsync(ContactFormModel model)
+    public async Task SendMessageEmailAsync(MessageFormModel model)
     {
         var smtpClient = new SmtpClient("smtp.gmail.com")
         {

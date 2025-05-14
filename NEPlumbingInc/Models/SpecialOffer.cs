@@ -1,3 +1,5 @@
+namespace NEPlumbingInc.Models;
+
 public class SpecialOffer
 {
     public int Id { get; set; }
@@ -12,7 +14,7 @@ public class SpecialOffer
     public string? Message { get; set; }
     public const int MaxClicks = 30;
 
-    public void UpdateFromForm(ContactFormModel form)
+    public void UpdateFromForm(MessageFormModel form)
     {
         Name = form.Name;
         Email = form.Email;

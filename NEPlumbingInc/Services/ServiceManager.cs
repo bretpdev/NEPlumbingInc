@@ -1,4 +1,4 @@
-namespace NEPlumbingInc.Models;
+namespace NEPlumbingInc.Services;
 
 public interface IServiceManager
 {

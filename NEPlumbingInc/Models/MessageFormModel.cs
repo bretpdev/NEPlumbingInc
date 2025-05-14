@@ -1,4 +1,6 @@
-public class ContactFormModel
+namespace NEPlumbingInc.Models;
+
+public class MessageFormModel
 {
     [Required(ErrorMessage = "Name is required")]
     public string Name { get; set; } = string.Empty;

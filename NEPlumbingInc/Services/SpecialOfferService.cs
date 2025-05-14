@@ -1,10 +1,12 @@
+namespace NEPlumbingInc.Services;
+
 public interface ISpecialOfferService
 {
     Task<bool> IsOfferAvailableAsync();
     Task<bool> RecordClickAsync(string? ipAddress);
     Task<bool> HasClickedBeforeAsync(string? ipAddress);
     Task<bool> HasSubmittedFormAsync(string? ipAddress);
-    Task<bool> RecordFormSubmissionAsync(string? ipAddress, ContactFormModel form);
+    Task<bool> RecordFormSubmissionAsync(string? ipAddress, MessageFormModel form);
     Task<(bool hasAccess, string message)> CheckOfferAccessAsync(string? ipAddress);
 }
 
@@ -62,7 +64,7 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
             .AnyAsync(o => o.IpAddress == ipAddress && o.FormSubmitted);
     }
 
-    public async Task<bool> RecordFormSubmissionAsync(string? ipAddress, ContactFormModel form)
+    public async Task<bool> RecordFormSubmissionAsync(string? ipAddress, MessageFormModel form)
     {
         var offer = await _context.SpecialOffers
             .FirstOrDefaultAsync(o => o.IpAddress == ipAddress && !o.FormSubmitted);
