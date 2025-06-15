@@ -1,4 +1,5 @@
 ﻿@page "/services"
+@rendermode InteractiveServer
 @inject IServiceManager ServiceManager
 
 <style>
@@ -7,16 +8,52 @@
         opacity: 1;
         transition: all 0.3s ease-in-out;
     }
+
+    .service-card {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+
+    .service-card::after {
+        content: "Click for details →";
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        background: var(--bs-primary);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        opacity: 0;
+        transform: translateX(10px);
+        transition: all 0.3s ease;
+    }
+
+    .service-card:hover::after {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .service-card:active {
+        transform: translateY(-2px);
+    }
 </style>
 
-<h1 class="text-center mb-5">Our Plumbing Services</h1>
+<h1 class="text-center mb-5">N.E. Plumbing Services</h1>
 
 <div class="container">
     <div class="row">
         @foreach (var service in services)
         {
             <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm" @onclick="() => OpenModal(service)">
+                <div class="card service-card h-100 shadow-sm" @onclick="@(() => OpenModal(service))">
                     @if (!string.IsNullOrEmpty(service.ServiceImage))
                     {
                         <img src="@service.ServiceImage" 
@@ -52,33 +89,51 @@
                     <button type="button" class="btn-close" @onclick="CloseModal"></button>
                 </div>
                 <div class="modal-body">
-                    @if (!string.IsNullOrEmpty(selectedService.ServiceImage))
-                    {
-                        <img src="@selectedService.ServiceImage" alt="Service Image" class="img-fluid rounded mb-3" />
-                    }
-
-                    <p>@selectedService.ServiceDescription</p>
+                    <p class="lead mb-4">@selectedService.ServiceDescription</p>
 
                     @if (selectedService.SubServices?.Any() == true)
                     {
-                        <h5 class="mt-4">What’s Included</h5>
-                        <ul class="list-group">
-                            @foreach (var sub in selectedService.SubServices)
-                            {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>@sub.Name</strong><br />
-                                        <small class="text-muted">@sub.Description</small>
-                                    </div>
-                                    <span class="badge bg-primary fs-6">@($"${sub.Price:F2}")</span>
-                                </li>
-                            }
-                        </ul>
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Service Options & Pricing</h5>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var sub in selectedService.SubServices)
+                                {
+                                    <li class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="ms-2 me-auto">
+                                                <div class="fw-bold">@sub.Name</div>
+                                                @if (!string.IsNullOrEmpty(sub.Description))
+                                                {
+                                                    <p class="mb-0 text-muted small">@sub.Description</p>
+                                                }
+                                            </div>
+                                            @if (sub.Price.HasValue)
+                                            {
+                                                <span class="badge bg-primary rounded-pill fs-6">
+                                                    @($"${sub.Price:F2}")
+                                                </span>
+                                            }
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
                     }
                     else
                     {
-                        <p class="text-muted">No detailed pricing available yet.</p>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Contact us for detailed pricing information.
+                        </div>
                     }
+                </div>
+                <div class="modal-footer">
+                    <a href="/contact" class="btn btn-primary">
+                        <i class="fas fa-envelope me-2"></i>Contact Us
+                    </a>
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
                 </div>
             </div>
         </div>
@@ -91,14 +146,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        services = (await ServiceManager.GetAllServicesAsync())
-            .Where(s => s.IsActive)
-            .ToList();
-
+        services = await ServiceManager.GetAllServicesAsync();
+        
         // Debug output
         foreach (var service in services)
         {
-            Console.WriteLine($"Service: {service.ServiceName}, Image: {service.ServiceImage}");
+            Console.WriteLine($"Service: {service.ServiceName}");
+            Console.WriteLine($"SubServices count: {service.SubServices?.Count ?? 0}");
+            if (service.SubServices != null)
+            {
+                foreach (var sub in service.SubServices)
+                {
+                    Console.WriteLine($"  - {sub.Name}: ${sub.Price}");
+                }
+            }
         }
     }
 
