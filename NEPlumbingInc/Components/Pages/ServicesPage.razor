@@ -14,11 +14,14 @@
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
+        border: none;
+        border-radius: 12px;  /* Slightly larger border radius */
+        background: linear-gradient(to bottom, #ffffff, #f8f9fa);
     }
 
     .service-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
     }
 
     .service-card::after {
@@ -28,12 +31,71 @@
         right: 1rem;
         background: var(--bs-primary);
         color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
         font-size: 0.875rem;
         opacity: 0;
         transform: translateX(10px);
         transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .image-container {
+        height: 220px;  /* Slightly taller container */
+        overflow: hidden;
+        position: relative;
+        background: linear-gradient(135deg, #e9ecef, #dee2e6); /* Angled gradient */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .service-image {
+        width: 90%;  /* Slightly smaller to create margin */
+        height: 90%;
+        object-fit: contain;
+        object-position: center;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);  /* Smooth easing */
+        filter: drop-shadow(0 8px 15px rgba(0,0,0,0.15))
+               contrast(1.02)
+               saturate(1.05);  /* Subtle image enhancement */
+    }
+
+    .service-card:hover .service-image {
+        transform: scale(1.08) translateY(-5px);
+        filter: drop-shadow(0 15px 25px rgba(0,0,0,0.2))
+               contrast(1.05)
+               saturate(1.1);
+    }
+
+    .service-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 220px;
+        background: radial-gradient(circle at center, transparent 70%, rgba(0,0,0,0.03));
+        pointer-events: none;
+    }
+
+    .card-title {
+        color: var(--bs-primary);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        border-bottom: 2px solid transparent;
+        transition: border-color 0.3s ease;
+    }
+
+    .service-card:hover .card-title {
+        border-bottom-color: var(--bs-primary);
+    }
+
+    .card-text {
+        color: #6c757d;
+        font-size: 0.95rem;
+        line-height: 1.5;
     }
 
     .service-card:hover::after {
@@ -43,6 +105,11 @@
 
     .service-card:active {
         transform: translateY(-2px);
+    }
+
+    .card-body {
+        padding: 1.5rem;  /* More generous padding */
+        background: linear-gradient(180deg, #ffffff, #f8f9fa);
     }
 </style>
 
@@ -56,16 +123,16 @@
                 <div class="card service-card h-100 shadow-sm" @onclick="@(() => OpenModal(service))">
                     @if (!string.IsNullOrEmpty(service.ServiceImage))
                     {
-                        <img src="@service.ServiceImage" 
-                             class="card-img-top" 
-                             alt="@service.ServiceName"
-                             style="height: 200px; object-fit: cover;"
-                             @onerror="@(e => Console.WriteLine($"Image failed to load: {service.ServiceImage}"))" />
+                        <div class="image-container">
+                            <img src="@service.ServiceImage" 
+                                 class="service-image" 
+                                 alt="@service.ServiceName"
+                                 @onerror="@(e => Console.WriteLine($"Image failed to load: {service.ServiceImage}"))" />
+                        </div>
                     }
                     else
                     {
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                             style="height: 200px;">
+                        <div class="image-container bg-light d-flex align-items-center justify-content-center">
                             <span class="text-muted">No image available</span>
                         </div>
                     }
@@ -111,9 +178,14 @@
                                             </div>
                                             @if (sub.Price.HasValue)
                                             {
-                                                <span class="badge bg-primary rounded-pill fs-6">
-                                                    @($"${sub.Price:F2}")
-                                                </span>
+                                                <div class="text-end">
+                                                    <span class="badge bg-primary rounded-pill fs-6">
+                                                        Starting at @($"${sub.Price.Value:N2}")
+                                                    </span>
+                                                    <div class="text-muted small mt-1">
+                                                        *Final price determined after inspection
+                                                    </div>
+                                                </div>
                                             }
                                         </div>
                                     </li>
@@ -129,11 +201,19 @@
                         </div>
                     }
                 </div>
-                <div class="modal-footer">
-                    <a href="/contact" class="btn btn-primary">
-                        <i class="fas fa-envelope me-2"></i>Contact Us
-                    </a>
-                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                <div class="modal-footer flex-column align-items-stretch">
+                    <div class="text-muted small text-center mb-2">
+                        All prices shown are starting points. Final costs may vary based on requirements.
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <a href="/contact" class="btn btn-primary me-2">
+                            <i class="fas fa-envelope me-2"></i>
+                            @(selectedService.ConsultationType == ConsultationType.Inspection 
+                                ? "Schedule Inspection" 
+                                : "Schedule Consultation")
+                        </a>
+                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>

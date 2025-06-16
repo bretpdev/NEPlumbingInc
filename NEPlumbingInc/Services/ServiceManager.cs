@@ -49,8 +49,7 @@ public class ServiceManager : IServiceManager
     public async Task<List<ServicesFormModel>> GetAllServicesAsync()
     {
         return await _context.Services
-            .Include(s => s.SubServices)  // This line ensures SubServices are loaded
-            .Where(s => s.IsActive)
+            .Include(s => s.SubServices)
             .Select(s => new ServicesFormModel
             {
                 Id = s.Id,
@@ -59,7 +58,17 @@ public class ServiceManager : IServiceManager
                 ServiceImage = s.ServiceImage,
                 IsActive = s.IsActive,
                 CreatedAt = s.CreatedAt,
-                SubServices = s.SubServices!.ToList()
+                ConsultationType = s.ConsultationType,
+                SubServices = s.SubServices!
+                    .Select(sub => new SubServiceModel
+                    {
+                        Id = sub.Id,
+                        Name = sub.Name,
+                        Description = sub.Description,
+                        Price = sub.Price,
+                        ServiceId = sub.ServiceId
+                    })
+                    .ToList()
             })
             .ToListAsync();
     }
@@ -93,16 +102,17 @@ public class ServiceManager : IServiceManager
         var service = await _context.Services
             .Include(s => s.SubServices)
             .FirstOrDefaultAsync(s => s.Id == model.Id);
-    
+
         if (service == null)
             throw new KeyNotFoundException($"Service {model.Id} not found");
-    
+
         // Update main service properties
         service.ServiceName = model.ServiceName;
         service.ServiceDescription = model.ServiceDescription;
         service.ServiceImage = model.ServiceImage;
         service.IsActive = model.IsActive;
-    
+        service.ConsultationType = model.ConsultationType;  // Add this line
+
         // Remove deleted sub-services
         var existingIds = service.SubServices!.Select(s => s.Id).ToList();
         var updatedIds = model.SubServices?.Select(s => s.Id).ToList() ?? new List<int>();

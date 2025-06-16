@@ -1,16 +1,21 @@
 namespace NEPlumbingInc.Models;
 
+public enum ConsultationType
+{
+    Inspection,
+    Consultation
+}
+
 public class ServicesFormModel
 {
-    [Key]
     public int Id { get; set; }
-    public string? ServiceName { get; set; } = string.Empty;
-    public string? ServiceDescription { get; set; } = string.Empty;
-    public string? ServiceImage { get; set; } = string.Empty;
-    public bool IsActive { get; set; } = true;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-    public List<SubServiceModel>? SubServices { get; set; } = [];
+    public string ServiceName { get; set; } = string.Empty;
+    public string ServiceDescription { get; set; } = string.Empty;
+    public string? ServiceImage { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public ConsultationType ConsultationType { get; set; } = ConsultationType.Inspection;
+    public List<SubServiceModel>? SubServices { get; set; }
 }
 
 public class SubServiceModel
