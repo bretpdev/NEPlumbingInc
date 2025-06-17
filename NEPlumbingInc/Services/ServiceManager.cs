@@ -9,42 +9,9 @@ public interface IServiceManager
     Task DeleteServiceAsync(int id);
 }
 
-public class ServiceManager : IServiceManager
+public class ServiceManager(AppDbContext context) : IServiceManager
 {
-    private readonly AppDbContext _context;
-    private readonly IFilePathService _filePathService;
-
-    public ServiceManager(AppDbContext context, IFilePathService filePathService)
-    {
-        _context = context;
-        _filePathService = filePathService;
-    }
-
-    private void DeleteImageFile(string? imagePath)
-    {
-        if (string.IsNullOrEmpty(imagePath)) return;
-
-        var fullPath = _filePathService.GetFullPath(imagePath);
-        if (File.Exists(fullPath))
-        {
-            File.Delete(fullPath);
-        }
-    }
-
-    private string NormalizeImagePath(string? imagePath)
-    {
-        if (string.IsNullOrEmpty(imagePath)) return string.Empty;
-
-        // If the path is already normalized (starts with /uploads/), return as is
-        if (imagePath.StartsWith("/uploads/"))
-        {
-            return imagePath;
-        }
-
-        // Otherwise, get the filename and create a new normalized path
-        var fileName = Path.GetFileName(imagePath);
-        return $"/uploads/{fileName}";
-    }
+    private readonly AppDbContext _context = context;
 
     public async Task<List<ServicesFormModel>> GetAllServicesAsync()
     {
@@ -160,9 +127,6 @@ public class ServiceManager : IServiceManager
     {
         var service = await _context.Services.FindAsync(id)
             ?? throw new KeyNotFoundException($"Service with ID {id} not found.");
-
-        // Delete associated image file
-        DeleteImageFile(service.ServiceImage);
 
         _context.Services.Remove(service);
         await _context.SaveChangesAsync();

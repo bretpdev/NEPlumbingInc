@@ -25,7 +25,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
-builder.Services.AddScoped<IFilePathService, FilePathService>();
 builder.Services.AddScoped<ISpecialOfferService, SpecialOfferService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.Configure<EmailSettings>(
