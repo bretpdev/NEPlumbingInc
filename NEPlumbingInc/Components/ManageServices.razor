@@ -134,8 +134,7 @@
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <h5 class="mb-0">Sub Services</h5>
-                                        <button type="button" class="btn btn-sm btn-outline-success" 
-                                                @onclick="AddSubService">
+                                        <button type="button" class="btn btn-sm btn-outline-success" @onclick="() => OpenSubServiceModal(null)">
                                             <i class="fas fa-plus"></i> Add Option
                                         </button>
                                     </div>
@@ -143,32 +142,29 @@
                                     @if (editService.SubServices?.Any() == true)
                                     {
                                         <div class="list-group">
-                                            @foreach (var sub in editService.SubServices)
+                                            @for (int i = 0; i < editService.SubServices.Count; i++)
                                             {
-                                                <div class="list-group-item">
-                                                    <div class="row g-3">
-                                                        <div class="col-sm-4">
-                                                            <input type="text" class="form-control" 
-                                                                   placeholder="Name"
-                                                                   @bind="sub.Name" />
-                                                        </div>
-                                                        <div class="col-sm-4">
-                                                            <input type="text" class="form-control" 
-                                                                   placeholder="Description"
-                                                                   @bind="sub.Description" />
-                                                        </div>
-                                                        <div class="col-sm-3">
-                                                            <input type="number" class="form-control" 
-                                                                   placeholder="Price"
-                                                                   @bind="sub.Price" />
-                                                        </div>
-                                                        <div class="col-sm-1">
-                                                            <button type="button" 
-                                                                    class="btn btn-sm btn-outline-danger"
-                                                                    @onclick="() => RemoveSubService(sub)">
-                                                                <i class="fas fa-times"></i>
-                                                            </button>
-                                                        </div>
+                                                var sub = editService.SubServices[i];
+                                                var index = i;
+
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong>@sub.Name</strong>
+                                                        <div class="text-muted small">@sub.Description</div>
+                                                        @if (sub.Price.HasValue)
+                                                        {
+                                                            <span class="badge bg-primary">Starting at @($"{sub.Price.Value:N2}")</span>
+                                                        }
+                                                    </div>
+                                                    <div class="d-flex flex-nowrap align-items-center" style="gap:0.5rem; min-width:90px;">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                                                @onclick="() => OpenSubServiceModal(index)">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                                @onclick="() => RemoveSubService(sub)">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             }
@@ -212,11 +208,52 @@
     </div>
 }
 
+@if (showSubServiceModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(editingSubServiceIndex != null ? "Edit" : "Add") Sub Service</h5>
+                    <button type="button" class="btn-close" @onclick="CloseSubServiceModal"></button>
+                </div>
+                <EditForm Model="@editingSubService" OnValidSubmit="SaveSubService" FormName="subServiceForm">
+                    <div class="modal-body">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <InputText class="form-control" @bind-Value="editingSubService.Name" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <InputTextArea class="form-control" @bind-Value="editingSubService.Description" rows="3" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Price</label>
+                            <InputNumber class="form-control" @bind-Value="editingSubService.Price" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" @onclick="CloseSubServiceModal">Cancel</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private List<ServicesFormModel> services = new();
     private ServicesFormModel editService = new();
     private bool showModal;
     private bool isEditing;
+
+    private bool showSubServiceModal = false;
+    private SubServiceModel editingSubService = new();
+    private int? editingSubServiceIndex = null;
 
     protected override async Task OnInitializedAsync() => await LoadServices();
 
@@ -302,5 +339,74 @@
     {
         editService.ServiceImage = null;
         StateHasChanged();
+    }
+
+    private void OpenSubServiceModal(int? index)
+    {
+        if (index is int i)
+        {
+            // Edit existing
+            if (editService.SubServices != null && i >= 0 && i < editService.SubServices.Count)
+            {
+                var sub = editService.SubServices[i];
+                editingSubService = new SubServiceModel
+                {
+                    Id = sub.Id,
+                    Name = sub.Name,
+                    Description = sub.Description,
+                    Price = sub.Price
+                };
+                editingSubServiceIndex = i;
+            }
+            else
+            {
+                editingSubService = new SubServiceModel();
+                editingSubServiceIndex = null;
+            }
+        }
+        else
+        {
+            // Add new
+            editingSubService = new SubServiceModel();
+            editingSubServiceIndex = null;
+        }
+        showSubServiceModal = true;
+    }
+
+    private void CloseSubServiceModal()
+    {
+        showSubServiceModal = false;
+        editingSubService = new SubServiceModel();
+        editingSubServiceIndex = null;
+    }
+
+    private void SaveSubService()
+    {
+        if (editingSubServiceIndex is int i)
+        {
+            // Update existing
+            editService.SubServices ??= new List<SubServiceModel>();
+            if (i >= 0 && i < editService.SubServices.Count)
+            {
+                editService.SubServices[i] = new SubServiceModel
+                {
+                    Name = editingSubService.Name,
+                    Description = editingSubService.Description,
+                    Price = editingSubService.Price
+                };
+            }
+        }
+        else
+        {
+            // Add new
+            editService.SubServices ??= new List<SubServiceModel>();
+            editService.SubServices.Add(new SubServiceModel
+            {
+                Name = editingSubService.Name,
+                Description = editingSubService.Description,
+                Price = editingSubService.Price
+            });
+        }
+        CloseSubServiceModal();
     }
 }

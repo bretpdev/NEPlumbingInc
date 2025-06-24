@@ -3,6 +3,7 @@ namespace NEPlumbingInc.Services;
 public interface IServiceManager
 {
     Task<List<ServicesFormModel>> GetAllServicesAsync();
+    Task<List<ServicesFormModel>> GetActiveServicesAsync();
     Task<ServicesFormModel> GetServiceByIdAsync(int id);
     Task<ServicesFormModel> CreateServiceAsync(ServicesFormModel service);
     Task<ServicesFormModel> UpdateServiceAsync(ServicesFormModel service);
@@ -16,6 +17,34 @@ public class ServiceManager(AppDbContext context) : IServiceManager
     public async Task<List<ServicesFormModel>> GetAllServicesAsync()
     {
         return await _context.Services
+            .Include(s => s.SubServices)
+            .Select(s => new ServicesFormModel
+            {
+                Id = s.Id,
+                ServiceName = s.ServiceName,
+                ServiceDescription = s.ServiceDescription,
+                ServiceImage = s.ServiceImage,
+                IsActive = s.IsActive,
+                CreatedAt = s.CreatedAt,
+                ConsultationType = s.ConsultationType,
+                SubServices = s.SubServices!
+                    .Select(sub => new SubServiceModel
+                    {
+                        Id = sub.Id,
+                        Name = sub.Name,
+                        Description = sub.Description,
+                        Price = sub.Price,
+                        ServiceId = sub.ServiceId
+                    })
+                    .ToList()
+            })
+            .ToListAsync();
+    }
+
+    public async Task<List<ServicesFormModel>> GetActiveServicesAsync()
+    {
+        return await _context.Services
+            .Where(s => s.IsActive)
             .Include(s => s.SubServices)
             .Select(s => new ServicesFormModel
             {

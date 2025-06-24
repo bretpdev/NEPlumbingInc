@@ -223,7 +223,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        services = await ServiceManager.GetAllServicesAsync();
+        services = await ServiceManager.GetActiveServicesAsync();
         
         // Debug output
         foreach (var service in services)
