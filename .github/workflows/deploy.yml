@@ -11,9 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-    - name: Set up .NET
+    - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
@@ -22,20 +23,13 @@ jobs:
       run: dotnet restore
       working-directory: ./NEPlumbingInc
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+    - name: Build and Publish
+      run: |
+        dotnet build --configuration Release --no-restore
+        dotnet publish --configuration Release --no-build --output ./publish
       working-directory: ./NEPlumbingInc
 
-    - name: Publish
-      run: dotnet publish --configuration Release --no-build --output ./publish
-      working-directory: ./NEPlumbingInc
-
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Deploy to App Service
+    - name: Deploy to Azure App Service
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'neplumbinginc'
