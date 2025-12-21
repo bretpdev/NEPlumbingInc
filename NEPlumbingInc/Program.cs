@@ -1,8 +1,20 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add database context
-builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseSqlite("Data Source=app.db"));
+if (builder.Environment.IsDevelopment())
+{
+    // Use SQLite for local development
+    builder.Services.AddDbContextFactory<AppDbContext>(options =>
+        options.UseSqlite("Data Source=app.db"));
+}
+else
+{
+    // Use SQL Server for production (Azure)
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    builder.Services.AddDbContextFactory<AppDbContext>(options =>
+        options.UseSqlServer(connectionString));
+}
 
 builder.Services.AddCascadingAuthenticationState();
 
@@ -27,6 +39,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<ISpecialOfferService, SpecialOfferService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<HomePageContentService>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("Email"));
 builder.Services.AddScoped<IEmailService, EmailService>();

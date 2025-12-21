@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<SpecialOffer> SpecialOffers { get; set; }
     public DbSet<MessageViewModel> Messages { get; set; }
     public DbSet<SubServiceModel> SubServices { get; set; }
+    public DbSet<HomePageContent> HomePageContents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

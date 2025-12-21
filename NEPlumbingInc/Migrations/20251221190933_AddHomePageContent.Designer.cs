@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace NEPlumbingInc.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251221190933_AddHomePageContent")]
+    partial class AddHomePageContent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
@@ -23,45 +26,30 @@ namespace NEPlumbingInc.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("FeatureBadge1")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FeatureBadge2")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FeatureBadge3")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HeroBadgeText")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HeroDescription")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HeroTitle")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PremiumServicesTitle")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Service1Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Service1Title")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Service2Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Service2Title")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Service3Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Service3Title")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
