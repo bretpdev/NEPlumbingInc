@@ -1,37 +1,49 @@
-name: Deploy to Azure
+name: Build and Deploy Blazor Server App to Azure
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+    # 1️⃣ Checkout your repository
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # 2️⃣ Setup .NET 8 SDK
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
 
+    # 3️⃣ Restore dependencies
     - name: Restore dependencies
       run: dotnet restore
       working-directory: ./NEPlumbingInc
 
+    # 4️⃣ Build and publish
     - name: Build and Publish
       run: |
         dotnet build --configuration Release --no-restore
         dotnet publish --configuration Release --no-build --output ./publish
       working-directory: ./NEPlumbingInc
 
+    # 5️⃣ Login to Azure using service principal
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # 6️⃣ Deploy to Azure App Service
     - name: Deploy to Azure App Service
       uses: azure/webapps-deploy@v2
       with:
         app-name: 'neplumbinginc'
-        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
         package: './NEPlumbingInc/publish'
