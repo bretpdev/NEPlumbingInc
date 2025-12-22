@@ -9,9 +9,11 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    // Use SQL Server for production (Azure)
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    // Use SQL Server for production (Azure Linux)
+    var connectionString =
+        builder.Configuration["DefaultConnection"]
+        ?? throw new InvalidOperationException("DefaultConnection environment variable not found.");
+
     builder.Services.AddDbContextFactory<AppDbContext>(options =>
         options.UseSqlServer(connectionString));
 }
