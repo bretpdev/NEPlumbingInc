@@ -8,6 +8,15 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     {
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        if (!optionsBuilder.IsConfigured)
+        {
+            // SQL Server will be configured from Program.cs, but ensure we're not defaulting to SQLite
+        }
+    }
+
     public DbSet<LoginViewModel> LoginUsers { get; set; }
     public DbSet<ServicesFormModel> Services { get; set; }
     public DbSet<UndergroundSubmission> UndergroundSubmissions { get; set; }
