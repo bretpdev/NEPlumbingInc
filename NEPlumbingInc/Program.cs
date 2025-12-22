@@ -1,25 +1,15 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add database context
-if (builder.Environment.IsDevelopment())
-{
-    // Use SQLite for local development
-    builder.Services.AddDbContextFactory<AppDbContext>(options =>
-        options.UseSqlite("Data Source=app.db"));
-}
-else
-{
-    var connectionString =
-        builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? builder.Configuration["ConnectionStrings__DefaultConnection"]
-        ?? builder.Configuration["DefaultConnection"]
-        ?? throw new InvalidOperationException(
-            "DefaultConnection connection string not found.");
+// Add database context - use SQL Server for all environments
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? builder.Configuration["ConnectionStrings__DefaultConnection"]
+    ?? builder.Configuration["DefaultConnection"]
+    ?? throw new InvalidOperationException(
+        "DefaultConnection connection string not found.");
 
-    builder.Services.AddDbContextFactory<AppDbContext>(options =>
-        options.UseSqlServer(connectionString));
-}
-
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddCascadingAuthenticationState();
 
