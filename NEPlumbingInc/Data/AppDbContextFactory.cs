@@ -11,7 +11,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         
         // For migrations, use a SQL Server connection string
         // This is only used by 'dotnet ef' commands locally
-        var connectionString = "Server=.;Database=NEPlumbingIncDB;Integrated Security=true;TrustServerCertificate=true;";
+        var connectionString = "Server=localhost;Database=NEPlumbingIncDB;User=sa;Password=YourPassword123!;Encrypt=false;TrustServerCertificate=true;";
         optionsBuilder.UseSqlServer(connectionString);
         
         return new AppDbContext(optionsBuilder.Options);
