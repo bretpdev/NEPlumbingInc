@@ -6,24 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace NEPlumbingInc.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdatingTables : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AdminUsers");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Phone",
-                table: "UndergroundSubmissions",
-                type: "TEXT",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "TEXT",
-                oldNullable: true);
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -61,21 +48,6 @@ namespace NEPlumbingInc.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LoginUsers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserName = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false),
-                    RememberMe = table.Column<bool>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LoginUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -124,8 +96,8 @@ namespace NEPlumbingInc.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
+                    ProviderKey = table.Column<string>(type: "TEXT", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
@@ -169,8 +141,8 @@ namespace NEPlumbingInc.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    LoginProvider = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Value = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -241,36 +213,10 @@ namespace NEPlumbingInc.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "LoginUsers");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Phone",
-                table: "UndergroundSubmissions",
-                type: "TEXT",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
-
-            migrationBuilder.CreateTable(
-                name: "AdminUsers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    IsAuthenticated = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false),
-                    Username = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AdminUsers", x => x.Id);
-                });
         }
     }
 }

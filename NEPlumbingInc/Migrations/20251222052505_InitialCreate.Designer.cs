@@ -10,14 +10,67 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace NEPlumbingInc.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250421030625_UpdatingTables")]
-    partial class UpdatingTables
+    [Migration("20251222052505_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
+
+            modelBuilder.Entity("HomePageContent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FeatureBadge1")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FeatureBadge2")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FeatureBadge3")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HeroBadgeText")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HeroDescription")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HeroTitle")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PremiumServicesTitle")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Service1Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Service1Title")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Service2Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Service2Title")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Service3Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Service3Title")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HomePageContents");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -158,11 +211,9 @@ namespace NEPlumbingInc.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProviderDisplayName")
@@ -200,11 +251,9 @@ namespace NEPlumbingInc.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
@@ -237,10 +286,48 @@ namespace NEPlumbingInc.Migrations
                     b.ToTable("LoginUsers");
                 });
 
-            modelBuilder.Entity("ServicesFormModel", b =>
+            modelBuilder.Entity("NEPlumbingInc.Models.MessageViewModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsSpecialOffer")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("NEPlumbingInc.Models.ServicesFormModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ConsultationType")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
@@ -250,6 +337,7 @@ namespace NEPlumbingInc.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ServiceDescription")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ServiceImage")
@@ -259,15 +347,76 @@ namespace NEPlumbingInc.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
                     b.ToTable("Services");
                 });
 
-            modelBuilder.Entity("UndergroundSubmission", b =>
+            modelBuilder.Entity("NEPlumbingInc.Models.SpecialOffer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ClickedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("FormSubmitted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("FormSubmittedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SpecialOffers");
+                });
+
+            modelBuilder.Entity("NEPlumbingInc.Models.SubServiceModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("SubServices");
+                });
+
+            modelBuilder.Entity("NEPlumbingInc.Models.UndergroundSubmission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -350,6 +499,22 @@ namespace NEPlumbingInc.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("NEPlumbingInc.Models.SubServiceModel", b =>
+                {
+                    b.HasOne("NEPlumbingInc.Models.ServicesFormModel", "Service")
+                        .WithMany("SubServices")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("NEPlumbingInc.Models.ServicesFormModel", b =>
+                {
+                    b.Navigation("SubServices");
                 });
 #pragma warning restore 612, 618
         }
