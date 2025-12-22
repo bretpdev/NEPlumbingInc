@@ -9,8 +9,10 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         
-        // Use SQL Server for migrations (change this to your actual connection string)
-        optionsBuilder.UseSqlServer("Server=.;Database=NEPlumbingIncDB;Integrated Security=true;TrustServerCertificate=true;");
+        // For migrations, use a SQL Server connection string
+        // This is only used by 'dotnet ef' commands locally
+        var connectionString = "Server=.;Database=NEPlumbingIncDB;Integrated Security=true;TrustServerCertificate=true;";
+        optionsBuilder.UseSqlServer(connectionString);
         
         return new AppDbContext(optionsBuilder.Options);
     }
