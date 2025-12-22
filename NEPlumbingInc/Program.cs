@@ -9,14 +9,17 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    // Use SQL Server for production (Azure Linux)
     var connectionString =
         builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? throw new InvalidOperationException("DefaultConnection connection string not found.");
+        ?? builder.Configuration["ConnectionStrings__DefaultConnection"]
+        ?? builder.Configuration["DefaultConnection"]
+        ?? throw new InvalidOperationException(
+            "DefaultConnection connection string not found.");
 
     builder.Services.AddDbContextFactory<AppDbContext>(options =>
         options.UseSqlServer(connectionString));
 }
+
 
 builder.Services.AddCascadingAuthenticationState();
 
