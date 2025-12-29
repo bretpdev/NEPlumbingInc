@@ -286,6 +286,14 @@ namespace NEPlumbingInc.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ButtonColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HeroBadgeColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LightBgColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

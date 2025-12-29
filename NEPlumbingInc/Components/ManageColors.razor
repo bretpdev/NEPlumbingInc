@@ -115,6 +115,18 @@
                             <input type="color" class="color-input" id="bgColor" 
                                    @bind="colorSettings.LightBgColor" />
                         </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="heroBadgeColor">Hero Badge Background</label>
+                            <input type="color" class="color-input" id="heroBadgeColor" 
+                                   @bind="colorSettings.HeroBadgeColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="buttonColor">Button Color</label>
+                            <input type="color" class="color-input" id="buttonColor" 
+                                   @bind="colorSettings.ButtonColor" />
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -149,6 +161,18 @@
                             <input type="text" class="form-control form-control-sm" 
                                    @bind="colorSettings.LightBgColor" placeholder="#f8f9fa" />
                         </div>
+
+                        <div class="mb-2">
+                            <small class="text-muted">Hero Badge Background:</small>
+                            <input type="text" class="form-control form-control-sm" 
+                                   @bind="colorSettings.HeroBadgeColor" placeholder="#0056b3" />
+                        </div>
+
+                        <div class="mb-2">
+                            <small class="text-muted">Button Color:</small>
+                            <input type="text" class="form-control form-control-sm" 
+                                   @bind="colorSettings.ButtonColor" placeholder="#0066CC" />
+                        </div>
                     </div>
                 </div>
 
@@ -180,7 +204,13 @@
 
                 <div class="preview-card">
                     <p>Regular text will use color: <code>@colorSettings.TextColor</code></p>
-                    <button class="btn btn-sm" style="background-color: @colorSettings.PrimaryColor; color: white; border: none;">
+                    <span class="hero-badge" style="background-color: @colorSettings.HeroBadgeColor; color: white; padding: 0.5rem 1rem; border-radius: 2rem; display: inline-block;">
+                        Hero Badge
+                    </span>
+                </div>
+
+                <div class="preview-card">
+                    <button class="btn btn-sm" style="background-color: @colorSettings.ButtonColor; color: white; border: none;">
                         Sample Button
                     </button>
                 </div>

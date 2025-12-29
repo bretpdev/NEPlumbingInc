@@ -14,6 +14,8 @@
         --accent-color: @(colorSettings?.AccentColor ?? "#003d7a");
         --text-color: @(colorSettings?.TextColor ?? "#212529");
         --light-bg-color: @(colorSettings?.LightBgColor ?? "#f8f9fa");
+        --hero-badge-color: @(colorSettings?.HeroBadgeColor ?? "#0056b3");
+        --button-color: @(colorSettings?.ButtonColor ?? "#0066CC");
         --bs-border-color: #dee2e6;
         --bs-code-color: #e83e8c;
         --bs-heading-color: inherit;
@@ -125,12 +127,12 @@
 
 <div class="min-vh-100 d-flex flex-column" data-dark-mode="@DarkModeService.IsDarkMode.ToString().ToLower()">
     <header class="navbar navbar-expand-lg navbar-dark px-4" style="background-color: var(--primary-color);">
-        <div class="container-fluid d-flex justify-content-between align-items-center w-100">
-            <!-- Company Name (Left) -->
+        <div class="container-fluid d-flex flex-column w-100">
+            <!-- Company Name (Top on mobile, left on desktop) -->
             <a class="navbar-brand me-4" href="">N.E. Plumbing Inc.</a>
 
             <!-- Center Nav Links -->
-            <div class="d-flex flex-grow-1 justify-content-center">
+            <div class="d-flex navbar-nav-center">
                 <NavLink class="nav-link text-white me-3" href="" Match="NavLinkMatch.All">
                     <span class="oi oi-home" aria-hidden="true"></span> Home
                 </NavLink>
@@ -140,7 +142,7 @@
             </div>
 
             <!-- Right Side Login/Logout & Dark Mode -->
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex navbar-controls">
                 <button class="dark-mode-toggle" @onclick="ToggleDarkMode" type="button" title="Toggle dark mode">
                     <i class="fas @(DarkModeService.IsDarkMode ? "fa-sun" : "fa-moon")"></i>
                 </button>

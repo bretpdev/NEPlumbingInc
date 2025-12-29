@@ -20,5 +20,11 @@ public class ColorSettings
     [Required]
     public string LightBgColor { get; set; } = "#f8f9fa";
 
+    [Required]
+    public string HeroBadgeColor { get; set; } = "#0056b3";
+
+    [Required]
+    public string ButtonColor { get; set; } = "#0066CC";
+
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
