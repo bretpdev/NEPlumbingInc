@@ -25,12 +25,23 @@
             console.error('Blazor error:', event.reason);
         });
 
+        // Handle Blazor navigation to restore dark mode after page changes
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.Blazor) {
+                Blazor.addEventListener('beforeNavigate', () => {
+                    // Preserve dark mode setting before navigation
+                });
+                
+                Blazor.addEventListener('afterNavigate', () => {
+                    // Restore dark mode setting after navigation
+                    RestoreDarkModeSetting();
+                });
+            }
+        });
+
         // Function to update dark mode attribute
         window.UpdateDarkModeAttribute = function(isDarkMode) {
-            const root = document.querySelector('[data-dark-mode]');
-            if (root) {
-                root.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
-            }
+            document.documentElement.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
         };
 
         // Clean up corrupted localStorage entries
@@ -59,11 +70,9 @@
             try {
                 const savedDarkMode = localStorage.getItem('darkMode');
                 if (savedDarkMode === 'true') {
-                    const root = document.documentElement;
-                    root.setAttribute('data-dark-mode', 'true');
-                } else if (savedDarkMode === 'false') {
-                    const root = document.documentElement;
-                    root.setAttribute('data-dark-mode', 'false');
+                    document.documentElement.setAttribute('data-dark-mode', 'true');
+                } else {
+                    document.documentElement.setAttribute('data-dark-mode', 'false');
                 }
             } catch (e) {
                 console.error('Error restoring dark mode:', e);
