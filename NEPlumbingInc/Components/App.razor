@@ -19,6 +19,12 @@
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    <script>
+        // Blazor circuit handler for reconnection
+        Blazor.addEventListener('unhandledError', event => {
+            console.error('Blazor error:', event.reason);
+        });
+    </script>
 </body>
 
 </html>

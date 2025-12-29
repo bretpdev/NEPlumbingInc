@@ -31,6 +31,15 @@ builder.Services.AddControllers();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Configure Blazor Server circuit options
+builder.Services.Configure<CircuitOptions>(options =>
+{
+    // Increase the circuit timeout to 45 minutes
+    options.DisconnectedCircuitMaxRetained = 100;
+    options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(5);
+    options.MaxBufferedUnacknowledgedRenderBatches = 10;
+});
+
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<ISpecialOfferService, SpecialOfferService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
