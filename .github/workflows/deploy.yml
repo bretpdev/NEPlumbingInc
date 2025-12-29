@@ -32,6 +32,7 @@ jobs:
     - name: Build and Publish
       run: |
         dotnet build --configuration Release --no-restore
+        rm -rf ./publish
         dotnet publish --configuration Release --no-build --output ./publish
       working-directory: ./NEPlumbingInc
 
@@ -47,3 +48,4 @@ jobs:
       with:
         app-name: 'neplumbinginc'
         package: './NEPlumbingInc/publish'
+        clean: true
