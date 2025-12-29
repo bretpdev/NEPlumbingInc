@@ -25,19 +25,7 @@
             console.error('Blazor error:', event.reason);
         });
 
-        // Handle Blazor navigation to restore dark mode after page changes
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.Blazor) {
-                Blazor.addEventListener('beforeNavigate', () => {
-                    // Preserve dark mode setting before navigation
-                });
-                
-                Blazor.addEventListener('afterNavigate', () => {
-                    // Restore dark mode setting after navigation
-                    RestoreDarkModeSetting();
-                });
-            }
-        });
+        // Theme restoration is handled by MainLayout (interactive routing).
 
         // Function to update dark mode attribute
         window.UpdateDarkModeAttribute = function(isDarkMode) {
