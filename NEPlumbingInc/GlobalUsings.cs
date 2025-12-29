@@ -4,7 +4,6 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authentication.Cookies;
 global using Microsoft.AspNetCore.Components.Server;
-global using Microsoft.AspNetCore.Localization;
 global using Microsoft.Extensions.Options;
 
 // Sytem
