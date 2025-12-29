@@ -61,6 +61,43 @@
         background-color: #4a7ba7;
         color: #e0f0ff;
     }
+
+    /* Dark mode table styling */
+    [data-dark-mode="true"] .table {
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .table thead th {
+        color: #d4d4d4;
+        background-color: #252526;
+        border-color: #3e3e42;
+    }
+
+    [data-dark-mode="true"] .table tbody tr {
+        background-color: #2a2a2a;
+        color: #d4d4d4;
+        border-color: #3e3e42;
+    }
+
+    [data-dark-mode="true"] .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: #252526;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .table-striped > tbody > tr:nth-of-type(even) {
+        background-color: #2a2a2a;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .table-hover > tbody > tr:hover {
+        background-color: #353535;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .table td {
+        color: #d4d4d4;
+        vertical-align: middle;
+    }
 </style>
 
 <div class="card shadow-sm">
