@@ -94,10 +94,20 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+/* Navbar brand styling to prevent cutoff */
+.navbar-brand {
+    white-space: nowrap;
+    overflow: visible;
+    flex-shrink: 0;
+    padding: 0.5rem 0;
+}
+
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
     .navbar-brand {
         font-size: 1.1rem;
+        white-space: nowrap;
     }
 
     .nav-link {
@@ -108,7 +118,8 @@ main {
 
 @media (max-width: 640px) {
     .navbar-brand {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        white-space: nowrap;
     }
 
     .nav-link {
