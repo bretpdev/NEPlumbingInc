@@ -102,6 +102,14 @@ main {
     flex-shrink: 0;
     padding: 0.5rem 0;
     min-width: fit-content;
+    transition: none !important;
+}
+
+.navbar-brand:hover,
+.navbar-brand:focus {
+    color: inherit !important;
+    opacity: 1 !important;
+    transform: none !important;
 }
 
 /* Ensure navbar takes full width without overflow */
