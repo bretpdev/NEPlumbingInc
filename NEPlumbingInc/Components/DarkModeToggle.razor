@@ -35,6 +35,16 @@
 </style>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Clear any corrupted localStorage data
+            await JS.InvokeVoidAsync("localStorage.removeItem", "med>i__field");
+        }
+        catch { }
+    }
+
     private async Task ToggleDarkMode()
     {
         DarkModeService.IsDarkMode = !DarkModeService.IsDarkMode;

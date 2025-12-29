@@ -32,6 +32,27 @@
                 root.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
             }
         };
+
+        // Clean up corrupted localStorage entries
+        window.CleanupCorruptedStorage = function() {
+            try {
+                // Remove known corrupted keys
+                localStorage.removeItem('med>i__field');
+                
+                // Remove any keys with invalid characters
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.includes('>') || key.includes('<') || key.includes('field'))) {
+                        localStorage.removeItem(key);
+                    }
+                }
+            } catch (e) {
+                console.error('Error cleaning localStorage:', e);
+            }
+        };
+        
+        // Run cleanup on page load
+        CleanupCorruptedStorage();
     </script>
 </body>
 
