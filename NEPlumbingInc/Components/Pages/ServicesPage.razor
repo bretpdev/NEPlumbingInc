@@ -111,6 +111,110 @@
         padding: 1.5rem;  /* More generous padding */
         background: linear-gradient(180deg, #ffffff, #f8f9fa);
     }
+
+    /* Dark mode styling */
+    [data-dark-mode="true"] h1 {
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .service-card {
+        background: linear-gradient(to bottom, #252526, #2a2a2a) !important;
+        border: 1px solid #3e3e42 !important;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .service-card:hover {
+        box-shadow: 0 15px 30px rgba(0,0,0,0.5) !important;
+    }
+
+    [data-dark-mode="true"] .service-card::after {
+        background: #0e639c !important;
+    }
+
+    [data-dark-mode="true"] .image-container {
+        background: linear-gradient(135deg, #3c3c3c, #4c4c4c) !important;
+        border-bottom-color: #3e3e42 !important;
+    }
+
+    [data-dark-mode="true"] .service-image {
+        filter: drop-shadow(0 8px 15px rgba(0,0,0,0.4))
+               contrast(1.02)
+               saturate(1.05);
+    }
+
+    [data-dark-mode="true"] .card-body {
+        background: linear-gradient(180deg, #252526, #2a2a2a) !important;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .card-title {
+        color: #569cd6 !important;
+    }
+
+    [data-dark-mode="true"] .card-text {
+        color: #b8b8b8 !important;
+    }
+
+    [data-dark-mode="true"] .modal-content {
+        background-color: #252526 !important;
+        border-color: #3e3e42 !important;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .modal-header {
+        background-color: #2d2d30 !important;
+        border-color: #3e3e42 !important;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .modal-title {
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .btn-close {
+        background-color: transparent;
+        filter: invert(1);
+    }
+
+    [data-dark-mode="true"] .modal-body {
+        background-color: #252526 !important;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .modal-body .lead {
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .list-group-item {
+        background-color: #2a2a2a !important;
+        border-color: #3e3e42 !important;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .list-group-item .text-muted {
+        color: #858585 !important;
+    }
+
+    [data-dark-mode="true"] .list-group-item .fw-bold {
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .badge {
+        background-color: #0e639c !important;
+        color: #e0f0ff !important;
+    }
+
+    [data-dark-mode="true"] .alert {
+        background-color: #2a2a2a !important;
+        border-color: #3e3e42 !important;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .alert-info {
+        background-color: #1e3a4d !important;
+        border-color: #0e639c !important;
+        color: #9cdcfe !important;
+    }
 </style>
 
 <h1 class="text-center mb-5">N.E. Plumbing Services</h1>
