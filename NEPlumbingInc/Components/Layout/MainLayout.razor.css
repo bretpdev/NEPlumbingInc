@@ -104,20 +104,27 @@ main {
     min-width: fit-content;
 }
 
-/* Ensure navbar container and navbar take full width */
+/* Ensure navbar takes full width without overflow */
 .navbar {
     width: 100%;
-    overflow: visible !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-sizing: border-box;
 }
 
-.navbar .container-fluid {
-    overflow: visible;
-    max-width: 100%;
-    width: 100%;
-    padding-left: 1rem;
-    padding-right: 1rem;
+.navbar-nav-center {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.navbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 /* Mobile responsive adjustments */

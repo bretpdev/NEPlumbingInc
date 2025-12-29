@@ -134,43 +134,41 @@
 
 <div class="min-vh-100 d-flex flex-column" data-dark-mode="@DarkModeService.IsDarkMode.ToString().ToLower()">
     <header class="navbar navbar-expand-lg navbar-dark w-100" style="background-color: var(--primary-color); padding: 0.5rem 1rem;">
-        <div class="container-fluid p-0 d-flex flex-column">
-            <!-- Company Name (Top on mobile, left on desktop) -->
-            <a class="navbar-brand" href="">N.E. Plumbing Inc.</a>
+        <!-- Company Name -->
+        <a class="navbar-brand flex-shrink-0" href="">N.E. Plumbing Inc.</a>
 
-            <!-- Center Nav Links -->
-            <div class="d-flex navbar-nav-center">
-                <NavLink class="nav-link text-white me-3" href="" Match="NavLinkMatch.All">
-                    <span class="oi oi-home" aria-hidden="true"></span> Home
-                </NavLink>
-                <NavLink class="nav-link text-white me-3" href="services">
-                    <span class="oi oi-plus" aria-hidden="true"></span> Services
-                </NavLink>
-            </div>
+        <!-- Center Nav Links -->
+        <div class="d-flex navbar-nav-center ms-3">
+            <NavLink class="nav-link text-white me-3" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+            <NavLink class="nav-link text-white me-3" href="services">
+                <span class="oi oi-plus" aria-hidden="true"></span> Services
+            </NavLink>
+        </div>
 
-            <!-- Right Side Login/Logout & Dark Mode -->
-            <div class="d-flex navbar-controls">
-                <button class="dark-mode-toggle" @onclick="ToggleDarkMode" type="button" title="Toggle dark mode">
-                    <i class="fas @(DarkModeService.IsDarkMode ? "fa-sun" : "fa-moon")"></i>
-                </button>
-                <AuthorizeView Roles="Admin">
-                    <Authorized Context="auth">
-                        <div class="d-flex align-items-center gap-2">
-                            <NavLink class="nav-link text-white" href="admin-dashboard">
-                                <span class="oi oi-account-logout" aria-hidden="true"></span> @auth.User.Identity?.Name's dashboard
-                            </NavLink>
-                            <NavLink class="nav-link text-white" href="/auth/logout">
-                                <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
-                            </NavLink>
-                        </div>
-                    </Authorized>
-                    <NotAuthorized>
-                        <NavLink class="nav-link text-white" href="/account/login">
-                            <span class="oi oi-account-login" aria-hidden="true"></span> Admin Login
+        <!-- Right Side Login/Logout & Dark Mode -->
+        <div class="d-flex navbar-controls ms-auto">
+            <button class="dark-mode-toggle" @onclick="ToggleDarkMode" type="button" title="Toggle dark mode">
+                <i class="fas @(DarkModeService.IsDarkMode ? "fa-sun" : "fa-moon")"></i>
+            </button>
+            <AuthorizeView Roles="Admin">
+                <Authorized Context="auth">
+                    <div class="d-flex align-items-center gap-2">
+                        <NavLink class="nav-link text-white" href="admin-dashboard">
+                            <span class="oi oi-account-logout" aria-hidden="true"></span> @auth.User.Identity?.Name's dashboard
                         </NavLink>
-                    </NotAuthorized>
-                </AuthorizeView>
-            </div>
+                        <NavLink class="nav-link text-white" href="/auth/logout">
+                            <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                        </NavLink>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink class="nav-link text-white" href="/account/login">
+                        <span class="oi oi-account-login" aria-hidden="true"></span> Admin Login
+                    </NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
     </header>
 
