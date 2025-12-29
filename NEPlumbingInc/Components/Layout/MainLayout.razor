@@ -496,12 +496,16 @@
             string? darkModeValue = await JS.InvokeAsync<string?>("localStorage.getItem", "darkMode");
             bool isDarkMode = darkModeValue == "true";
             DarkModeService.Initialize(isDarkMode);
+            // Apply the dark mode attribute to the HTML element
+            await JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
             StateHasChanged();
         }
     }
 
     private void OnDarkModeChanged(bool isDarkMode)
     {
+        // Apply the dark mode attribute whenever dark mode changes
+        _ = JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
         StateHasChanged();
     }
 
