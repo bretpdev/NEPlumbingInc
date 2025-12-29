@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-@inject DarkModeService DarkModeService
+@inject ThemeService ThemeService
 @inject IColorSettingsService ColorSettingsService
 @implements IAsyncDisposable
 
@@ -378,7 +378,7 @@
     }
 </style>
 
-<div class="min-vh-100 d-flex flex-column" data-dark-mode="@DarkModeService.IsDarkMode.ToString().ToLower()">
+<div class="min-vh-100 d-flex flex-column" data-dark-mode="@ThemeService.IsDarkMode.ToString().ToLower()">
     <header class="navbar navbar-expand-lg navbar-dark w-100" style="background-color: var(--primary-color); padding: 0.5rem 1rem;">
         <!-- Company Name -->
         <a class="navbar-brand flex-shrink-0" href="">N.E. Plumbing Inc.</a>
@@ -484,7 +484,7 @@
     {
         // Load color settings (no JS interop)
         colorSettings = await ColorSettingsService.GetColorSettingsAsync();
-        DarkModeService.OnDarkModeChanged += OnDarkModeChanged;
+        ThemeService.OnChange += OnThemeChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -507,22 +507,22 @@
         if (firstRender && !initialized)
         {
             initialized = true;
-            DarkModeService.Initialize(isDarkMode);
+            ThemeService.Initialize(isDarkMode);
         }
         else if (!firstRender)
         {
             // On navigation, update the service if it changed
-            DarkModeService.IsDarkMode = isDarkMode;
+            ThemeService.IsDarkMode = isDarkMode;
         }
         
         // Always apply the dark mode attribute
         await JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
     }
 
-    private void OnDarkModeChanged(bool isDarkMode)
+    private void OnThemeChanged()
     {
         // Apply the dark mode attribute whenever dark mode changes
-        _ = JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
+        _ = JS.InvokeVoidAsync("UpdateDarkModeAttribute", ThemeService.IsDarkMode);
         StateHasChanged();
     }
 
@@ -531,7 +531,7 @@
 
     ValueTask IAsyncDisposable.DisposeAsync()
     {
-        DarkModeService.OnDarkModeChanged -= OnDarkModeChanged;
+        ThemeService.OnChange -= OnThemeChanged;
         return ValueTask.CompletedTask;
     }
 }

@@ -1,9 +1,9 @@
-@inject DarkModeService DarkModeService
+@inject ThemeService ThemeService
 @inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <button class="dark-mode-toggle" @onclick="ToggleDarkMode" type="button" title="Toggle dark mode">
-    <i class="fas @(DarkModeService.IsDarkMode ? "fa-sun" : "fa-moon")"></i>
+    <i class="fas @(ThemeService.IsDarkMode ? "fa-sun" : "fa-moon")"></i>
 </button>
 
 <style>
@@ -57,7 +57,7 @@
                 isDarkMode = await JS.InvokeAsync<bool>("GetSystemDarkModePreference");
             }
             
-            DarkModeService.Initialize(isDarkMode);
+            ThemeService.Initialize(isDarkMode);
             // Apply the saved or system setting to the page
             await JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
         }
@@ -66,10 +66,10 @@
 
     private async Task ToggleDarkMode()
     {
-        DarkModeService.IsDarkMode = !DarkModeService.IsDarkMode;
+        ThemeService.IsDarkMode = !ThemeService.IsDarkMode;
         try
         {
-            await JS.InvokeVoidAsync("localStorage.setItem", "darkMode", DarkModeService.IsDarkMode.ToString().ToLower());
+            await JS.InvokeVoidAsync("localStorage.setItem", "darkMode", ThemeService.IsDarkMode.ToString().ToLower());
         }
         catch
         {
@@ -79,7 +79,7 @@
         // Update the data-dark-mode attribute on the page
         try
         {
-            await JS.InvokeVoidAsync("UpdateDarkModeAttribute", DarkModeService.IsDarkMode);
+            await JS.InvokeVoidAsync("UpdateDarkModeAttribute", ThemeService.IsDarkMode);
         }
         catch
         {

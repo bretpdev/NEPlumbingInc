@@ -47,6 +47,7 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IColorSettingsService, ColorSettingsService>();
 builder.Services.AddScoped<DarkModeService>();
+builder.Services.AddScoped<ThemeService>();
 builder.Services.AddScoped<HomePageContentService>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("Email"));
