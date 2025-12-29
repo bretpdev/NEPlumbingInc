@@ -36,23 +36,72 @@
         color: #e0e0e0;
     }
 
+    /* Dark mode - Navigation */
     [data-dark-mode="true"] .navbar,
     [data-dark-mode="true"] .navbar-dark {
         background-color: #0052a3 !important;
     }
 
+    [data-dark-mode="true"] .nav-link {
+        color: #e0e0e0 !important;
+    }
+
+    [data-dark-mode="true"] .nav-link:hover {
+        color: #4da6ff !important;
+    }
+
+    /* Dark mode - Content */
+    [data-dark-mode="true"] main {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .container,
+    [data-dark-mode="true"] .container-fluid {
+        background-color: transparent;
+    }
+
+    /* Dark mode - Cards and Panels */
     [data-dark-mode="true"] .card {
         background-color: #2a2a2a;
         border-color: #444;
         color: #e0e0e0;
     }
 
+    [data-dark-mode="true"] .card-header {
+        background-color: #252525;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .card-body {
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .card-footer {
+        background-color: #252525;
+        border-color: #444;
+    }
+
+    /* Dark mode - Modals */
     [data-dark-mode="true"] .modal-content {
         background-color: #2a2a2a;
         border-color: #444;
         color: #e0e0e0;
     }
 
+    [data-dark-mode="true"] .modal-header {
+        background-color: #252525;
+        border-color: #444;
+    }
+
+    [data-dark-mode="true"] .modal-footer {
+        background-color: #252525;
+        border-color: #444;
+    }
+
+    /* Dark mode - Forms */
     [data-dark-mode="true"] .form-control,
     [data-dark-mode="true"] .form-select {
         background-color: #3a3a3a;
@@ -67,23 +116,46 @@
         color: #e0e0e0;
     }
 
-    [data-dark-mode="true"] .table {
+    [data-dark-mode="true"] .form-label {
         color: #e0e0e0;
-        border-color: #444;
     }
 
-    [data-dark-mode="true"] .table-striped > tbody > tr:nth-of-type(odd) {
-        background-color: #2a2a2a;
-    }
-
-    [data-dark-mode="true"] .accordion-button {
+    [data-dark-mode="true"] .input-group-text {
         background-color: #3a3a3a;
+        border-color: #555;
         color: #e0e0e0;
     }
 
-    [data-dark-mode="true"] .accordion-button:not(.collapsed) {
-        background-color: #4a4a4a;
+    /* Dark mode - Buttons */
+    [data-dark-mode="true"] .btn-primary {
+        background-color: #0052a3;
+        border-color: #0052a3;
+    }
+
+    [data-dark-mode="true"] .btn-primary:hover {
+        background-color: #0066cc;
+        border-color: #0066cc;
+    }
+
+    [data-dark-mode="true"] .btn-secondary {
+        background-color: #444;
+        border-color: #555;
         color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .btn-secondary:hover {
+        background-color: #555;
+        border-color: #666;
+    }
+
+    [data-dark-mode="true"] .btn-outline-light {
+        color: #e0e0e0;
+        border-color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .btn-outline-light:hover {
+        background-color: #e0e0e0;
+        color: #1a1a1a;
     }
 
     [data-dark-mode="true"] .btn-outline-primary {
@@ -97,8 +169,139 @@
         color: #1a1a1a;
     }
 
+    /* Dark mode - Tables */
+    [data-dark-mode="true"] .table {
+        color: #e0e0e0;
+        border-color: #444;
+    }
+
+    [data-dark-mode="true"] .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: #2a2a2a;
+    }
+
+    [data-dark-mode="true"] .table-hover > tbody > tr:hover {
+        background-color: #333;
+    }
+
+    [data-dark-mode="true"] .table-bordered,
+    [data-dark-mode="true"] .table-bordered > :not(caption) > * {
+        border-color: #444;
+    }
+
+    /* Dark mode - Accordions */
+    [data-dark-mode="true"] .accordion-button {
+        background-color: #3a3a3a;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .accordion-button:not(.collapsed) {
+        background-color: #4a4a4a;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .accordion-button:focus {
+        border-color: #4da6ff;
+        box-shadow: 0 0 0 0.25rem rgba(77, 166, 255, 0.25);
+    }
+
+    [data-dark-mode="true"] .accordion-body {
+        background-color: #2a2a2a;
+        border-color: #444;
+    }
+
+    /* Dark mode - Lists and Text */
+    [data-dark-mode="true"] h1,
+    [data-dark-mode="true"] h2,
+    [data-dark-mode="true"] h3,
+    [data-dark-mode="true"] h4,
+    [data-dark-mode="true"] h5,
+    [data-dark-mode="true"] h6 {
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] p {
+        color: #e0e0e0;
+    }
+
     [data-dark-mode="true"] .text-muted {
         color: #999 !important;
+    }
+
+    [data-dark-mode="true"] .text-secondary {
+        color: #999 !important;
+    }
+
+    /* Dark mode - Links */
+    [data-dark-mode="true"] a {
+        color: #4da6ff;
+    }
+
+    [data-dark-mode="true"] a:hover {
+        color: #80bfff;
+    }
+
+    /* Dark mode - Borders and Dividers */
+    [data-dark-mode="true"] hr {
+        border-color: #444;
+    }
+
+    [data-dark-mode="true"] .border {
+        border-color: #444 !important;
+    }
+
+    /* Dark mode - Alerts */
+    [data-dark-mode="true"] .alert {
+        background-color: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .alert-info {
+        background-color: #1a3a4a;
+        border-color: #0052a3;
+        color: #4da6ff;
+    }
+
+    [data-dark-mode="true"] .alert-warning {
+        background-color: #4a3a1a;
+        border-color: #cc8800;
+        color: #ffcc00;
+    }
+
+    [data-dark-mode="true"] .alert-danger {
+        background-color: #4a1a1a;
+        border-color: #cc0000;
+        color: #ff6666;
+    }
+
+    [data-dark-mode="true"] .alert-success {
+        background-color: #1a4a2a;
+        border-color: #00cc00;
+        color: #66ff66;
+    }
+
+    /* Dark mode - Badges */
+    [data-dark-mode="true"] .badge {
+        background-color: #4a4a4a;
+        color: #e0e0e0;
+    }
+
+    /* Dark mode - Footer */
+    [data-dark-mode="true"] footer {
+        background-color: #0052a3 !important;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] footer a {
+        color: #4da6ff;
+    }
+
+    [data-dark-mode="true"] footer a:hover {
+        color: #80bfff;
+    }
+
+    [data-dark-mode="true"] .border-secondary {
+        border-color: #444 !important;
     }
 
     .navbar-brand {
