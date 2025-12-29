@@ -13,6 +13,10 @@
         justify-content: center;
     }
 
+    [data-dark-mode="true"] .preview-container {
+        background: #3c3c3c;
+    }
+
     .preview-image {
         max-width: 100%;
         max-height: 200px;
@@ -28,11 +32,34 @@
         background: #f8f9fa;
         cursor: pointer;
         transition: all 0.3s ease;
+        color: #212529;
+    }
+
+    [data-dark-mode="true"] .upload-zone {
+        background: #3c3c3c;
+        border-color: #3e3e42;
+        color: #d4d4d4;
     }
 
     .upload-zone:hover {
         border-color: var(--bs-primary);
         background: #fff;
+    }
+
+    [data-dark-mode="true"] .upload-zone:hover {
+        background: #4c4c4c;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .list-group-item {
+        background-color: #252526;
+        border-color: #3e3e42;
+        color: #d4d4d4;
+    }
+
+    [data-dark-mode="true"] .badge {
+        background-color: #4a7ba7;
+        color: #e0f0ff;
     }
 </style>
 
