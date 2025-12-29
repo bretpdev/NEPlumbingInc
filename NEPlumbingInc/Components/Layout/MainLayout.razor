@@ -121,50 +121,6 @@
     .nav-link {
         font-size: 1rem;
     }
-
-    /* Mobile-first responsive navbar */
-    @media (max-width: 991.98px) {
-        .navbar {
-            flex-direction: column !important;
-        }
-
-        .navbar-brand {
-            font-size: 1.2rem;
-            margin-bottom: 0.75rem !important;
-            margin-right: 0 !important;
-            width: 100%;
-            text-align: center;
-        }
-
-        .navbar-nav-center {
-            flex-direction: column;
-            width: 100%;
-            text-align: center;
-            margin-bottom: 0.75rem;
-        }
-
-        .navbar-nav-center .nav-link {
-            padding: 0.5rem 0 !important;
-            margin: 0 !important;
-        }
-
-        .navbar-controls {
-            width: 100%;
-            justify-content: center !important;
-            gap: 1rem !important;
-            flex-wrap: wrap;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .navbar-brand {
-            font-size: 1rem;
-        }
-
-        .nav-link {
-            font-size: 0.9rem;
-        }
-    }
 </style>
 
 <div class="min-vh-100 d-flex flex-column" data-dark-mode="@DarkModeService.IsDarkMode.ToString().ToLower()">
@@ -308,8 +264,9 @@
     [Inject]
     private IJSRuntime JS { get; set; } = null!;
 
-    async ValueTask IAsyncDisposable.DisposeAsync()
+    ValueTask IAsyncDisposable.DisposeAsync()
     {
         DarkModeService.OnDarkModeChanged -= OnDarkModeChanged;
+        return ValueTask.CompletedTask;
     }
 }
