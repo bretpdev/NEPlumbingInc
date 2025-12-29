@@ -94,59 +94,25 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
-/* Mobile-first responsive navbar */
-@media (max-width: 991.98px) {
-    header.navbar {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    header.navbar .container-fluid {
-        flex-basis: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 0.5rem 0;
-    }
-
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
     .navbar-brand {
-        font-size: 1.2rem;
-        margin: 0 0 0.75rem 0 !important;
-        padding: 0.5rem 0;
-        flex-basis: 100%;
-        text-align: center;
-        order: -1;
+        font-size: 1.1rem;
     }
 
-    .navbar-nav-center {
-        flex-direction: column;
-        width: 100%;
-        text-align: center;
-        margin-bottom: 0.75rem;
-        align-items: center;
-    }
-
-    .navbar-nav-center .nav-link {
-        padding: 0.5rem 1rem !important;
-        margin: 0 !important;
-        display: inline-block;
-    }
-
-    .navbar-controls {
-        width: 100%;
-        justify-content: center !important;
-        gap: 1rem !important;
-        flex-wrap: wrap;
-        align-items: center;
+    .nav-link {
+        font-size: 0.9rem;
+        margin-right: 0.5rem !important;
     }
 }
 
 @media (max-width: 640px) {
     .navbar-brand {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     .nav-link {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+        margin-right: 0.25rem !important;
     }
 }
