@@ -10,10 +10,10 @@ public class SeedData
         if (!user)
         {
             logger.LogInformation("No users found, seeding admin user");
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword("bret");
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword("admin123");
             context.LoginUsers.Add(new LoginViewModel
             {
-                UserName = "bret",
+                UserName = "admin",
                 Password = hashedPassword
             });
             await context.SaveChangesAsync();
