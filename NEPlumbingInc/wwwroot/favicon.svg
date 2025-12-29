@@ -1,0 +1,17 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="64" height="64" rx="8" fill="#1e5a96"/>
+  
+  <!-- Wrench Icon -->
+  <g transform="translate(32, 32)">
+    <!-- Wrench handle -->
+    <rect x="-24" y="-4" width="40" height="8" rx="4" fill="#ffffff" transform="rotate(-25)"/>
+    
+    <!-- Wrench head (circular part) -->
+    <circle cx="18" cy="0" r="8" fill="#ffffff"/>
+    <circle cx="18" cy="0" r="5" fill="#1e5a96"/>
+    
+    <!-- Water drop accent -->
+    <path d="M -8 8 Q -8 12 -5 14 Q -2 12 -2 8" fill="#4da6ff" stroke="#ffffff" stroke-width="1"/>
+  </g>
+</svg>
