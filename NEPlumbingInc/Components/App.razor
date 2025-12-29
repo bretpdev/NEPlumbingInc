@@ -53,6 +53,25 @@
         
         // Run cleanup on page load
         CleanupCorruptedStorage();
+        
+        // Restore dark mode setting on page load
+        window.RestoreDarkModeSetting = function() {
+            try {
+                const savedDarkMode = localStorage.getItem('darkMode');
+                if (savedDarkMode === 'true') {
+                    const root = document.documentElement;
+                    root.setAttribute('data-dark-mode', 'true');
+                } else if (savedDarkMode === 'false') {
+                    const root = document.documentElement;
+                    root.setAttribute('data-dark-mode', 'false');
+                }
+            } catch (e) {
+                console.error('Error restoring dark mode:', e);
+            }
+        };
+        
+        // Apply dark mode on initial page load
+        RestoreDarkModeSetting();
     </script>
 </body>
 
