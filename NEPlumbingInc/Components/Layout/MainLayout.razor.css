@@ -133,6 +133,8 @@ main {
     display: flex;
     align-items: center;
     gap: 1rem;
+    position: relative;
+    z-index: 10;
 }
 
 /* Mobile responsive adjustments */

@@ -109,10 +109,21 @@
         font-size: 1.5rem;
         padding: 0.5rem;
         transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        position: relative;
+        z-index: 11;
     }
 
     .dark-mode-toggle:hover {
         transform: scale(1.1);
+    }
+
+    .dark-mode-toggle:focus {
+        outline: 2px solid rgba(255, 255, 255, 0.5);
+        outline-offset: 2px;
     }
 
     .navbar-brand {
@@ -259,7 +270,14 @@
     private async Task ToggleDarkMode()
     {
         DarkModeService.IsDarkMode = !DarkModeService.IsDarkMode;
-        await JS.InvokeVoidAsync("localStorage.setItem", "darkMode", DarkModeService.IsDarkMode.ToString().ToLower());
+        try
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", "darkMode", DarkModeService.IsDarkMode.ToString().ToLower());
+        }
+        catch
+        {
+            // If JS interop fails, still toggle the mode locally
+        }
         StateHasChanged();
     }
 
