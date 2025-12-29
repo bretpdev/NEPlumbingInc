@@ -42,6 +42,7 @@ builder.Services.Configure<CircuitOptions>(options =>
 
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<ISpecialOfferService, SpecialOfferService>();
+builder.Services.AddScoped<ISpecialOfferSettingsService, SpecialOfferSettingsService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IColorSettingsService, ColorSettingsService>();

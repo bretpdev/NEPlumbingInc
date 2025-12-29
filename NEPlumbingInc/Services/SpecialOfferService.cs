@@ -8,17 +8,26 @@ public interface ISpecialOfferService
     Task<bool> HasSubmittedFormAsync(string? ipAddress);
     Task<bool> RecordFormSubmissionAsync(string? ipAddress, MessageFormModel form);
     Task<(bool hasAccess, string message)> CheckOfferAccessAsync(string? ipAddress);
+    Task<int> GetOfferCountAsync();
+    Task ResetOfferCountAsync();
 }
 
-public class SpecialOfferService(AppDbContext context, IHttpContextAccessor httpContextAccessor) : ISpecialOfferService
+public class SpecialOfferService(AppDbContext context, IHttpContextAccessor httpContextAccessor, ISpecialOfferSettingsService settingsService) : ISpecialOfferService
 {
     private readonly AppDbContext _context = context;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly ISpecialOfferSettingsService _settingsService = settingsService;
 
     public async Task<bool> IsOfferAvailableAsync()
     {
+        var settings = await _settingsService.GetSettingsAsync();
+        
+        // Check if offers are enabled
+        if (!settings.IsEnabled)
+            return false;
+
         var clickCount = await _context.SpecialOffers.CountAsync();
-        return clickCount < SpecialOffer.MaxClicks;
+        return clickCount < settings.MaxOffersLimit;
     }
 
     public async Task<bool> HasClickedBeforeAsync(string? ipAddress)
@@ -91,5 +100,17 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
             return (false, "You've already claimed this offer. Thank you!");
             
         return (true, "Welcome back! Please complete your form to claim your offer.");
+    }
+
+    public async Task<int> GetOfferCountAsync()
+    {
+        return await _context.SpecialOffers.CountAsync();
+    }
+
+    public async Task ResetOfferCountAsync()
+    {
+        var offers = await _context.SpecialOffers.ToListAsync();
+        _context.SpecialOffers.RemoveRange(offers);
+        await _context.SaveChangesAsync();
     }
 }

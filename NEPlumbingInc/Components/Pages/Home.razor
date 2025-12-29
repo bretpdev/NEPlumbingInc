@@ -241,16 +241,16 @@
                 
                 @if (offerAvailable)
                 {
-                    <h2>Welcome to the NE Underground</h2>
-                    <p>Unlock this season's exclusive homeowner offer.</p>
+                    <h2>@offerSettings?.HeadingText</h2>
+                    <p>@offerSettings?.DescriptionText</p>
                     <a href="@($"/messages?source=special-offer&ip={Uri.EscapeDataString(currentIpAddress)}")"
-                        class="btn btn-light">Reveal the Offer</a>
+                        class="btn btn-light">@offerSettings?.ButtonText</a>
                 }
                 else if (string.IsNullOrEmpty(errorMessage))
                 {
-                    <h2>Sorry, you missed it!</h2>
-                    <p>Our exclusive offer has reached its limit.</p>
-                    <p>Sign up for our newsletter to be notified of future offers.</p>
+                    <h2>@offerSettings?.NoOfferHeading</h2>
+                    <p>@offerSettings?.NoOfferDescription</p>
+                    <p>@offerSettings?.NewsletterText</p>
                 }
             </div>
         </div>
@@ -313,17 +313,20 @@
 
 @inject IJSRuntime JSRuntime
 @inject ISpecialOfferService SpecialOfferService
+@inject ISpecialOfferSettingsService SpecialOfferSettingsService
 @inject IHttpContextAccessor HttpContextAccessor
 
 @code {
     private bool offerAvailable;
     private string? errorMessage;
     private string currentIpAddress = string.Empty;
+    private SpecialOfferSettings? offerSettings;
 
     protected override async Task OnInitializedAsync()
     {
         currentIpAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
         offerAvailable = await SpecialOfferService.IsOfferAvailableAsync();
+        offerSettings = await SpecialOfferSettingsService.GetSettingsAsync();
         pageContent = await HomePageContentService!.GetContentAsync();
     }
 
