@@ -4,22 +4,121 @@
 <h3 class="mb-4">Admin Dashboard</h3>
 
 <div class="row">
-    <div class="col-12 mb-4">
-        <ManageHomePageContent />
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Home Page Content</strong>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleHomeContent">
+                    @(showHomeContent ? "Collapse" : "Open")
+                </button>
+            </div>
+            @if (showHomeContent)
+            {
+                <div class="card-body">
+                    <ManageHomePageContent />
+                </div>
+            }
+        </div>
     </div>
-    <div class="col-12 mb-4">
-        <ManageServices />
+
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Services</strong>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleServices">
+                    @(showServices ? "Collapse" : "Open")
+                </button>
+            </div>
+            @if (showServices)
+            {
+                <div class="card-body">
+                    <ManageServices />
+                </div>
+            }
+        </div>
     </div>
-    <div class="col-12 mb-4">
-        <ManageSpecialOffers />
+
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Special Offers</strong>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleSpecialOffers">
+                    @(showSpecialOffers ? "Collapse" : "Open")
+                </button>
+            </div>
+            @if (showSpecialOffers)
+            {
+                <div class="card-body">
+                    <ManageSpecialOffers />
+                </div>
+            }
+        </div>
     </div>
-    <div class="col-12 mb-4">
-        <ManageMessages />
+
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Messages</strong>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleMessages">
+                    @(showMessages ? "Collapse" : "Open")
+                </button>
+            </div>
+            @if (showMessages)
+            {
+                <div class="card-body">
+                    <ManageMessages />
+                </div>
+            }
+        </div>
     </div>
-    <div class="col-12">
-        <ManageUsers />
+
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Users</strong>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleUsers">
+                    @(showUsers ? "Collapse" : "Open")
+                </button>
+            </div>
+            @if (showUsers)
+            {
+                <div class="card-body">
+                    <ManageUsers />
+                </div>
+            }
+        </div>
     </div>
-    <div class="col-12 mb-4">
-        <ManageColors />
+
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Colors</strong>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleColors">
+                    @(showColors ? "Collapse" : "Open")
+                </button>
+            </div>
+            @if (showColors)
+            {
+                <div class="card-body">
+                    <ManageColors />
+                </div>
+            }
+        </div>
     </div>
 </div>
+
+@code {
+    private bool showHomeContent;
+    private bool showServices;
+    private bool showSpecialOffers;
+    private bool showMessages;
+    private bool showUsers;
+    private bool showColors;
+
+    private void ToggleHomeContent() => showHomeContent = !showHomeContent;
+    private void ToggleServices() => showServices = !showServices;
+    private void ToggleSpecialOffers() => showSpecialOffers = !showSpecialOffers;
+    private void ToggleMessages() => showMessages = !showMessages;
+    private void ToggleUsers() => showUsers = !showUsers;
+    private void ToggleColors() => showColors = !showColors;
+}
