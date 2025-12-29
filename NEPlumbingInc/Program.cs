@@ -1,5 +1,12 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// Add supported cultures
+var supportedCultures = new[] { "en-US" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("en-US")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
 // Add database context - use SQL Server for all environments
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
@@ -77,6 +84,7 @@ if (!app.Environment.IsDevelopment())
 
 app.MapControllers();
 
+app.UseRequestLocalization(localizationOptions);
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
