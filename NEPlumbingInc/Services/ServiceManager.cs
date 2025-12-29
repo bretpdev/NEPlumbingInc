@@ -10,13 +10,14 @@ public interface IServiceManager
     Task DeleteServiceAsync(int id);
 }
 
-public class ServiceManager(AppDbContext context) : IServiceManager
+public class ServiceManager(IDbContextFactory<AppDbContext> contextFactory) : IServiceManager
 {
-    private readonly AppDbContext _context = context;
+    private readonly IDbContextFactory<AppDbContext> _contextFactory = contextFactory;
 
     public async Task<List<ServicesFormModel>> GetAllServicesAsync()
     {
-        return await _context.Services
+        using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.Services
             .Include(s => s.SubServices)
             .Select(s => new ServicesFormModel
             {
@@ -43,7 +44,8 @@ public class ServiceManager(AppDbContext context) : IServiceManager
 
     public async Task<List<ServicesFormModel>> GetActiveServicesAsync()
     {
-        return await _context.Services
+        using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.Services
             .Where(s => s.IsActive)
             .Include(s => s.SubServices)
             .Select(s => new ServicesFormModel
@@ -71,13 +73,15 @@ public class ServiceManager(AppDbContext context) : IServiceManager
 
     public async Task<ServicesFormModel> GetServiceByIdAsync(int id)
     {
-        var service = await _context.Services.FindAsync(id)
+        using var context = await _contextFactory.CreateDbContextAsync();
+        var service = await context.Services.FindAsync(id)
             ?? throw new KeyNotFoundException($"Service with ID {id} not found.");
         return service;
     }
 
     public async Task<ServicesFormModel> CreateServiceAsync(ServicesFormModel model)
     {
+        using var context = await _contextFactory.CreateDbContextAsync();
         var service = new ServicesFormModel
         {
             ServiceName = model.ServiceName,
@@ -88,14 +92,15 @@ public class ServiceManager(AppDbContext context) : IServiceManager
             SubServices = model.SubServices ?? new List<SubServiceModel>()
         };
 
-        _context.Services.Add(service);
-        await _context.SaveChangesAsync();
+        context.Services.Add(service);
+        await context.SaveChangesAsync();
         return service;
     }
 
     public async Task<ServicesFormModel> UpdateServiceAsync(ServicesFormModel model)
     {
-        var service = await _context.Services
+        using var context = await _contextFactory.CreateDbContextAsync();
+        var service = await context.Services
             .Include(s => s.SubServices)
             .FirstOrDefaultAsync(s => s.Id == model.Id);
 
@@ -116,7 +121,7 @@ public class ServiceManager(AppDbContext context) : IServiceManager
         
         foreach (var subService in toRemove)
         {
-            _context.SubServices.Remove(subService);
+            context.SubServices.Remove(subService);
         }
     
         // Update existing and add new sub-services
@@ -148,16 +153,17 @@ public class ServiceManager(AppDbContext context) : IServiceManager
             }
         }
     
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
         return service;
     }
 
     public async Task DeleteServiceAsync(int id)
     {
-        var service = await _context.Services.FindAsync(id)
+        using var context = await _contextFactory.CreateDbContextAsync();
+        var service = await context.Services.FindAsync(id)
             ?? throw new KeyNotFoundException($"Service with ID {id} not found.");
 
-        _context.Services.Remove(service);
-        await _context.SaveChangesAsync();
+        context.Services.Remove(service);
+        await context.SaveChangesAsync();
     }
 }

@@ -1,15 +1,16 @@
 public class HomePageContentService
 {
-    private readonly AppDbContext _context;
+    private readonly IDbContextFactory<AppDbContext> _contextFactory;
 
-    public HomePageContentService(AppDbContext context)
+    public HomePageContentService(IDbContextFactory<AppDbContext> contextFactory)
     {
-        _context = context;
+        _contextFactory = contextFactory;
     }
 
     public async Task<HomePageContent> GetContentAsync()
     {
-        var content = await _context.HomePageContents.FirstOrDefaultAsync();
+        using var context = await _contextFactory.CreateDbContextAsync();
+        var content = await context.HomePageContents.FirstOrDefaultAsync();
         if (content == null)
         {
             content = new HomePageContent
@@ -29,8 +30,8 @@ public class HomePageContentService
                 Service3Description = "Efficient tankless water heaters for continuous, energy-saving hot water.",
                 UpdatedAt = DateTime.Now
             };
-            _context.HomePageContents.Add(content);
-            await _context.SaveChangesAsync();
+            context.HomePageContents.Add(content);
+            await context.SaveChangesAsync();
         }
         else
         {
@@ -105,8 +106,8 @@ public class HomePageContentService
             if (needsUpdate)
             {
                 content.UpdatedAt = DateTime.Now;
-                _context.HomePageContents.Update(content);
-                await _context.SaveChangesAsync();
+                context.HomePageContents.Update(content);
+                await context.SaveChangesAsync();
             }
         }
         return content;
@@ -114,8 +115,9 @@ public class HomePageContentService
 
     public async Task UpdateContentAsync(HomePageContent content)
     {
+        using var context = await _contextFactory.CreateDbContextAsync();
         content.UpdatedAt = DateTime.Now;
-        _context.HomePageContents.Update(content);
-        await _context.SaveChangesAsync();
+        context.HomePageContents.Update(content);
+        await context.SaveChangesAsync();
     }
 }

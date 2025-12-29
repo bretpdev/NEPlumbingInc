@@ -9,13 +9,14 @@ public interface IMessageService
     Task DeleteMessageAsync(int id);
 }
 
-public class MessageService(AppDbContext context) : IMessageService
+public class MessageService(IDbContextFactory<AppDbContext> contextFactory) : IMessageService
 {
-    private readonly AppDbContext _context = context;
+    private readonly IDbContextFactory<AppDbContext> _contextFactory = contextFactory;
 
     public async Task<List<MessageViewModel>> GetAllMessagesAsync()
     {
-        return await _context.Messages
+        using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.Messages
             .OrderByDescending(m => m.CreatedAt)
             .Select(m => new MessageViewModel
             {
@@ -33,12 +34,14 @@ public class MessageService(AppDbContext context) : IMessageService
 
     public async Task<MessageViewModel> GetMessageByIdAsync(int id)
     {
-        return await _context.Messages.FindAsync(id) 
+        using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.Messages.FindAsync(id) 
             ?? throw new KeyNotFoundException($"Message {id} not found");
     }
 
     public async Task<MessageViewModel> CreateMessageAsync(MessageFormModel form, bool isSpecialOffer)
     {
+        using var context = await _contextFactory.CreateDbContextAsync();
         var message = new MessageViewModel
         {
             Name = form.Name,
@@ -50,26 +53,28 @@ public class MessageService(AppDbContext context) : IMessageService
             IsRead = false
         };
 
-        _context.Messages.Add(message);
-        await _context.SaveChangesAsync();
+        context.Messages.Add(message);
+        await context.SaveChangesAsync();
         return message;
     }
 
     public async Task MarkAsReadAsync(int id)
     {
-        var message = await _context.Messages.FindAsync(id)
+        using var context = await _contextFactory.CreateDbContextAsync();
+        var message = await context.Messages.FindAsync(id)
             ?? throw new KeyNotFoundException($"Message {id} not found");
             
         message.IsRead = true;
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 
     public async Task DeleteMessageAsync(int id)
     {
-        var message = await _context.Messages.FindAsync(id)
+        using var context = await _contextFactory.CreateDbContextAsync();
+        var message = await context.Messages.FindAsync(id)
             ?? throw new KeyNotFoundException($"Message {id} not found");
             
-        _context.Messages.Remove(message);
-        await _context.SaveChangesAsync();
+        context.Messages.Remove(message);
+        await context.SaveChangesAsync();
     }
 }
