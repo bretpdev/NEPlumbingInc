@@ -42,6 +42,11 @@
         // Function to update dark mode attribute
         window.UpdateDarkModeAttribute = function(isDarkMode) {
             document.documentElement.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
+            // Also update the main wrapper div for Razor components
+            const wrapper = document.querySelector('[data-dark-mode]');
+            if (wrapper && wrapper !== document.documentElement) {
+                wrapper.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
+            }
         };
 
         // Function to get system dark mode preference
@@ -85,6 +90,11 @@
                 }
                 
                 document.documentElement.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
+                // Also update any Razor wrapper divs
+                const wrapper = document.querySelector('[data-dark-mode]');
+                if (wrapper && wrapper !== document.documentElement) {
+                    wrapper.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
+                }
             } catch (e) {
                 console.error('Error restoring dark mode:', e);
             }
