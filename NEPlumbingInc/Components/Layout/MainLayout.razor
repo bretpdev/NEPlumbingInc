@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject DarkModeService DarkModeService
+@inject IColorSettingsService ColorSettingsService
 @implements IAsyncDisposable
 
 <PageTitle>N.E. Plumbing Inc.</PageTitle>
@@ -8,6 +9,11 @@
     :root {
         --bs-body-bg: #ffffff;
         --bs-body-color: #212529;
+        --primary-color: @(colorSettings?.PrimaryColor ?? "#0066CC");
+        --secondary-color: @(colorSettings?.SecondaryColor ?? "#005299");
+        --accent-color: @(colorSettings?.AccentColor ?? "#003d7a");
+        --text-color: @(colorSettings?.TextColor ?? "#212529");
+        --light-bg-color: @(colorSettings?.LightBgColor ?? "#f8f9fa");
         --bs-border-color: #dee2e6;
         --bs-code-color: #e83e8c;
         --bs-heading-color: inherit;
@@ -118,7 +124,7 @@
 </style>
 
 <div class="min-vh-100 d-flex flex-column" data-dark-mode="@DarkModeService.IsDarkMode.ToString().ToLower()">
-    <header class="navbar navbar-expand-lg navbar-dark px-4" style="background-color: #0066CC;">
+    <header class="navbar navbar-expand-lg navbar-dark px-4" style="background-color: var(--primary-color);">
         <div class="container-fluid d-flex justify-content-between align-items-center w-100">
             <!-- Company Name (Left) -->
             <a class="navbar-brand me-4" href="">N.E. Plumbing Inc.</a>
@@ -163,7 +169,7 @@
         @Body
     </main>
 
-    <footer class="text-white py-4 mt-auto" style="background-color: #0066CC;">
+    <footer class="text-white py-4 mt-auto" style="background-color: var(--primary-color);">
         <div class="container">
             <div class="row text-center text-md-start">
                 <!-- About -->
@@ -220,12 +226,18 @@
 </div>
 
 @code {
+    private ColorSettings? colorSettings;
+
     protected override async Task OnInitializedAsync()
     {
         // Load dark mode preference from localStorage
-        bool isDarkMode = await JS.InvokeAsync<bool>("localStorage.getItem", "darkMode") == "true";
+        string? darkModeValue = await JS.InvokeAsync<string?>("localStorage.getItem", "darkMode");
+        bool isDarkMode = darkModeValue == "true";
         DarkModeService.Initialize(isDarkMode);
         DarkModeService.OnDarkModeChanged += OnDarkModeChanged;
+        
+        // Load color settings
+        colorSettings = await ColorSettingsService.GetColorSettingsAsync();
     }
 
     private void ToggleDarkMode()

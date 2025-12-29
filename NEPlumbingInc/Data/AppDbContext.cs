@@ -24,6 +24,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<MessageViewModel> Messages { get; set; }
     public DbSet<SubServiceModel> SubServices { get; set; }
     public DbSet<HomePageContent> HomePageContents { get; set; }
+    public DbSet<ColorSettings> ColorSettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
