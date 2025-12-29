@@ -1,6 +1,5 @@
 ﻿@page "/"
 @attribute [AllowAnonymous]
-@rendermode InteractiveServer
 @using NEPlumbingInc.Services
 @using NEPlumbingInc.Models
 
@@ -243,7 +242,7 @@
     <div class="row align-items-center">
         <div class="col-lg-6 text-center">
             <img src="images/NEPlumbingInc7.PNG" alt="Luxury Plumbing Work" class="hero-image"
-                @onclick="RevealSpeakeasy" />
+                onclick="window.NePlumbingOpenSpeakeasy && window.NePlumbingOpenSpeakeasy()" />
         </div>
         <div class="col-lg-6 mb-4 mb-lg-0">
             @if (pageContent != null)
@@ -284,27 +283,21 @@
         <!-- Hidden overlay that appears above everything -->
         <div class="hidden-overlay">
             <div class="overlay-content position-relative">
-                <button class="close-button" @onclick="CloseSpeakeasy" aria-label="Close">&times;</button>
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="alert @(offerAvailable ? "alert-info" : "alert-warning")" role="alert">
-                        @errorMessage
-                    </div>
-                }
+                <button class="close-button" type="button" onclick="window.NePlumbingCloseSpeakeasy && window.NePlumbingCloseSpeakeasy()" aria-label="Close">&times;</button>
                 
-                @if (offerAvailable)
-                {
+                <div id="specialOfferMessage" class="alert d-none" role="alert"></div>
+
+                <div id="specialOfferAvailable" class="d-none">
                     <h2>@offerSettings?.HeadingText</h2>
                     <p>@offerSettings?.DescriptionText</p>
-                    <a href="@($"/messages?source=special-offer&ip={Uri.EscapeDataString(currentIpAddress)}")"
-                        class="btn btn-light">@offerSettings?.ButtonText</a>
-                }
-                else if (string.IsNullOrEmpty(errorMessage))
-                {
+                    <a id="specialOfferLink" href="/messages?source=special-offer" class="btn btn-light">@offerSettings?.ButtonText</a>
+                </div>
+
+                <div id="specialOfferUnavailable" class="d-none">
                     <h2>@offerSettings?.NoOfferHeading</h2>
                     <p>@offerSettings?.NoOfferDescription</p>
                     <p>@offerSettings?.NewsletterText</p>
-                }
+                </div>
             </div>
         </div>
     </div>
@@ -364,61 +357,15 @@
     </div>
 </div> *@
 
-@inject IJSRuntime JSRuntime
-@inject ISpecialOfferService SpecialOfferService
 @inject ISpecialOfferSettingsService SpecialOfferSettingsService
-@inject IHttpContextAccessor HttpContextAccessor
 
 @code {
-    private bool offerAvailable;
-    private string? errorMessage;
-    private string currentIpAddress = string.Empty;
     private SpecialOfferSettings? offerSettings;
 
     protected override async Task OnInitializedAsync()
     {
-        currentIpAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
-        offerAvailable = await SpecialOfferService.IsOfferAvailableAsync();
         offerSettings = await SpecialOfferSettingsService.GetSettingsAsync();
         pageContent = await HomePageContentService!.GetContentAsync();
-    }
-
-    private async Task RevealSpeakeasy()
-    {
-        var ipAddress = HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
-        var (hasAccess, message) = await SpecialOfferService.CheckOfferAccessAsync(ipAddress);
-
-        if (!hasAccess)
-        {
-            errorMessage = message;
-            offerAvailable = false;
-        }
-        else 
-        {
-            // Only try to record click if they have access
-            var clickRecorded = await SpecialOfferService.RecordClickAsync(ipAddress);
-            if (!clickRecorded && !await SpecialOfferService.HasClickedBeforeAsync(ipAddress))
-            {
-                // Only show "no longer available" if they haven't clicked before
-                offerAvailable = false;
-                errorMessage = "This offer is no longer available.";
-            }
-            else
-            {
-                // They either successfully recorded a click or have clicked before
-                offerAvailable = true;
-                errorMessage = message;  // Use the welcome/welcome back message
-            }
-        }
-
-        // Show overlay in all cases
-        await JSRuntime.InvokeVoidAsync("eval", @"document.querySelector('.hidden-overlay').classList.add('active');");
-    }
-
-    private async Task CloseSpeakeasy()
-    {
-        errorMessage = null;
-        await JSRuntime.InvokeVoidAsync("eval", @"document.querySelector('.hidden-overlay').classList.remove('active');");
     }
 
     private HomePageContent? pageContent;

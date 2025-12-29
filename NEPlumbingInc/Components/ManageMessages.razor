@@ -15,7 +15,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
-                        <th>Special Offer</th>
+                        <th>Tags</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -29,6 +29,10 @@
                             <td>@message.Email</td>
                             <td>@message.Phone</td>
                             <td>
+                                @if (IsJobApplication(message))
+                                {
+                                    <span class="badge bg-warning text-dark me-1">Job</span>
+                                }
                                 @if (message.IsSpecialOffer)
                                 {
                                     <span class="badge bg-success">Yes</span>
@@ -91,6 +95,10 @@
     private List<MessageViewModel> messages = new();
     private MessageViewModel selectedMessage = new();
     private bool showModal;
+
+    private static bool IsJobApplication(MessageViewModel message)
+        => !string.IsNullOrWhiteSpace(message.Message)
+           && message.Message.TrimStart().StartsWith("Job Application", StringComparison.OrdinalIgnoreCase);
 
     protected override async Task OnInitializedAsync() => 
         await LoadMessages();

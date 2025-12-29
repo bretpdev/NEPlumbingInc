@@ -25,6 +25,8 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
                 AccentColor = "#003d7a",
                 TextColor = "#212529",
                 LightBgColor = "#f8f9fa",
+                HeroBadgeColor = "#0056b3",
+                ButtonColor = "#0066CC",
                 UpdatedAt = DateTime.UtcNow
             };
             context.ColorSettings.Add(settings);
@@ -46,6 +48,8 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.AccentColor = settings.AccentColor;
             existing.TextColor = settings.TextColor;
             existing.LightBgColor = settings.LightBgColor;
+            existing.HeroBadgeColor = settings.HeroBadgeColor;
+            existing.ButtonColor = settings.ButtonColor;
             existing.UpdatedAt = DateTime.UtcNow;
             
             context.ColorSettings.Update(existing);
@@ -72,6 +76,8 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.AccentColor = "#003d7a";
             existing.TextColor = "#212529";
             existing.LightBgColor = "#f8f9fa";
+            existing.HeroBadgeColor = "#0056b3";
+            existing.ButtonColor = "#0066CC";
             existing.UpdatedAt = DateTime.UtcNow;
             
             context.ColorSettings.Update(existing);

@@ -8,7 +8,7 @@
       "preLaunchTask": "build",
       "program": "${workspaceFolder}/NEPlumbingInc/bin/Debug/net8.0/NEPlumbingInc.dll",
       "args": [],
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/NEPlumbingInc",
       "stopAtEntry": false,
       "serverReadyAction": {
         "action": "openExternally",

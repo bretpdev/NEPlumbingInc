@@ -11,23 +11,23 @@ namespace NEPlumbingInc.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "ColorSettings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PrimaryColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SecondaryColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AccentColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TextColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LightBgColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ColorSettings", x => x.Id);
-                });
+            migrationBuilder.Sql(@"
+IF OBJECT_ID(N'[dbo].[ColorSettings]', N'U') IS NULL
+BEGIN
+    CREATE TABLE [dbo].[ColorSettings] (
+        [Id] int NOT NULL IDENTITY(1,1),
+        [PrimaryColor] nvarchar(max) NOT NULL,
+        [SecondaryColor] nvarchar(max) NOT NULL,
+        [AccentColor] nvarchar(max) NOT NULL,
+        [TextColor] nvarchar(max) NOT NULL,
+        [LightBgColor] nvarchar(max) NOT NULL,
+        [HeroBadgeColor] nvarchar(max) NOT NULL CONSTRAINT [DF_ColorSettings_HeroBadgeColor] DEFAULT N'#0056b3',
+        [ButtonColor] nvarchar(max) NOT NULL CONSTRAINT [DF_ColorSettings_ButtonColor] DEFAULT N'#0066CC',
+        [UpdatedAt] datetime2 NOT NULL,
+        CONSTRAINT [PK_ColorSettings] PRIMARY KEY ([Id])
+    );
+END
+");
         }
 
         /// <inheritdoc />

@@ -1,8 +1,32 @@
 @page "/admin-dashboard"
 @attribute [Authorize]
+@rendermode InteractiveServer
+
+@implements IAsyncDisposable
+
+@inject IMessageService MessageService
 
 <h3 class="mb-4">Admin Dashboard</h3>
 
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>
+                    Messages
+                    <span class="badge rounded-pill bg-danger text-white ms-2">@unreadMessagesCount</span>
+                </strong>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleMessages">
+                    @(showMessages ? "Collapse" : "Open")
+                </button>
+            </div>
+            @if (showMessages)
+            {
+                <div class="card-body">
+                    <ManageMessages />
+                </div>
+            }
+        </div>
+    </div>
 <div class="row">
     <div class="col-12 mb-3">
         <div class="card">
@@ -58,23 +82,6 @@
     <div class="col-12 mb-3">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <strong>Messages</strong>
-                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleMessages">
-                    @(showMessages ? "Collapse" : "Open")
-                </button>
-            </div>
-            @if (showMessages)
-            {
-                <div class="card-body">
-                    <ManageMessages />
-                </div>
-            }
-        </div>
-    </div>
-
-    <div class="col-12 mb-3">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
                 <strong>Users</strong>
                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleUsers">
                     @(showUsers ? "Collapse" : "Open")
@@ -115,10 +122,72 @@
     private bool showUsers;
     private bool showColors;
 
+    private int unreadMessagesCount;
+
+    private PeriodicTimer? unreadTimer;
+    private CancellationTokenSource? unreadTimerCts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshUnreadMessagesCountAsync();
+
+        // Keep the badge up-to-date while the dashboard is open.
+        // This avoids needing to open/collapse Messages just to refresh the count.
+        unreadTimerCts = new CancellationTokenSource();
+        unreadTimer = new PeriodicTimer(TimeSpan.FromSeconds(15));
+        _ = PollUnreadMessagesCountAsync(unreadTimer, unreadTimerCts.Token);
+    }
+
     private void ToggleHomeContent() => showHomeContent = !showHomeContent;
     private void ToggleServices() => showServices = !showServices;
     private void ToggleSpecialOffers() => showSpecialOffers = !showSpecialOffers;
-    private void ToggleMessages() => showMessages = !showMessages;
+    private async Task ToggleMessages()
+    {
+        showMessages = !showMessages;
+
+        // When collapsing, refresh count to reflect anything that was marked read/deleted.
+        if (!showMessages)
+        {
+            await RefreshUnreadMessagesCountAsync();
+        }
+    }
     private void ToggleUsers() => showUsers = !showUsers;
     private void ToggleColors() => showColors = !showColors;
+
+    private async Task RefreshUnreadMessagesCountAsync()
+    {
+        unreadMessagesCount = await MessageService.GetUnreadCountAsync();
+    }
+
+    private async Task PollUnreadMessagesCountAsync(PeriodicTimer timer, CancellationToken cancellationToken)
+    {
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cancellationToken))
+            {
+                await InvokeAsync(async () =>
+                {
+                    await RefreshUnreadMessagesCountAsync();
+                    StateHasChanged();
+                });
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // expected on dispose
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (unreadTimerCts is not null)
+        {
+            await unreadTimerCts.CancelAsync();
+            unreadTimerCts.Dispose();
+            unreadTimerCts = null;
+        }
+
+        unreadTimer?.Dispose();
+        unreadTimer = null;
+    }
 }

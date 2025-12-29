@@ -4,6 +4,7 @@ public interface IMessageService
 {
     Task<List<MessageViewModel>> GetAllMessagesAsync();
     Task<MessageViewModel> GetMessageByIdAsync(int id);
+    Task<int> GetUnreadCountAsync();
     Task<MessageViewModel> CreateMessageAsync(MessageFormModel form, bool isSpecialOffer);
     Task MarkAsReadAsync(int id);
     Task DeleteMessageAsync(int id);
@@ -12,6 +13,12 @@ public interface IMessageService
 public class MessageService(IDbContextFactory<AppDbContext> contextFactory) : IMessageService
 {
     private readonly IDbContextFactory<AppDbContext> _contextFactory = contextFactory;
+
+    public async Task<int> GetUnreadCountAsync()
+    {
+        using var context = await _contextFactory.CreateDbContextAsync();
+        return await context.Messages.CountAsync(m => !m.IsRead);
+    }
 
     public async Task<List<MessageViewModel>> GetAllMessagesAsync()
     {

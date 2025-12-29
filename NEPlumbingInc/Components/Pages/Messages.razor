@@ -1,10 +1,6 @@
 ﻿@page "/messages"
-@rendermode InteractiveServer
-@inject IMessageService MessageService
-@inject IHttpContextAccessor HttpContextAccessor
-@inject ISpecialOfferService SpecialOfferService
+@page "/message"
 @inject NavigationManager NavigationManager
-@inject IEmailService EmailService
 
 <PageTitle>Contact Us - NE Plumbing Inc.</PageTitle>
 
@@ -18,28 +14,28 @@
                         We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.
                     </p>
 
-                    <EditForm Model="@form" OnValidSubmit="HandleSubmit" FormName="contactForm">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
+                    <form method="post" action="/messages/submit">
+                        <input type="hidden" name="source" value="@source" />
+                        <input type="hidden" name="ip" value="@ipAddress" />
 
                         <div class="mb-3">
                             <label class="form-label">Name</label>
-                            <InputText class="form-control" @bind-Value="form.Name" />
+                            <input class="form-control" name="Name" value="@form.Name" required />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Email</label>
-                            <InputText class="form-control" @bind-Value="form.Email" />
+                            <input class="form-control" name="Email" type="email" value="@form.Email" required />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Phone (optional)</label>
-                            <InputText class="form-control" @bind-Value="form.Phone" />
+                            <input class="form-control" name="Phone" value="@form.Phone" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Message</label>
-                            <InputTextArea class="form-control" rows="5" @bind-Value="form.Message" />
+                            <textarea class="form-control" name="Message" rows="5" required>@form.Message</textarea>
                         </div>
 
                         <div class="d-grid">
@@ -47,16 +43,16 @@
                                 <i class="bi bi-send me-2"></i>Send Message
                             </button>
                         </div>
-                    </EditForm>
+                    </form>
 
-                    @if (message != null)
+                    @if (showSuccess)
                     {
-                        <div class="alert alert-success mt-4 text-center">@message</div>
+                        <div class="alert alert-success mt-4 text-center">Thank you for your submission! We'll be in touch soon.</div>
                     }
 
-                    @if (errorMessage != null)
+                    @if (showError)
                     {
-                        <div class="alert alert-danger mt-4 text-center">@errorMessage</div>
+                        <div class="alert alert-danger mt-4 text-center">An error occurred while processing your submission.</div>
                     }
                 </div>
             </div>
@@ -66,10 +62,12 @@
 
 @code {
     private MessageFormModel form = new();
-    private string? message;
-    private string? errorMessage;
     private string? ipAddress;
-    private bool isSpecialOffer;
+    private string? source;
+    private string? serviceName;
+    private string? consultationType;
+    private bool showSuccess;
+    private bool showError;
 
     protected override void OnInitialized()
     {
@@ -77,49 +75,47 @@
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
         
         ipAddress = query["ip"];
-        isSpecialOffer = query["source"] == "special-offer";
-    }
+        source = query["source"];
+        serviceName = query["service"];
+        consultationType = query["type"];
+        showSuccess = query["sent"] == "1";
+        showError = query["error"] == "1";
 
-    private async Task HandleSubmit()
-    {
-        try
+        if (!showSuccess && !showError && string.Equals(source, "services", StringComparison.OrdinalIgnoreCase))
         {
-            message = null;
-            errorMessage = null;
-
-            // Create the message first
-            var savedMessage = await MessageService.CreateMessageAsync(form, isSpecialOffer);
-
-            // Send email notification
-            //await EmailService.SendMessageEmailAsync(form);
-
-            // Handle special offer if present
-            if (isSpecialOffer)
+            // Only prefill when coming from the Services CTA and the user hasn't typed anything yet.
+            if (string.IsNullOrWhiteSpace(form.Message))
             {
-                var submissionIpAddress = ipAddress ?? 
-                    HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+                var typeLabel = string.Equals(consultationType, "inspection", StringComparison.OrdinalIgnoreCase)
+                    ? "inspection"
+                    : "consultation";
 
-                if (string.IsNullOrEmpty(submissionIpAddress))
+                if (!string.IsNullOrWhiteSpace(serviceName))
                 {
-                    errorMessage = "Unable to process special offer. Message saved.";
-                    return;
+                    form.Message = $"I'd like to schedule an {typeLabel} for: {serviceName}.";
                 }
-
-                var success = await SpecialOfferService.RecordFormSubmissionAsync(submissionIpAddress, form);
-                if (!success)
+                else
                 {
-                    errorMessage = "Unable to process special offer. Message saved.";
-                    return;
+                    form.Message = $"I'd like to schedule an {typeLabel}.";
                 }
             }
-
-            message = "Thank you for your submission! We'll be in touch soon.";
-            form = new MessageFormModel();
         }
-        catch (Exception ex)
+
+        if (!showSuccess && !showError && string.Equals(source, "jobs", StringComparison.OrdinalIgnoreCase))
         {
-            errorMessage = "An error occurred while processing your submission.";
-            Console.Error.WriteLine($"Form submission error: {ex}");
+            if (string.IsNullOrWhiteSpace(form.Message))
+            {
+                form.Message =
+                    "Job Application\n" +
+                    "\n" +
+                    "Position interested in: \n" +
+                    "Years of experience: \n" +
+                    "Licensed/Certified (if applicable): \n" +
+                    "Availability: \n" +
+                    "Preferred contact method/time: \n" +
+                    "\n" +
+                    "Additional details: ";
+            }
         }
     }
 }

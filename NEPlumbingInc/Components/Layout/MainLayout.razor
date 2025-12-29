@@ -1,7 +1,6 @@
 ﻿@inherits LayoutComponentBase
-@inject ThemeService ThemeService
 @inject IColorSettingsService ColorSettingsService
-@implements IAsyncDisposable
+@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>N.E. Plumbing Inc.</PageTitle>
 
@@ -376,9 +375,54 @@
         flex-wrap: wrap;
         width: 100%;
     }
+
+    /* Dark mode toggle button (no Blazor circuit required) */
+    .dark-mode-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        position: relative;
+        z-index: 11;
+    }
+
+    .dark-mode-toggle:hover {
+        transform: scale(1.1);
+    }
+
+    .dark-mode-toggle:focus {
+        outline: 2px solid rgba(255, 255, 255, 0.5);
+        outline-offset: 2px;
+    }
+
+    /* Show current mode icon:
+       - Light mode => sun
+       - Dark mode  => moon */
+    .dark-mode-icon-sun {
+        display: inline-block;
+    }
+
+    .dark-mode-icon-moon {
+        display: none;
+    }
+
+    [data-dark-mode="true"] .dark-mode-icon-sun {
+        display: none;
+    }
+
+    [data-dark-mode="true"] .dark-mode-icon-moon {
+        display: inline-block;
+    }
 </style>
 
-<div class="min-vh-100 d-flex flex-column" data-dark-mode="@ThemeService.IsDarkMode.ToString().ToLower()">
+<div class="min-vh-100 d-flex flex-column">
     <header class="navbar navbar-expand-lg navbar-dark w-100" style="background-color: var(--primary-color); padding: 0.5rem 1rem;">
         <!-- Company Name -->
         <a class="navbar-brand flex-shrink-0" href="">N.E. Plumbing Inc.</a>
@@ -395,7 +439,10 @@
 
         <!-- Right Side Login/Logout & Dark Mode -->
         <div class="d-flex navbar-controls ms-auto">
-            <DarkModeToggle />
+            <button class="dark-mode-toggle" type="button" onclick="window.ToggleDarkMode && window.ToggleDarkMode()" title="Toggle dark mode">
+                <i class="fas fa-moon dark-mode-icon-moon" aria-hidden="true"></i>
+                <i class="fas fa-sun dark-mode-icon-sun" aria-hidden="true"></i>
+            </button>
             <AuthorizeView Roles="Admin">
                 <Authorized Context="auth">
                     <div class="d-flex align-items-center gap-2">
@@ -434,7 +481,7 @@
                 <div class="col-md-4 mb-3">
                     <h5>Now Hiring</h5>
                     <p class="mb-1">We're looking for skilled plumbers to join our team!</p>
-                    <a href="/messages" class="btn btn-outline-light btn-sm">Apply Now</a>
+                    <a href="/careers" class="btn btn-outline-light btn-sm">Apply Now</a>
                 </div>
 
                 <!-- Connect -->
@@ -478,60 +525,10 @@
 
 @code {
     private ColorSettings? colorSettings;
-    private bool initialized = false;
 
     protected override async Task OnInitializedAsync()
     {
-        // Load color settings (no JS interop)
+        // Load color settings (server-side)
         colorSettings = await ColorSettingsService.GetColorSettingsAsync();
-        ThemeService.OnChange += OnThemeChanged;
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // Always restore dark mode setting on every render (for navigation)
-        string? darkModeValue = await JS.InvokeAsync<string?>("localStorage.getItem", "darkMode");
-        bool isDarkMode;
-        
-        if (darkModeValue != null)
-        {
-            // User has a saved preference
-            isDarkMode = darkModeValue == "true";
-        }
-        else
-        {
-            // No saved preference - check system preference
-            isDarkMode = await JS.InvokeAsync<bool>("GetSystemDarkModePreference");
-        }
-        
-        if (firstRender && !initialized)
-        {
-            initialized = true;
-            ThemeService.Initialize(isDarkMode);
-        }
-        else if (!firstRender)
-        {
-            // On navigation, update the service if it changed
-            ThemeService.IsDarkMode = isDarkMode;
-        }
-        
-        // Always apply the dark mode attribute
-        await JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
-    }
-
-    private void OnThemeChanged()
-    {
-        // Apply the dark mode attribute whenever dark mode changes
-        _ = JS.InvokeVoidAsync("UpdateDarkModeAttribute", ThemeService.IsDarkMode);
-        StateHasChanged();
-    }
-
-    [Inject]
-    private IJSRuntime JS { get; set; } = null!;
-
-    ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        ThemeService.OnChange -= OnThemeChanged;
-        return ValueTask.CompletedTask;
     }
 }
