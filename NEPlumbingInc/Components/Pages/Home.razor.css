@@ -1,0 +1,10 @@
+/* Reorder columns on desktop so image is on the left */
+.hero-section .row {
+    flex-direction: row-reverse;
+}
+
+@media (max-width: 991.98px) {
+    .hero-section .row {
+        flex-direction: column;
+    }
+}

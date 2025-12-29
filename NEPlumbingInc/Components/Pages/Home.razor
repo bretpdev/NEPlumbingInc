@@ -179,10 +179,19 @@
     .col-lg-6.text-center {
         padding: 2rem;
     }
+
+    /* Reorder columns on desktop so image is on the left */
+    .hero-section .row {
+        flex-direction: row-reverse;
+    }
 </style>
 
 <div class="container hero-section">
     <div class="row align-items-center">
+        <div class="col-lg-6 text-center">
+            <img src="images/NEPlumbingInc7.PNG" alt="Luxury Plumbing Work" class="hero-image"
+                @onclick="RevealSpeakeasy" />
+        </div>
         <div class="col-lg-6 mb-4 mb-lg-0">
             @if (pageContent != null)
             {
@@ -217,10 +226,6 @@
                     <i class="bi bi-grid me-2"></i>View Services
                 </a>
             </div>
-        </div>
-        <div class="col-lg-6 text-center">
-            <img src="images/NEPlumbingInc7.PNG" alt="Luxury Plumbing Work" class="hero-image"
-                @onclick="RevealSpeakeasy" />
         </div>
 
         <!-- Hidden overlay that appears above everything -->
