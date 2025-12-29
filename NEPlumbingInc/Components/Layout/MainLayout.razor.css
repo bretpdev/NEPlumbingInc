@@ -101,6 +101,23 @@ main {
     overflow: visible;
     flex-shrink: 0;
     padding: 0.5rem 0;
+    min-width: fit-content;
+}
+
+/* Ensure navbar container and navbar take full width */
+.navbar {
+    width: 100%;
+    overflow: visible !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.navbar .container-fluid {
+    overflow: visible;
+    max-width: 100%;
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 /* Mobile responsive adjustments */

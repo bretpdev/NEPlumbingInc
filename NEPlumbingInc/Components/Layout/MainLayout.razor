@@ -123,13 +123,20 @@
     .nav-link {
         font-size: 1rem;
     }
+
+    /* Ensure navbar displays properly on all browsers */
+    header.navbar {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+    }
 </style>
 
 <div class="min-vh-100 d-flex flex-column" data-dark-mode="@DarkModeService.IsDarkMode.ToString().ToLower()">
-    <header class="navbar navbar-expand-lg navbar-dark px-4" style="background-color: var(--primary-color);">
-        <div class="container-fluid d-flex flex-column w-100">
+    <header class="navbar navbar-expand-lg navbar-dark w-100" style="background-color: var(--primary-color); padding: 0.5rem 1rem;">
+        <div class="container-fluid p-0 d-flex flex-column">
             <!-- Company Name (Top on mobile, left on desktop) -->
-            <a class="navbar-brand me-4" href="">N.E. Plumbing Inc.</a>
+            <a class="navbar-brand" href="">N.E. Plumbing Inc.</a>
 
             <!-- Center Nav Links -->
             <div class="d-flex navbar-nav-center">
