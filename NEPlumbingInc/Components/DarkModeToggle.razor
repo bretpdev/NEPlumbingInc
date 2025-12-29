@@ -42,14 +42,24 @@
             // Clear any corrupted localStorage data
             await JS.InvokeVoidAsync("localStorage.removeItem", "med>i__field");
             
-            // Restore dark mode setting from localStorage
+            // Restore dark mode setting from localStorage or system preference
             var savedDarkMode = await JS.InvokeAsync<string>("localStorage.getItem", "darkMode");
-            if (savedDarkMode != null && bool.TryParse(savedDarkMode, out bool isDarkMode))
+            bool isDarkMode;
+            
+            if (savedDarkMode != null && bool.TryParse(savedDarkMode, out bool parsedValue))
             {
-                DarkModeService.IsDarkMode = isDarkMode;
-                // Apply the saved setting to the page
-                await JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
+                // User has a saved preference
+                isDarkMode = parsedValue;
             }
+            else
+            {
+                // No saved preference - check system preference
+                isDarkMode = await JS.InvokeAsync<bool>("GetSystemDarkModePreference");
+            }
+            
+            DarkModeService.Initialize(isDarkMode);
+            // Apply the saved or system setting to the page
+            await JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
         }
         catch { }
     }

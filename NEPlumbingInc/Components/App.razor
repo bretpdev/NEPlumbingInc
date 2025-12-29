@@ -44,6 +44,11 @@
             document.documentElement.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
         };
 
+        // Function to get system dark mode preference
+        window.GetSystemDarkModePreference = function() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        };
+
         // Clean up corrupted localStorage entries
         window.CleanupCorruptedStorage = function() {
             try {
@@ -69,11 +74,17 @@
         window.RestoreDarkModeSetting = function() {
             try {
                 const savedDarkMode = localStorage.getItem('darkMode');
-                if (savedDarkMode === 'true') {
-                    document.documentElement.setAttribute('data-dark-mode', 'true');
+                let isDarkMode;
+                
+                if (savedDarkMode !== null) {
+                    // User has manually set a preference - use it
+                    isDarkMode = savedDarkMode === 'true';
                 } else {
-                    document.documentElement.setAttribute('data-dark-mode', 'false');
+                    // No user preference - check system preference
+                    isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 }
+                
+                document.documentElement.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
             } catch (e) {
                 console.error('Error restoring dark mode:', e);
             }
