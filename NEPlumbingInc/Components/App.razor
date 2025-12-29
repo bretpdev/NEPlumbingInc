@@ -24,6 +24,14 @@
         Blazor.addEventListener('unhandledError', event => {
             console.error('Blazor error:', event.reason);
         });
+
+        // Function to update dark mode attribute
+        window.UpdateDarkModeAttribute = function(isDarkMode) {
+            const root = document.querySelector('[data-dark-mode]');
+            if (root) {
+                root.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
+            }
+        };
     </script>
 </body>
 

@@ -46,6 +46,17 @@
         {
             // If JS interop fails, still toggle the mode locally
         }
+        
+        // Update the data-dark-mode attribute on the page
+        try
+        {
+            await JS.InvokeVoidAsync("UpdateDarkModeAttribute", DarkModeService.IsDarkMode);
+        }
+        catch
+        {
+            // Fallback - StateHasChanged should still work
+        }
+        
         StateHasChanged();
     }
 }
