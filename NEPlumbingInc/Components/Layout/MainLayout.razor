@@ -227,17 +227,26 @@
 
 @code {
     private ColorSettings? colorSettings;
+    private bool initialized = false;
 
     protected override async Task OnInitializedAsync()
     {
-        // Load dark mode preference from localStorage
-        string? darkModeValue = await JS.InvokeAsync<string?>("localStorage.getItem", "darkMode");
-        bool isDarkMode = darkModeValue == "true";
-        DarkModeService.Initialize(isDarkMode);
-        DarkModeService.OnDarkModeChanged += OnDarkModeChanged;
-        
-        // Load color settings
+        // Load color settings (no JS interop)
         colorSettings = await ColorSettingsService.GetColorSettingsAsync();
+        DarkModeService.OnDarkModeChanged += OnDarkModeChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !initialized)
+        {
+            initialized = true;
+            // Load dark mode preference from localStorage (JS interop only works here)
+            string? darkModeValue = await JS.InvokeAsync<string?>("localStorage.getItem", "darkMode");
+            bool isDarkMode = darkModeValue == "true";
+            DarkModeService.Initialize(isDarkMode);
+            StateHasChanged();
+        }
     }
 
     private void ToggleDarkMode()
