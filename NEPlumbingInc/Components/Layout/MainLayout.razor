@@ -1,8 +1,112 @@
 ﻿@inherits LayoutComponentBase
+@inject DarkModeService DarkModeService
+@implements IAsyncDisposable
 
 <PageTitle>N.E. Plumbing Inc.</PageTitle>
 
 <style>
+    :root {
+        --bs-body-bg: #ffffff;
+        --bs-body-color: #212529;
+        --bs-border-color: #dee2e6;
+        --bs-code-color: #e83e8c;
+        --bs-heading-color: inherit;
+        --bs-link-color: #0066CC;
+        --bs-link-hover-color: #0052a3;
+    }
+
+    [data-dark-mode="true"] {
+        --bs-body-bg: #1a1a1a;
+        --bs-body-color: #e0e0e0;
+        --bs-border-color: #444;
+        --bs-link-color: #4da6ff;
+        --bs-link-hover-color: #80bfff;
+    }
+
+    [data-dark-mode="true"] body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .navbar,
+    [data-dark-mode="true"] .navbar-dark {
+        background-color: #0052a3 !important;
+    }
+
+    [data-dark-mode="true"] .card {
+        background-color: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .modal-content {
+        background-color: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .form-control,
+    [data-dark-mode="true"] .form-select {
+        background-color: #3a3a3a;
+        border-color: #555;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .form-control:focus,
+    [data-dark-mode="true"] .form-select:focus {
+        background-color: #3a3a3a;
+        border-color: #4da6ff;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .table {
+        color: #e0e0e0;
+        border-color: #444;
+    }
+
+    [data-dark-mode="true"] .table-striped > tbody > tr:nth-of-type(odd) {
+        background-color: #2a2a2a;
+    }
+
+    [data-dark-mode="true"] .accordion-button {
+        background-color: #3a3a3a;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .accordion-button:not(.collapsed) {
+        background-color: #4a4a4a;
+        color: #e0e0e0;
+    }
+
+    [data-dark-mode="true"] .btn-outline-primary {
+        color: #4da6ff;
+        border-color: #4da6ff;
+    }
+
+    [data-dark-mode="true"] .btn-outline-primary:hover {
+        background-color: #4da6ff;
+        border-color: #4da6ff;
+        color: #1a1a1a;
+    }
+
+    [data-dark-mode="true"] .text-muted {
+        color: #999 !important;
+    }
+
+    .dark-mode-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        transition: transform 0.2s;
+    }
+
+    .dark-mode-toggle:hover {
+        transform: scale(1.1);
+    }
+
     .navbar-brand {
         font-size: 1.5rem;
         font-weight: bold;
@@ -13,7 +117,7 @@
     }
 </style>
 
-<div class="min-vh-100 d-flex flex-column">
+<div class="min-vh-100 d-flex flex-column" data-dark-mode="@DarkModeService.IsDarkMode.ToString().ToLower()">
     <header class="navbar navbar-expand-lg navbar-dark px-4" style="background-color: #0066CC;">
         <div class="container-fluid d-flex justify-content-between align-items-center w-100">
             <!-- Company Name (Left) -->
@@ -29,8 +133,11 @@
                 </NavLink>
             </div>
 
-            <!-- Right Side Login/Logout -->
-            <div>
+            <!-- Right Side Login/Logout & Dark Mode -->
+            <div class="d-flex align-items-center gap-3">
+                <button class="dark-mode-toggle" @onclick="ToggleDarkMode" title="Toggle dark mode">
+                    <i class="fas @(DarkModeService.IsDarkMode ? "fa-sun" : "fa-moon")"></i>
+                </button>
                 <AuthorizeView Roles="Admin">
                     <Authorized Context="auth">
                         <div class="d-flex align-items-center gap-2">
@@ -111,3 +218,32 @@
         </div>
     </footer>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Load dark mode preference from localStorage
+        bool isDarkMode = await JS.InvokeAsync<bool>("localStorage.getItem", "darkMode") == "true";
+        DarkModeService.Initialize(isDarkMode);
+        DarkModeService.OnDarkModeChanged += OnDarkModeChanged;
+    }
+
+    private void ToggleDarkMode()
+    {
+        DarkModeService.IsDarkMode = !DarkModeService.IsDarkMode;
+        _ = JS.InvokeVoidAsync("localStorage.setItem", "darkMode", DarkModeService.IsDarkMode.ToString().ToLower());
+    }
+
+    private void OnDarkModeChanged(bool isDarkMode)
+    {
+        StateHasChanged();
+    }
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = null!;
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        DarkModeService.OnDarkModeChanged -= OnDarkModeChanged;
+    }
+}
