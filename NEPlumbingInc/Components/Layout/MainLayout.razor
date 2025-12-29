@@ -141,7 +141,7 @@
 
             <!-- Right Side Login/Logout & Dark Mode -->
             <div class="d-flex align-items-center gap-3">
-                <button class="dark-mode-toggle" @onclick="ToggleDarkMode" title="Toggle dark mode">
+                <button class="dark-mode-toggle" @onclick="ToggleDarkMode" type="button" title="Toggle dark mode">
                     <i class="fas @(DarkModeService.IsDarkMode ? "fa-sun" : "fa-moon")"></i>
                 </button>
                 <AuthorizeView Roles="Admin">
@@ -249,10 +249,11 @@
         }
     }
 
-    private void ToggleDarkMode()
+    private async Task ToggleDarkMode()
     {
         DarkModeService.IsDarkMode = !DarkModeService.IsDarkMode;
-        _ = JS.InvokeVoidAsync("localStorage.setItem", "darkMode", DarkModeService.IsDarkMode.ToString().ToLower());
+        await JS.InvokeVoidAsync("localStorage.setItem", "darkMode", DarkModeService.IsDarkMode.ToString().ToLower());
+        StateHasChanged();
     }
 
     private void OnDarkModeChanged(bool isDarkMode)
