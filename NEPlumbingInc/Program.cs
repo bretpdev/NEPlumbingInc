@@ -34,6 +34,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<ISpecialOfferService, SpecialOfferService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<HomePageContentService>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("Email"));

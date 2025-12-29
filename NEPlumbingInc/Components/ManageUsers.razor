@@ -1,0 +1,355 @@
+@inject IUserService UserService
+
+<style>
+    .user-form-card {
+        max-width: 500px;
+    }
+    
+    .password-field {
+        position: relative;
+    }
+    
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 35px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: #666;
+    }
+</style>
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Manage Users</h5>
+        <button class="btn btn-success btn-sm" @onclick="ShowCreateForm">
+            <i class="fas fa-user-plus"></i> Add User
+        </button>
+    </div>
+    <div class="card-body">
+        @if (users == null)
+        {
+            <p class="text-muted">Loading users...</p>
+        }
+        else if (users.Count == 0)
+        {
+            <p class="text-muted">No users found.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in users)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary me-1" 
+                                            @onclick="() => ShowPasswordForm(user)">
+                                        <i class="fas fa-key"></i> Change Password
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            @onclick="() => DeleteUserConfirm(user)" 
+                                            disabled="@(users.Count == 1)">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Create User Modal -->
+<div class="modal @(showCreateModal ? "show d-block" : "")" style="background-color: @(showCreateModal ? "rgba(0,0,0,0.5)" : "")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New User</h5>
+                <button type="button" class="btn-close" @onclick="CloseModals"></button>
+            </div>
+            <div class="modal-body">
+                <form @onsubmit="CreateUser">
+                    <div class="mb-3">
+                        <label for="newUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="newUsername" 
+                               @bind="newUsername" placeholder="Enter username" required />
+                        @if (!string.IsNullOrEmpty(usernameError))
+                        {
+                            <div class="text-danger small mt-1">@usernameError</div>
+                        }
+                    </div>
+                    <div class="mb-3 password-field">
+                        <label for="newPassword" class="form-label">Password</label>
+                        <input type="@(showNewPassword ? "text" : "password")" class="form-control" 
+                               id="newPassword" @bind="newPassword" placeholder="Enter password" required />
+                        <button type="button" class="toggle-password" 
+                                @onclick="() => showNewPassword = !showNewPassword">
+                            <i class="fas @(showNewPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                        </button>
+                    </div>
+                    <div class="mb-3 password-field">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="@(showConfirmPassword ? "text" : "password")" class="form-control" 
+                               id="confirmPassword" @bind="confirmPassword" placeholder="Confirm password" required />
+                        <button type="button" class="toggle-password" 
+                                @onclick="() => showConfirmPassword = !showConfirmPassword">
+                            <i class="fas @(showConfirmPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                        </button>
+                        @if (!string.IsNullOrEmpty(passwordError))
+                        {
+                            <div class="text-danger small mt-1">@passwordError</div>
+                        }
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Create User</button>
+                        <button type="button" class="btn btn-secondary" @onclick="CloseModals">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal @(showPasswordModal ? "show d-block" : "")" style="background-color: @(showPasswordModal ? "rgba(0,0,0,0.5)" : "")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Password for @selectedUser?.UserName</h5>
+                <button type="button" class="btn-close" @onclick="CloseModals"></button>
+            </div>
+            <div class="modal-body">
+                <form @onsubmit="UpdatePassword">
+                    <div class="mb-3 password-field">
+                        <label for="newPwd" class="form-label">New Password</label>
+                        <input type="@(showNewPwd ? "text" : "password")" class="form-control" 
+                               id="newPwd" @bind="newPwd" placeholder="Enter new password" required />
+                        <button type="button" class="toggle-password" 
+                                @onclick="() => showNewPwd = !showNewPwd">
+                            <i class="fas @(showNewPwd ? "fa-eye-slash" : "fa-eye")"></i>
+                        </button>
+                    </div>
+                    <div class="mb-3 password-field">
+                        <label for="confirmPwd" class="form-label">Confirm Password</label>
+                        <input type="@(showConfirmPwd ? "text" : "password")" class="form-control" 
+                               id="confirmPwd" @bind="confirmPwd" placeholder="Confirm password" required />
+                        <button type="button" class="toggle-password" 
+                                @onclick="() => showConfirmPwd = !showConfirmPwd">
+                            <i class="fas @(showConfirmPwd ? "fa-eye-slash" : "fa-eye")"></i>
+                        </button>
+                        @if (!string.IsNullOrEmpty(changePasswordError))
+                        {
+                            <div class="text-danger small mt-1">@changePasswordError</div>
+                        }
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                        <button type="button" class="btn btn-secondary" @onclick="CloseModals">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal @(showDeleteModal ? "show d-block" : "")" style="background-color: @(showDeleteModal ? "rgba(0,0,0,0.5)" : "")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete User</h5>
+                <button type="button" class="btn-close" @onclick="CloseModals"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete user <strong>@selectedUser?.UserName</strong>? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseModals">Cancel</button>
+                <button type="button" class="btn btn-danger" @onclick="ConfirmDelete">Delete User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<UserManagementModel> users = new();
+    private UserManagementModel? selectedUser;
+
+    // Create user modal
+    private bool showCreateModal;
+    private string newUsername = "";
+    private string newPassword = "";
+    private string confirmPassword = "";
+    private bool showNewPassword;
+    private bool showConfirmPassword;
+    private string usernameError = "";
+    private string passwordError = "";
+
+    // Change password modal
+    private bool showPasswordModal;
+    private string newPwd = "";
+    private string confirmPwd = "";
+    private bool showNewPwd;
+    private bool showConfirmPwd;
+    private string changePasswordError = "";
+
+    // Delete modal
+    private bool showDeleteModal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        users = await UserService.GetAllUsersAsync();
+    }
+
+    private void ShowCreateForm()
+    {
+        showCreateModal = true;
+        newUsername = "";
+        newPassword = "";
+        confirmPassword = "";
+        usernameError = "";
+        passwordError = "";
+    }
+
+    private void ShowPasswordForm(UserManagementModel user)
+    {
+        selectedUser = user;
+        showPasswordModal = true;
+        newPwd = "";
+        confirmPwd = "";
+        changePasswordError = "";
+    }
+
+    private void DeleteUserConfirm(UserManagementModel user)
+    {
+        selectedUser = user;
+        showDeleteModal = true;
+    }
+
+    private void CloseModals()
+    {
+        showCreateModal = false;
+        showPasswordModal = false;
+        showDeleteModal = false;
+        selectedUser = null;
+    }
+
+    private async Task CreateUser()
+    {
+        usernameError = "";
+        passwordError = "";
+
+        // Validation
+        if (string.IsNullOrWhiteSpace(newUsername))
+        {
+            usernameError = "Username is required";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(newPassword))
+        {
+            passwordError = "Password is required";
+            return;
+        }
+
+        if (newPassword.Length < 6)
+        {
+            passwordError = "Password must be at least 6 characters";
+            return;
+        }
+
+        if (newPassword != confirmPassword)
+        {
+            passwordError = "Passwords do not match";
+            return;
+        }
+
+        try
+        {
+            await UserService.CreateUserAsync(newUsername, newPassword);
+            CloseModals();
+            await LoadUsers();
+        }
+        catch (InvalidOperationException ex)
+        {
+            usernameError = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            usernameError = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task UpdatePassword()
+    {
+        changePasswordError = "";
+
+        if (string.IsNullOrWhiteSpace(newPwd))
+        {
+            changePasswordError = "Password is required";
+            return;
+        }
+
+        if (newPwd.Length < 6)
+        {
+            changePasswordError = "Password must be at least 6 characters";
+            return;
+        }
+
+        if (newPwd != confirmPwd)
+        {
+            changePasswordError = "Passwords do not match";
+            return;
+        }
+
+        try
+        {
+            if (selectedUser != null)
+            {
+                await UserService.UpdateUserPasswordAsync(selectedUser.Id, newPwd);
+                CloseModals();
+                await LoadUsers();
+            }
+        }
+        catch (Exception ex)
+        {
+            changePasswordError = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (selectedUser != null)
+        {
+            try
+            {
+                await UserService.DeleteUserAsync(selectedUser.Id);
+                CloseModals();
+                await LoadUsers();
+            }
+            catch (Exception ex)
+            {
+                // Show error
+                showDeleteModal = false;
+                selectedUser = null;
+            }
+        }
+    }
+}
