@@ -489,17 +489,34 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // Always restore dark mode setting on every render (for navigation)
+        string? darkModeValue = await JS.InvokeAsync<string?>("localStorage.getItem", "darkMode");
+        bool isDarkMode;
+        
+        if (darkModeValue != null)
+        {
+            // User has a saved preference
+            isDarkMode = darkModeValue == "true";
+        }
+        else
+        {
+            // No saved preference - check system preference
+            isDarkMode = await JS.InvokeAsync<bool>("GetSystemDarkModePreference");
+        }
+        
         if (firstRender && !initialized)
         {
             initialized = true;
-            // Load dark mode preference from localStorage (JS interop only works here)
-            string? darkModeValue = await JS.InvokeAsync<string?>("localStorage.getItem", "darkMode");
-            bool isDarkMode = darkModeValue == "true";
             DarkModeService.Initialize(isDarkMode);
-            // Apply the dark mode attribute to the HTML element
-            await JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
-            StateHasChanged();
         }
+        else if (!firstRender)
+        {
+            // On navigation, update the service if it changed
+            DarkModeService.IsDarkMode = isDarkMode;
+        }
+        
+        // Always apply the dark mode attribute
+        await JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
     }
 
     private void OnDarkModeChanged(bool isDarkMode)
