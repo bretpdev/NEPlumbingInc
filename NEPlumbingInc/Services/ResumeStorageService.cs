@@ -20,20 +20,36 @@ public class ResumeStorageService(IConfiguration configuration) : IResumeStorage
 {
     private readonly IConfiguration _configuration = configuration;
 
+    private static string? FirstNonEmpty(params string?[] values)
+    {
+        foreach (var value in values)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+                return value;
+        }
+
+        return null;
+    }
+
     private (BlobContainerClient Container, string ContainerName) CreateContainerClient()
     {
-        var connectionString = _configuration["AzureBlobStorage:ConnectionString"];
-        var containerName = _configuration["AzureBlobStorage:ResumeContainer"];
+        var connectionString = FirstNonEmpty(
+            _configuration["ResumeBlobStorage:ConnectionString"],
+            _configuration["AzureBlobStorage:ConnectionString"],
+            _configuration.GetConnectionString("ResumeBlobStorage"),
+            _configuration.GetConnectionString("AzureBlobStorage"));
 
-        if (string.IsNullOrWhiteSpace(containerName))
-            containerName = "resumes";
+        var containerName = FirstNonEmpty(
+            _configuration["ResumeBlobStorage:ResumeContainer"],
+            _configuration["AzureBlobStorage:ResumeContainer"]) ?? "resumes";
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
             throw new InvalidOperationException(
-                "AzureBlobStorage:ConnectionString is not configured. " +
-                "Set it via Azure App Service Configuration using the key 'AzureBlobStorage__ConnectionString' " +
-                "(recommended), or set 'AzureBlobStorage:ConnectionString' in appsettings.json / user-secrets for local development.");
+                "Blob storage connection string is not configured. " +
+                "Set it via Azure App Service Configuration using the key 'ResumeBlobStorage__ConnectionString', " +
+                "or set 'ResumeBlobStorage:ConnectionString' in appsettings.json / user-secrets for local development. " +
+                "(Legacy fallback: 'AzureBlobStorage:ConnectionString'.)");
         }
 
         return (new BlobContainerClient(connectionString, containerName), containerName);
