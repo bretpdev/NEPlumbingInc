@@ -1,16 +1,20 @@
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NEPlumbingInc.Models;
 using NEPlumbingInc.Services;
 
 namespace NEPlumbingInc.Controllers;
 
-public class CareersController(IMessageService messageService) : Controller
+public class CareersController(IMessageService messageService, IResumeStorageService resumeStorageService) : Controller
 {
     private readonly IMessageService _messageService = messageService;
+    private readonly IResumeStorageService _resumeStorageService = resumeStorageService;
 
     [HttpPost("/careers/submit")]
-    public async Task<IActionResult> Submit([FromForm] JobApplicationFormModel form)
+    [RequestFormLimits(MultipartBodyLengthLimit = 10_485_760)]
+    [RequestSizeLimit(10_485_760)]
+    public async Task<IActionResult> Submit([FromForm] JobApplicationFormModel form, [FromForm] IFormFile? resume)
     {
         try
         {
@@ -24,13 +28,36 @@ public class CareersController(IMessageService messageService) : Controller
                 Message = messageText
             };
 
-            await _messageService.CreateMessageAsync(messageForm, isSpecialOffer: false);
+            var created = await _messageService.CreateMessageAsync(messageForm, isSpecialOffer: false);
+
+            if (resume is not null && resume.Length > 0)
+            {
+                if (!IsAllowedResumeFile(resume.FileName))
+                    return Redirect("/careers?error=1");
+
+                if (resume.Length > 10_485_760)
+                    return Redirect("/careers?error=1");
+
+                var uploaded = await _resumeStorageService.UploadResumeAsync(created.Id, resume, HttpContext.RequestAborted);
+                await _messageService.AttachResumeAsync(created.Id, uploaded, HttpContext.RequestAborted);
+            }
+
             return Redirect("/careers?sent=1");
         }
         catch
         {
             return Redirect("/careers?error=1");
         }
+    }
+
+    private static bool IsAllowedResumeFile(string fileName)
+    {
+        var ext = Path.GetExtension(fileName);
+        if (string.IsNullOrWhiteSpace(ext)) return false;
+
+        return ext.Equals(".pdf", StringComparison.OrdinalIgnoreCase)
+               || ext.Equals(".doc", StringComparison.OrdinalIgnoreCase)
+               || ext.Equals(".docx", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string BuildApplicationMessage(JobApplicationFormModel form)

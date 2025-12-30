@@ -2,7 +2,41 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-<div class="card shadow-sm">
+<style>
+    /* Bootstrap tables default to dark text; override in dark mode using the app palette */
+    [data-dark-mode="true"] .manage-messages .table {
+        color: var(--text-color);
+
+        --bs-table-bg: var(--surface-color);
+        --bs-table-striped-bg: var(--surface-alt-color);
+        --bs-table-striped-color: var(--text-color);
+        --bs-table-active-bg: var(--surface-alt-color);
+        --bs-table-active-color: var(--text-color);
+        --bs-table-hover-bg: var(--surface-alt-color);
+        --bs-table-hover-color: var(--text-color);
+        --bs-table-border-color: var(--bs-border-color);
+    }
+
+    [data-dark-mode="true"] .manage-messages .table thead th {
+        color: var(--text-color);
+    }
+
+    [data-dark-mode="true"] .manage-messages .table td,
+    [data-dark-mode="true"] .manage-messages .table th {
+        border-color: var(--bs-border-color);
+    }
+
+    /* Keep unread highlight readable in dark mode */
+    [data-dark-mode="true"] .manage-messages .table-info {
+        color: var(--text-color);
+        --bs-table-bg: var(--surface-alt-color);
+        --bs-table-striped-bg: var(--surface-alt-color);
+        --bs-table-active-bg: var(--surface-alt-color);
+        --bs-table-hover-bg: var(--surface-alt-color);
+    }
+</style>
+
+<div class="card shadow-sm manage-messages">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Messages</h5>
     </div>
@@ -32,6 +66,10 @@
                                 @if (IsJobApplication(message))
                                 {
                                     <span class="badge bg-warning text-dark me-1">Job</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(message.ResumeBlobName))
+                                {
+                                    <span class="badge bg-secondary me-1">Resume</span>
                                 }
                                 @if (message.IsSpecialOffer)
                                 {
@@ -81,6 +119,16 @@
                     @if (!string.IsNullOrEmpty(selectedMessage.Phone))
                     {
                         <p><strong>Phone:</strong> @selectedMessage.Phone</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(selectedMessage.ResumeBlobName))
+                    {
+                        <p>
+                            <strong>Resume:</strong>
+                            <a class="btn btn-sm btn-outline-secondary ms-2" href="/admin/messages/@selectedMessage.Id/resume" target="_blank" rel="noopener noreferrer">
+                                <i class="fas fa-file-arrow-down me-1"></i>
+                                Download
+                            </a>
+                        </p>
                     }
                     <p><strong>Date:</strong> @selectedMessage.CreatedAt.ToLocalTime().ToString("g")</p>
                     <hr />

@@ -2,6 +2,7 @@
 @attribute [AllowAnonymous]
 
 @inject NavigationManager NavigationManager
+@inject ICareersPageSettingsService CareersPageSettingsService
 
 <PageTitle>Careers - N.E. Plumbing Inc.</PageTitle>
 
@@ -21,19 +22,19 @@
                         <div class="col-md-6">
                             <h5 class="mb-2">What We’re Looking For</h5>
                             <ul class="mb-0">
-                                <li>Residential and/or commercial plumbing experience</li>
-                                <li>Strong communication and customer service</li>
-                                <li>Dependable, punctual, team-oriented</li>
-                                <li>Valid driver’s license</li>
+                                @foreach (var item in GetBulletItems(settings?.LookingForText))
+                                {
+                                    <li>@item</li>
+                                }
                             </ul>
                         </div>
                         <div class="col-md-6">
                             <h5 class="mb-2">Helpful To Include</h5>
                             <ul class="mb-0">
-                                <li>Years of experience</li>
-                                <li>Licenses/certifications (if applicable)</li>
-                                <li>Availability and preferred work area</li>
-                                <li>Best way/time to contact you</li>
+                                @foreach (var item in GetBulletItems(settings?.HelpfulToIncludeText))
+                                {
+                                    <li>@item</li>
+                                }
                             </ul>
                         </div>
                     </div>
@@ -52,7 +53,7 @@
                         </div>
                     }
 
-                    <form method="post" action="/careers/submit" class="mt-4">
+                    <form method="post" action="/careers/submit" class="mt-4" enctype="multipart/form-data">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Full name</label>
@@ -98,6 +99,12 @@
                                 <label class="form-label">Additional details (optional)</label>
                                 <textarea class="form-control" name="AdditionalDetails" rows="5" placeholder="Tell us about your experience, what you’re looking for, and anything else we should know."></textarea>
                             </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Resume (optional)</label>
+                                <input class="form-control" type="file" name="resume" accept=".pdf,.doc,.docx" />
+                                <div class="form-text">Accepted: PDF, DOC, DOCX (max 10MB).</div>
+                            </div>
                         </div>
 
                         <div class="d-grid d-sm-flex gap-2 mt-4">
@@ -120,12 +127,28 @@
 @code {
     private bool showSuccess;
     private bool showError;
+    private CareersPageSettings? settings;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        settings = await CareersPageSettingsService.GetSettingsAsync();
+
         var uri = new Uri(NavigationManager.Uri);
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
         showSuccess = query["sent"] == "1";
         showError = query["error"] == "1";
+    }
+
+    private static IEnumerable<string> GetBulletItems(string? newlineDelimitedText)
+    {
+        if (string.IsNullOrWhiteSpace(newlineDelimitedText))
+        {
+            return Array.Empty<string>();
+        }
+
+        return newlineDelimitedText
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x));
     }
 }

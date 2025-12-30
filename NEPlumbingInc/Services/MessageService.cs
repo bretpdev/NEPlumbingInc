@@ -6,6 +6,7 @@ public interface IMessageService
     Task<MessageViewModel> GetMessageByIdAsync(int id);
     Task<int> GetUnreadCountAsync();
     Task<MessageViewModel> CreateMessageAsync(MessageFormModel form, bool isSpecialOffer);
+    Task AttachResumeAsync(int messageId, ResumeUploadResult resume, CancellationToken cancellationToken = default);
     Task MarkAsReadAsync(int id);
     Task DeleteMessageAsync(int id);
 }
@@ -32,6 +33,10 @@ public class MessageService(IDbContextFactory<AppDbContext> contextFactory) : IM
                 Email = m.Email,
                 Phone = m.Phone,
                 Message = m.Message,
+                ResumeBlobName = m.ResumeBlobName,
+                ResumeFileName = m.ResumeFileName,
+                ResumeContentType = m.ResumeContentType,
+                ResumeSizeBytes = m.ResumeSizeBytes,
                 CreatedAt = m.CreatedAt,
                 IsSpecialOffer = m.IsSpecialOffer,
                 IsRead = m.IsRead
@@ -63,6 +68,20 @@ public class MessageService(IDbContextFactory<AppDbContext> contextFactory) : IM
         context.Messages.Add(message);
         await context.SaveChangesAsync();
         return message;
+    }
+
+    public async Task AttachResumeAsync(int messageId, ResumeUploadResult resume, CancellationToken cancellationToken = default)
+    {
+        using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        var message = await context.Messages.FindAsync([messageId], cancellationToken)
+            ?? throw new KeyNotFoundException($"Message {messageId} not found");
+
+        message.ResumeBlobName = resume.BlobName;
+        message.ResumeFileName = resume.OriginalFileName;
+        message.ResumeContentType = resume.ContentType;
+        message.ResumeSizeBytes = resume.SizeBytes;
+
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task MarkAsReadAsync(int id)
