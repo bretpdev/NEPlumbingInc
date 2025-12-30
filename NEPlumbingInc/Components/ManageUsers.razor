@@ -81,7 +81,7 @@
                 <button type="button" class="btn-close" @onclick="CloseModals"></button>
             </div>
             <div class="modal-body">
-                <form @onsubmit="CreateUser">
+                <form @onsubmit="CreateUser" @onsubmit:preventDefault="true">
                     <div class="mb-3">
                         <label for="newUsername" class="form-label">Username</label>
                         <input type="text" class="form-control" id="newUsername" 
@@ -132,7 +132,7 @@
                 <button type="button" class="btn-close" @onclick="CloseModals"></button>
             </div>
             <div class="modal-body">
-                <form @onsubmit="UpdatePassword">
+                <form @onsubmit="UpdatePassword" @onsubmit:preventDefault="true">
                     <div class="mb-3 password-field">
                         <label for="newPwd" class="form-label">New Password</label>
                         <input type="@(showNewPwd ? "text" : "password")" class="form-control" 

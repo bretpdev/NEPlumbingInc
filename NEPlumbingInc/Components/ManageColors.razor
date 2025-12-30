@@ -573,6 +573,7 @@
 @code {
     private ColorSettings? colorSettings;
     private string message = "";
+    private CancellationTokenSource? clearMessageCts;
     private string activePalette = "light";
     private bool showAdvanced;
 
@@ -758,10 +759,7 @@
             {
                 await ColorSettingsService.UpdateColorSettingsAsync(colorSettings);
                 message = "Colors updated successfully! Refresh the page to see the changes everywhere.";
-                
-                // Clear message after 5 seconds
-                await Task.Delay(5000);
-                message = "";
+                ScheduleClearMessage(TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
@@ -777,14 +775,36 @@
             await ColorSettingsService.ResetToDefaultAsync();
             colorSettings = await ColorSettingsService.GetColorSettingsAsync();
             message = "Colors reset to defaults! Refresh the page to see the changes.";
-            
-            // Clear message after 5 seconds
-            await Task.Delay(5000);
-            message = "";
+            ScheduleClearMessage(TimeSpan.FromSeconds(5));
         }
         catch (Exception ex)
         {
             message = $"Error resetting colors: {ex.Message}";
         }
+    }
+
+    private void ScheduleClearMessage(TimeSpan delay)
+    {
+        clearMessageCts?.Cancel();
+        clearMessageCts?.Dispose();
+        clearMessageCts = new CancellationTokenSource();
+
+        var token = clearMessageCts.Token;
+        _ = ClearMessageAfterDelayAsync(delay, token);
+    }
+
+    private async Task ClearMessageAfterDelayAsync(TimeSpan delay, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(delay, cancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        message = "";
+        await InvokeAsync(StateHasChanged);
     }
 }

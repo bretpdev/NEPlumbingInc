@@ -173,7 +173,7 @@
     <div class="card-body">
         @if (settings != null)
         {
-            <form @onsubmit="SaveSettings">
+            <form @onsubmit="SaveSettings" @onsubmit:preventDefault="true">
                 <!-- Enable/Disable Toggle -->
                 <div class="settings-card">
                     <h6 class="mb-3">Offer Status</h6>
@@ -372,6 +372,8 @@
     private bool isError = false;
     private int offersGiven = 0;
 
+    private CancellationTokenSource? clearMessageCts;
+
     protected override async Task OnInitializedAsync()
     {
         settings = await SpecialOfferSettingsService.GetSettingsAsync();
@@ -392,10 +394,7 @@
                 await SpecialOfferSettingsService.UpdateSettingsAsync(settings);
                 message = "Settings saved successfully!";
                 isError = false;
-
-                // Clear message after 5 seconds
-                await Task.Delay(5000);
-                message = "";
+                ScheduleClearMessage(TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
@@ -415,10 +414,7 @@
                 settings = await SpecialOfferSettingsService.GetSettingsAsync();
                 message = "Settings reset to defaults!";
                 isError = false;
-
-                // Clear message after 5 seconds
-                await Task.Delay(5000);
-                message = "";
+                ScheduleClearMessage(TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
@@ -438,10 +434,7 @@
                 message = "Offer claims have been reset!";
                 isError = false;
                 offersGiven = 0;
-
-                // Clear message after 5 seconds
-                await Task.Delay(5000);
-                message = "";
+                ScheduleClearMessage(TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
@@ -461,9 +454,7 @@
                 await LoadOfferCount();
                 message = "New offer campaign started!";
                 isError = false;
-
-                await Task.Delay(5000);
-                message = "";
+                ScheduleClearMessage(TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
@@ -471,6 +462,31 @@
                 isError = true;
             }
         }
+    }
+
+    private void ScheduleClearMessage(TimeSpan delay)
+    {
+        clearMessageCts?.Cancel();
+        clearMessageCts?.Dispose();
+        clearMessageCts = new CancellationTokenSource();
+
+        var token = clearMessageCts.Token;
+        _ = ClearMessageAfterDelayAsync(delay, token);
+    }
+
+    private async Task ClearMessageAfterDelayAsync(TimeSpan delay, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(delay, cancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        message = "";
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task<bool> ConfirmAction(string confirmMessage)

@@ -22,7 +22,7 @@
                 <div class="alert alert-success" role="alert">Saved.</div>
             }
 
-            <form @onsubmit="SaveAsync">
+            <form @onsubmit="SaveAsync" @onsubmit:preventDefault="true">
                 <div class="mb-4">
                     <h6 class="mb-2">Hiring Footer Block</h6>
                     <div class="form-check form-switch">

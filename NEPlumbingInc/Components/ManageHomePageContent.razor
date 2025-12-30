@@ -33,7 +33,7 @@
     <div class="card-body p-2">
         @if (content != null)
         {
-            <form @onsubmit="SaveContent">
+            <form @onsubmit="SaveContent" @onsubmit:preventDefault="true">
                 <div class="accordion accordion-flush" id="contentAccordion">
                     <!-- Hero Section -->
                     <div class="accordion-item">
@@ -180,6 +180,7 @@
 @code {
     private HomePageContent? content;
     private string message = "";
+    private CancellationTokenSource? clearMessageCts;
     private Dictionary<string, bool> expandedSections = new()
     {
         { "hero", true },
@@ -199,10 +200,33 @@
     {
         await HomePageContentService!.UpdateContentAsync(content!);
         message = "Home page content updated successfully!";
-        
-        // Clear message after 3 seconds
-        await Task.Delay(3000);
+
+        ScheduleClearMessage(TimeSpan.FromSeconds(3));
+    }
+
+    private void ScheduleClearMessage(TimeSpan delay)
+    {
+        clearMessageCts?.Cancel();
+        clearMessageCts?.Dispose();
+        clearMessageCts = new CancellationTokenSource();
+
+        var token = clearMessageCts.Token;
+        _ = ClearMessageAfterDelayAsync(delay, token);
+    }
+
+    private async Task ClearMessageAfterDelayAsync(TimeSpan delay, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(delay, cancellationToken);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
         message = "";
+        await InvokeAsync(StateHasChanged);
     }
 
     private void ToggleSection(string sectionName)
