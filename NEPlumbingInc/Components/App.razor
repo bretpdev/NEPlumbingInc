@@ -5,6 +5,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+    <script>
+        // Apply theme as early as possible to avoid a light-mode flash.
+        (function () {
+            try {
+                var saved = localStorage.getItem('darkMode');
+                if (saved !== 'true' && saved !== 'false') {
+                    // First visit / no explicit preference: default to system preference
+                    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    saved = prefersDark ? 'true' : 'false';
+                    localStorage.setItem('darkMode', saved);
+                }
+
+                document.documentElement.setAttribute('data-dark-mode', saved === 'true' ? 'true' : 'false');
+            } catch (e) {
+                // If storage is unavailable, do nothing.
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="NEPlumbingInc.styles.css" />
@@ -21,19 +39,40 @@
     <script src="_framework/blazor.web.js"></script>
     <script>
         // Blazor circuit handler for reconnection
-        Blazor.addEventListener('unhandledError', event => {
-            console.error('Blazor error:', event.reason);
-        });
+        try {
+            if (window.Blazor && typeof window.Blazor.addEventListener === 'function') {
+                window.Blazor.addEventListener('unhandledError', event => {
+                    console.error('Blazor error:', event.reason);
+                });
+
+                // Enhanced navigation swaps the DOM without re-running this script.
+                // Use Blazor's enhanced navigation event to re-apply theme immediately.
+                window.Blazor.addEventListener('enhancedload', () => {
+                    window.ApplyDarkModeFromSettings && window.ApplyDarkModeFromSettings();
+                });
+            }
+        } catch (e) {
+            console.warn('Blazor error handler setup failed:', e);
+        }
 
         // Theme restoration is handled by MainLayout (interactive routing).
 
         // Function to update dark mode attribute
         window.UpdateDarkModeAttribute = function(isDarkMode) {
             document.documentElement.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
-            // Also update the main wrapper div for Razor components
-            const wrapper = document.querySelector('[data-dark-mode]');
-            if (wrapper && wrapper !== document.documentElement) {
-                wrapper.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
+            // Also keep body in sync (helps some CSS/background cases)
+            document.body && document.body.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
+        };
+
+        window.ToggleDarkMode = function() {
+            try {
+                const saved = localStorage.getItem('darkMode');
+                const current = saved === 'true';
+                const next = !current;
+                localStorage.setItem('darkMode', next ? 'true' : 'false');
+                window.UpdateDarkModeAttribute(next);
+            } catch (e) {
+                console.error('Error toggling dark mode:', e);
             }
         };
 
@@ -77,19 +116,217 @@
                     isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 }
                 
-                document.documentElement.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
-                // Also update any Razor wrapper divs
-                const wrapper = document.querySelector('[data-dark-mode]');
-                if (wrapper && wrapper !== document.documentElement) {
-                    wrapper.setAttribute('data-dark-mode', isDarkMode ? 'true' : 'false');
-                }
+                window.UpdateDarkModeAttribute(isDarkMode);
             } catch (e) {
                 console.error('Error restoring dark mode:', e);
             }
         };
+
+        // Apply dark mode on initial load and after enhanced navigations.
+        // Enhanced navigation updates the <body> without a full reload, so we must re-apply
+        // the attribute to the new body element to keep the theme consistent.
+        window.ApplyDarkModeFromSettings = function() {
+            if (typeof window.RestoreDarkModeSetting === 'function') {
+                window.RestoreDarkModeSetting();
+            }
+        };
+
+        // Re-apply on initial load (defensive in case the script is evaluated early)
+        try {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', window.ApplyDarkModeFromSettings, { once: true });
+            } else {
+                window.ApplyDarkModeFromSettings();
+            }
+        } catch (e) {
+            console.error('Error wiring dark mode initial apply:', e);
+        }
+
+        // Re-apply on BFCache restores and traditional history navigations
+        try {
+            window.addEventListener('pageshow', window.ApplyDarkModeFromSettings);
+            window.addEventListener('popstate', window.ApplyDarkModeFromSettings);
+        } catch (e) {
+            console.error('Error wiring dark mode page events:', e);
+        }
+
+        // Re-apply after ASP.NET Core enhanced navigation swaps the body.
+        // Event name is "enhancedload"; add a couple of fallbacks for version differences.
+        try {
+            document.addEventListener('enhancedload', window.ApplyDarkModeFromSettings);
+            document.addEventListener('enhancednavigationend', window.ApplyDarkModeFromSettings);
+        } catch (e) {
+            console.error('Error wiring dark mode enhanced navigation events:', e);
+        }
+
+        // Fallback: if the framework swaps <body> without firing an event we listen to,
+        // observe DOM changes and re-apply the attribute when <body> is replaced.
+        try {
+            if (!window.__neplumbingDarkModeBodyObserverSetup) {
+                window.__neplumbingDarkModeBodyObserverSetup = true;
+
+                const applyIfPossible = () => {
+                    if (typeof window.ApplyDarkModeFromSettings === 'function') {
+                        window.ApplyDarkModeFromSettings();
+                    }
+                };
+
+                const bodySwapObserver = new MutationObserver((mutations) => {
+                    for (const mutation of mutations) {
+                        if (mutation.type !== 'childList') continue;
+
+                        const addedBody = Array.from(mutation.addedNodes || []).some(n => n && n.nodeName === 'BODY');
+                        const removedBody = Array.from(mutation.removedNodes || []).some(n => n && n.nodeName === 'BODY');
+
+                        if (addedBody || removedBody) {
+                            // Defer to allow the new body to be fully connected.
+                            setTimeout(applyIfPossible, 0);
+                            break;
+                        }
+                    }
+                });
+
+                bodySwapObserver.observe(document.documentElement, { childList: true });
+            }
+        } catch (e) {
+            console.error('Error wiring dark mode body observer:', e);
+        }
+
+        // Track system preference changes when the user has not explicitly set a preference.
+        try {
+            const media = window.matchMedia('(prefers-color-scheme: dark)');
+            const onSystemChange = () => {
+                const saved = localStorage.getItem('darkMode');
+                if (saved === null) {
+                    window.UpdateDarkModeAttribute(media.matches);
+                }
+            };
+
+            if (typeof media.addEventListener === 'function') {
+                media.addEventListener('change', onSystemChange);
+            } else if (typeof media.addListener === 'function') {
+                // Safari older API
+                media.addListener(onSystemChange);
+            }
+        } catch (e) {
+            console.error('Error wiring system dark mode listener:', e);
+        }
+
+        // Simple helpers for the Home page speakeasy overlay (no Blazor circuit)
+        window.NePlumbingOpenSpeakeasy = async function() {
+            const overlay = document.querySelector('.hidden-overlay');
+            overlay && overlay.classList.add('active');
+
+            const messageEl = document.getElementById('specialOfferMessage');
+            const availableEl = document.getElementById('specialOfferAvailable');
+            const unavailableEl = document.getElementById('specialOfferUnavailable');
+            const linkEl = document.getElementById('specialOfferLink');
+
+            if (messageEl) {
+                messageEl.classList.add('d-none');
+                messageEl.classList.remove('alert-info', 'alert-warning');
+                messageEl.textContent = '';
+            }
+            availableEl && availableEl.classList.add('d-none');
+            unavailableEl && unavailableEl.classList.add('d-none');
+
+            try {
+                const resp = await fetch('/api/special-offer/reveal', {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!resp.ok) {
+                    unavailableEl && unavailableEl.classList.remove('d-none');
+                    return;
+                }
+
+                const data = await resp.json();
+
+                if (messageEl && data && data.message) {
+                    const type = (data.messageType || '').toLowerCase();
+                    messageEl.classList.remove('d-none');
+                    messageEl.classList.add(type === 'info' ? 'alert-info' : 'alert-warning');
+                    messageEl.textContent = data.message;
+                }
+
+                if (data && data.offerAvailable) {
+                    availableEl && availableEl.classList.remove('d-none');
+
+                    if (linkEl) {
+                        const ip = data.ipAddress;
+                        if (ip) {
+                            linkEl.href = '/messages?source=special-offer&ip=' + encodeURIComponent(ip);
+                        } else {
+                            linkEl.href = '/messages?source=special-offer';
+                        }
+                    }
+                } else {
+                    unavailableEl && unavailableEl.classList.remove('d-none');
+                }
+            } catch (e) {
+                console.error('Error revealing special offer:', e);
+                unavailableEl && unavailableEl.classList.remove('d-none');
+            }
+        };
+
+        window.NePlumbingCloseSpeakeasy = function() {
+            const overlay = document.querySelector('.hidden-overlay');
+            overlay && overlay.classList.remove('active');
+        };
+
+        // Services page modal (no Blazor circuit)
+        window.NePlumbingShowServiceModal = function(serviceId) {
+            try {
+                const modal = document.getElementById('serviceModalContainer');
+                const titleEl = document.getElementById('serviceModalTitle');
+                const bodyEl = document.getElementById('serviceModalBody');
+                const footerEl = document.getElementById('serviceModalFooter');
+
+                const bodyTemplate = document.getElementById('serviceModalBodyTemplate-' + serviceId);
+                const footerTemplate = document.getElementById('serviceModalFooterTemplate-' + serviceId);
+
+                if (!modal || !titleEl || !bodyEl || !footerEl || !bodyTemplate || !footerTemplate) {
+                    return;
+                }
+
+                const title = bodyTemplate.dataset && bodyTemplate.dataset.title ? bodyTemplate.dataset.title : '';
+                titleEl.textContent = title;
+
+                bodyEl.innerHTML = '';
+                footerEl.innerHTML = '';
+                bodyEl.appendChild(bodyTemplate.content.cloneNode(true));
+                footerEl.appendChild(footerTemplate.content.cloneNode(true));
+
+                modal.style.display = 'block';
+                modal.classList.add('show', 'd-block');
+            } catch (e) {
+                console.error('Error opening service modal:', e);
+            }
+        };
+
+        window.NePlumbingCloseServiceModal = function() {
+            try {
+                const modal = document.getElementById('serviceModalContainer');
+                const bodyEl = document.getElementById('serviceModalBody');
+                const footerEl = document.getElementById('serviceModalFooter');
+
+                if (!modal) {
+                    return;
+                }
+
+                modal.classList.remove('show', 'd-block');
+                modal.style.display = 'none';
+
+                if (bodyEl) bodyEl.innerHTML = '';
+                if (footerEl) footerEl.innerHTML = '';
+            } catch (e) {
+                console.error('Error closing service modal:', e);
+            }
+        };
         
-        // Apply dark mode on initial page load
-        RestoreDarkModeSetting();
+        // Back-compat: keep a direct call for any environments that don't fire the events above.
+        window.ApplyDarkModeFromSettings();
     </script>
 </body>
 

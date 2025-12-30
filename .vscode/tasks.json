@@ -9,7 +9,14 @@
                 "build",
                 "${workspaceFolder}"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "focus": false
+            }
         },
         {
             "label": "clean",
@@ -20,7 +27,14 @@
                 "${workspaceFolder}"
             ],
             "problemMatcher": [],
-            "group": "build"
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": true,
+                "focus": false
+            }
         }
     ]
 }

@@ -43,7 +43,9 @@ builder.Services.Configure<CircuitOptions>(options =>
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddScoped<ISpecialOfferService, SpecialOfferService>();
 builder.Services.AddScoped<ISpecialOfferSettingsService, SpecialOfferSettingsService>();
+builder.Services.AddScoped<ICareersPageSettingsService, CareersPageSettingsService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IResumeStorageService, ResumeStorageService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IColorSettingsService, ColorSettingsService>();
 builder.Services.AddScoped<DarkModeService>();

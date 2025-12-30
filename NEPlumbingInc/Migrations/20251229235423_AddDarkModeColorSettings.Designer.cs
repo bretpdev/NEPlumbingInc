@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace NEPlumbingInc.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251229235423_AddDarkModeColorSettings")]
+    partial class AddDarkModeColorSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -274,33 +277,6 @@ namespace NEPlumbingInc.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("NEPlumbingInc.Models.CareersPageSettings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("HelpfulToIncludeText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsHiringEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LookingForText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CareersPageSettings");
-                });
-
             modelBuilder.Entity("NEPlumbingInc.Models.ColorSettings", b =>
                 {
                     b.Property<int>("Id")
@@ -310,10 +286,6 @@ namespace NEPlumbingInc.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AccentColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BorderColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -329,19 +301,11 @@ namespace NEPlumbingInc.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DarkBorderColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("DarkButtonColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DarkHeroBadgeColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DarkInputBgColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -353,23 +317,11 @@ namespace NEPlumbingInc.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DarkSurfaceAltColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DarkSurfaceColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("DarkTextColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HeroBadgeColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InputBgColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -382,14 +334,6 @@ namespace NEPlumbingInc.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecondaryColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SurfaceAltColor")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SurfaceColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -460,18 +404,6 @@ namespace NEPlumbingInc.Migrations
 
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResumeBlobName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResumeContentType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResumeFileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("ResumeSizeBytes")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 

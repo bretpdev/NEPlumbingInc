@@ -1,34 +1,150 @@
 ﻿@inherits LayoutComponentBase
-@inject ThemeService ThemeService
 @inject IColorSettingsService ColorSettingsService
-@implements IAsyncDisposable
+@inject ICareersPageSettingsService CareersPageSettingsService
+@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>N.E. Plumbing Inc.</PageTitle>
 
 <style>
     :root {
-        --bs-body-bg: #ffffff;
-        --bs-body-color: #212529;
-        --primary-color: @(colorSettings?.PrimaryColor ?? "#0066CC");
-        --secondary-color: @(colorSettings?.SecondaryColor ?? "#005299");
-        --accent-color: @(colorSettings?.AccentColor ?? "#003d7a");
-        --text-color: @(colorSettings?.TextColor ?? "#212529");
+        /* Light palette (admin-configurable) */
+        --light-primary-color: @(colorSettings?.PrimaryColor ?? "#0066CC");
+        --light-secondary-color: @(colorSettings?.SecondaryColor ?? "#005299");
+        --light-accent-color: @(colorSettings?.AccentColor ?? "#003d7a");
+        --light-text-color: @(colorSettings?.TextColor ?? "#212529");
         --light-bg-color: @(colorSettings?.LightBgColor ?? "#f8f9fa");
-        --hero-badge-color: @(colorSettings?.HeroBadgeColor ?? "#0056b3");
-        --button-color: @(colorSettings?.ButtonColor ?? "#0066CC");
-        --bs-border-color: #dee2e6;
+        --light-hero-badge-color: @(colorSettings?.HeroBadgeColor ?? "#0056b3");
+        --light-button-color: @(colorSettings?.ButtonColor ?? "#0066CC");
+        --light-surface-color: @(colorSettings?.SurfaceColor ?? "#ffffff");
+        --light-surface-alt-color: @(colorSettings?.SurfaceAltColor ?? "#f8f9fa");
+        --light-input-bg-color: @(colorSettings?.InputBgColor ?? "#ffffff");
+
+        /* Dark palette (admin-configurable) */
+        --dark-primary-color: @(colorSettings?.DarkPrimaryColor ?? "#569cd6");
+        --dark-secondary-color: @(colorSettings?.DarkSecondaryColor ?? "#4f8cc4");
+        --dark-accent-color: @(colorSettings?.DarkAccentColor ?? "#9cdcfe");
+        --dark-text-color: @(colorSettings?.DarkTextColor ?? "#d4d4d4");
+        --dark-bg-color: @(colorSettings?.DarkBgColor ?? "#1e1e1e");
+        --dark-hero-badge-color: @(colorSettings?.DarkHeroBadgeColor ?? "#2d2d30");
+        --dark-button-color: @(colorSettings?.DarkButtonColor ?? "#569cd6");
+        --dark-surface-color: @(colorSettings?.DarkSurfaceColor ?? "#252526");
+        --dark-surface-alt-color: @(colorSettings?.DarkSurfaceAltColor ?? "#2d2d30");
+        --dark-input-bg-color: @(colorSettings?.DarkInputBgColor ?? "#3c3c3c");
+
+        /* Active palette (switches with data-dark-mode) */
+        --primary-color: var(--light-primary-color);
+        --secondary-color: var(--light-secondary-color);
+        --accent-color: var(--light-accent-color);
+        --text-color: var(--light-text-color);
+        --page-bg-color: var(--light-bg-color);
+        --hero-badge-color: var(--light-hero-badge-color);
+        --button-color: var(--light-button-color);
+        --surface-color: var(--light-surface-color);
+        --surface-alt-color: var(--light-surface-alt-color);
+        --input-bg-color: var(--light-input-bg-color);
+
+        --light-border-color: @(colorSettings?.BorderColor ?? "#dee2e6");
+        --dark-border-color: @(colorSettings?.DarkBorderColor ?? "#3e3e42");
+
+        --bs-body-bg: var(--page-bg-color);
+        --bs-body-color: var(--text-color);
+        --bs-border-color: var(--light-border-color);
         --bs-code-color: #e83e8c;
         --bs-heading-color: inherit;
-        --bs-link-color: #0066CC;
-        --bs-link-hover-color: #0052a3;
+        --bs-link-color: var(--primary-color);
+        --bs-link-hover-color: var(--secondary-color);
     }
 
-    [data-dark-mode="true"] {
-        --bs-body-bg: #1e1e1e;
-        --bs-body-color: #d4d4d4;
-        --bs-border-color: #3e3e42;
-        --bs-link-color: #569cd6;
-        --bs-link-hover-color: #9cdcfe;
+    :root[data-dark-mode="true"],
+    body[data-dark-mode="true"] {
+        --primary-color: var(--dark-primary-color);
+        --secondary-color: var(--dark-secondary-color);
+        --accent-color: var(--dark-accent-color);
+        --text-color: var(--dark-text-color);
+        --page-bg-color: var(--dark-bg-color);
+        --hero-badge-color: var(--dark-hero-badge-color);
+        --button-color: var(--dark-button-color);
+        --surface-color: var(--dark-surface-color);
+        --surface-alt-color: var(--dark-surface-alt-color);
+        --input-bg-color: var(--dark-input-bg-color);
+
+        --bs-body-bg: var(--page-bg-color);
+        --bs-body-color: var(--text-color);
+        --bs-border-color: var(--dark-border-color);
+        --bs-link-color: var(--primary-color);
+        --bs-link-hover-color: var(--accent-color);
+    }
+
+    /* Mode-agnostic rules driven by the active variables.
+       These intentionally live *after* the legacy dark-mode overrides to prevent
+       palette bleed/mixing and keep one source of truth: the CSS variables. */
+    body,
+    main,
+    .min-vh-100,
+    section,
+    article {
+        background-color: var(--page-bg-color);
+        color: var(--text-color);
+    }
+
+    a {
+        color: var(--bs-link-color);
+    }
+
+    a:hover {
+        color: var(--bs-link-hover-color);
+    }
+
+    h1, h2, h3, h4, h5, h6,
+    p {
+        color: var(--text-color);
+    }
+
+    .btn-primary {
+        background-color: var(--button-color);
+        border-color: var(--button-color);
+        color: #ffffff;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--button-color);
+        border-color: var(--button-color);
+        filter: brightness(1.05);
+    }
+
+    .btn-outline-primary {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: #ffffff;
+    }
+
+    .btn-outline-secondary {
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: #ffffff;
+    }
+
+    .btn-light {
+        background-color: var(--surface-alt-color);
+        border-color: var(--bs-border-color);
+        color: var(--text-color);
+    }
+
+    .btn-light:hover {
+        background-color: var(--surface-alt-color);
+        border-color: var(--bs-border-color);
+        color: var(--text-color);
+        filter: brightness(1.05);
     }
 
     [data-dark-mode="true"],
@@ -38,34 +154,34 @@
     [data-dark-mode="true"] .min-vh-100,
     [data-dark-mode="true"] section,
     [data-dark-mode="true"] article {
-        background-color: #1e1e1e !important;
-        color: #d4d4d4;
+        background-color: var(--page-bg-color) !important;
+        color: var(--text-color);
     }
 
     /* Remove any light backgrounds */
     [data-dark-mode="true"] [class*="bg-light"],
     [data-dark-mode="true"] [class*="bg-white"] {
-        background-color: #252526 !important;
+        background-color: var(--surface-color) !important;
     }
 
     /* Dark mode - Navigation */
     [data-dark-mode="true"] .navbar,
     [data-dark-mode="true"] .navbar-dark {
-        background-color: #252526 !important;
+        background-color: var(--surface-alt-color) !important;
     }
 
     [data-dark-mode="true"] .nav-link {
-        color: #d4d4d4 !important;
+        color: var(--text-color) !important;
     }
 
     [data-dark-mode="true"] .nav-link:hover {
-        color: #9cdcfe !important;
+        color: var(--accent-color) !important;
     }
 
     /* Dark mode - Content */
     [data-dark-mode="true"] main {
-        background-color: #1e1e1e;
-        color: #d4d4d4;
+        background-color: var(--page-bg-color);
+        color: var(--text-color);
     }
 
     [data-dark-mode="true"] .container,
@@ -75,91 +191,131 @@
 
     /* Dark mode - Cards and Panels */
     [data-dark-mode="true"] .card {
-        background-color: #252526;
-        border-color: #3e3e42;
-        color: #d4d4d4;
+        background-color: var(--surface-color);
+        border-color: var(--bs-border-color);
+        color: var(--text-color);
     }
 
     [data-dark-mode="true"] .card-header {
-        background-color: #2d2d30;
-        border-color: #3e3e42;
-        color: #d4d4d4;
+        background-color: var(--surface-alt-color);
+        border-color: var(--bs-border-color);
+        color: var(--text-color);
+    }
+
+    /* Some admin components use Bootstrap's bg-primary/text-white on headers.
+       In dark mode that forces an unrelated blue header, so normalize it back to the theme surfaces. */
+    [data-dark-mode="true"] .card-header.bg-primary {
+        background-color: var(--surface-alt-color) !important;
+        color: var(--text-color) !important;
+        border-color: var(--bs-border-color) !important;
+    }
+
+    [data-dark-mode="true"] .card-header.bg-primary.text-white {
+        color: var(--text-color) !important;
     }
 
     [data-dark-mode="true"] .card-body {
-        background-color: #252526;
-        color: #d4d4d4;
+        background-color: var(--surface-color);
+        color: var(--text-color);
     }
 
     [data-dark-mode="true"] .card-footer {
-        background-color: #2d2d30;
-        border-color: #3e3e42;
+        background-color: var(--surface-alt-color);
+        border-color: var(--bs-border-color);
     }
 
     /* Dark mode - Modals */
     [data-dark-mode="true"] .modal-content {
-        background-color: #252526;
-        border-color: #3e3e42;
-        color: #d4d4d4;
+        background-color: var(--surface-color);
+        border-color: var(--bs-border-color);
+        color: var(--text-color);
     }
 
     [data-dark-mode="true"] .modal-header {
-        background-color: #2d2d30;
-        border-color: #3e3e42;
+        background-color: var(--surface-alt-color);
+        border-color: var(--bs-border-color);
     }
 
     [data-dark-mode="true"] .modal-footer {
-        background-color: #2d2d30;
-        border-color: #3e3e42;
+        background-color: var(--surface-alt-color);
+        border-color: var(--bs-border-color);
     }
 
     /* Dark mode - Forms */
     [data-dark-mode="true"] .form-control,
     [data-dark-mode="true"] .form-select {
-        background-color: #3c3c3c;
-        border-color: #3e3e42;
-        color: #d4d4d4;
+        background-color: var(--input-bg-color);
+        border-color: var(--bs-border-color);
+        color: var(--text-color);
     }
 
     [data-dark-mode="true"] .form-control:focus,
     [data-dark-mode="true"] .form-select:focus {
-        background-color: #3c3c3c;
-        border-color: #569cd6;
-        color: #d4d4d4;
+        background-color: var(--input-bg-color);
+        border-color: var(--primary-color);
+        color: var(--text-color);
         box-shadow: 0 0 0 0.2rem rgba(86, 156, 214, 0.25);
     }
 
     [data-dark-mode="true"] .form-label {
-        color: #d4d4d4;
+        color: var(--text-color);
     }
 
     [data-dark-mode="true"] .input-group-text {
-        background-color: #3c3c3c;
-        border-color: #3e3e42;
-        color: #d4d4d4;
+        background-color: var(--input-bg-color);
+        border-color: var(--bs-border-color);
+        color: var(--text-color);
+    }
+
+    /* Mode-aware surfaces (light + dark) */
+    .card {
+        background-color: var(--surface-color);
+        color: var(--text-color);
+    }
+
+    .card-header,
+    .card-footer,
+    .modal-header,
+    .modal-footer {
+        background-color: var(--surface-alt-color);
+        color: var(--text-color);
+    }
+
+    .modal-content {
+        background-color: var(--surface-color);
+        color: var(--text-color);
+    }
+
+    .form-control,
+    .form-select,
+    .input-group-text {
+        background-color: var(--input-bg-color);
+        color: var(--text-color);
     }
 
     /* Dark mode - Buttons */
     [data-dark-mode="true"] .btn-primary {
-        background-color: #0e639c;
-        border-color: #0e639c;
-        color: #d4d4d4;
+        background-color: var(--button-color);
+        border-color: var(--button-color);
+        color: #ffffff;
     }
 
     [data-dark-mode="true"] .btn-primary:hover {
-        background-color: #1177bb;
-        border-color: #1177bb;
+        background-color: var(--button-color);
+        border-color: var(--button-color);
+        filter: brightness(1.05);
     }
 
     [data-dark-mode="true"] .btn-secondary {
-        background-color: #3e3e42;
-        border-color: #3e3e42;
-        color: #d4d4d4;
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: #ffffff;
     }
 
     [data-dark-mode="true"] .btn-secondary:hover {
-        background-color: #4e4e54;
-        border-color: #4e4e54;
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+        filter: brightness(1.05);
     }
 
     [data-dark-mode="true"] .btn-outline-light {
@@ -173,20 +329,20 @@
     }
 
     [data-dark-mode="true"] .btn-outline-primary {
-        color: #569cd6;
-        border-color: #569cd6;
+        color: var(--primary-color);
+        border-color: var(--primary-color);
     }
 
     [data-dark-mode="true"] .btn-outline-primary:hover {
-        background-color: #569cd6;
-        border-color: #569cd6;
-        color: #1e1e1e;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: #ffffff;
     }
 
     /* Dark mode - Tables */
     [data-dark-mode="true"] .table {
         color: #d4d4d4;
-        border-color: #3e3e42;
+        border-color: var(--bs-border-color);
     }
 
     [data-dark-mode="true"] .table-striped > tbody > tr:nth-of-type(odd) {
@@ -199,30 +355,38 @@
 
     [data-dark-mode="true"] .table-bordered,
     [data-dark-mode="true"] .table-bordered > :not(caption) > * {
-        border-color: #3e3e42;
+        border-color: var(--bs-border-color);
     }
 
     /* Dark mode - Accordions */
     [data-dark-mode="true"] .accordion-button {
-        background-color: #3c3c3c;
-        color: #d4d4d4;
-        border-color: #3e3e42;
+        background-color: var(--surface-alt-color);
+        color: var(--text-color);
+        border-color: var(--bs-border-color);
+    }
+
+    [data-dark-mode="true"] .accordion-button::after {
+        /* Make the Bootstrap chevron icon visible on dark surfaces */
+        filter: invert(1) grayscale(100%);
     }
 
     [data-dark-mode="true"] .accordion-button:not(.collapsed) {
-        background-color: #4e4e54;
-        color: #d4d4d4;
-        border-color: #3e3e42;
+        background-color: var(--surface-color);
+        color: var(--text-color);
+        border-color: var(--bs-border-color);
     }
 
     [data-dark-mode="true"] .accordion-button:focus {
-        border-color: #569cd6;
-        box-shadow: 0 0 0 0.25rem rgba(86, 156, 214, 0.25);
+        border-color: var(--primary-color);
+        box-shadow: none;
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
     }
 
     [data-dark-mode="true"] .accordion-body {
-        background-color: #252526;
-        border-color: #3e3e42;
+        background-color: var(--surface-color);
+        border-color: var(--bs-border-color);
+        color: var(--text-color);
     }
 
     /* Dark mode - Lists and Text */
@@ -258,17 +422,17 @@
 
     /* Dark mode - Borders and Dividers */
     [data-dark-mode="true"] hr {
-        border-color: #3e3e42;
+        border-color: var(--bs-border-color);
     }
 
     [data-dark-mode="true"] .border {
-        border-color: #3e3e42 !important;
+        border-color: var(--bs-border-color) !important;
     }
 
     /* Dark mode - Alerts */
     [data-dark-mode="true"] .alert {
         background-color: #2d2d30;
-        border-color: #3e3e42;
+        border-color: var(--bs-border-color);
         color: #d4d4d4;
     }
 
@@ -358,7 +522,7 @@
     }
 
     [data-dark-mode="true"] .border-secondary {
-        border-color: #3e3e42 !important;
+        border-color: var(--bs-border-color) !important;
     }
 
     .navbar-brand {
@@ -376,9 +540,54 @@
         flex-wrap: wrap;
         width: 100%;
     }
+
+    /* Dark mode toggle button (no Blazor circuit required) */
+    .dark-mode-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        position: relative;
+        z-index: 11;
+    }
+
+    .dark-mode-toggle:hover {
+        transform: scale(1.1);
+    }
+
+    .dark-mode-toggle:focus {
+        outline: 2px solid rgba(255, 255, 255, 0.5);
+        outline-offset: 2px;
+    }
+
+    /* Show current mode icon:
+       - Light mode => sun
+       - Dark mode  => moon */
+    .dark-mode-icon-sun {
+        display: inline-block;
+    }
+
+    .dark-mode-icon-moon {
+        display: none;
+    }
+
+    [data-dark-mode="true"] .dark-mode-icon-sun {
+        display: none;
+    }
+
+    [data-dark-mode="true"] .dark-mode-icon-moon {
+        display: inline-block;
+    }
 </style>
 
-<div class="min-vh-100 d-flex flex-column" data-dark-mode="@ThemeService.IsDarkMode.ToString().ToLower()">
+<div class="min-vh-100 d-flex flex-column">
     <header class="navbar navbar-expand-lg navbar-dark w-100" style="background-color: var(--primary-color); padding: 0.5rem 1rem;">
         <!-- Company Name -->
         <a class="navbar-brand flex-shrink-0" href="">N.E. Plumbing Inc.</a>
@@ -395,7 +604,10 @@
 
         <!-- Right Side Login/Logout & Dark Mode -->
         <div class="d-flex navbar-controls ms-auto">
-            <DarkModeToggle />
+            <button class="dark-mode-toggle" type="button" onclick="window.ToggleDarkMode && window.ToggleDarkMode()" title="Toggle dark mode">
+                <i class="fas fa-moon dark-mode-icon-moon" aria-hidden="true"></i>
+                <i class="fas fa-sun dark-mode-icon-sun" aria-hidden="true"></i>
+            </button>
             <AuthorizeView Roles="Admin">
                 <Authorized Context="auth">
                     <div class="d-flex align-items-center gap-2">
@@ -431,11 +643,14 @@
                 </div>
 
                 <!-- Now Hiring -->
-                <div class="col-md-4 mb-3">
-                    <h5>Now Hiring</h5>
-                    <p class="mb-1">We're looking for skilled plumbers to join our team!</p>
-                    <a href="/messages" class="btn btn-outline-light btn-sm">Apply Now</a>
-                </div>
+                @if (careersSettings?.IsHiringEnabled ?? true)
+                {
+                    <div class="col-md-4 mb-3">
+                        <h5>Now Hiring</h5>
+                        <p class="mb-1">We're looking for skilled plumbers to join our team!</p>
+                        <a href="/careers" class="btn btn-outline-light btn-sm">Apply Now</a>
+                    </div>
+                }
 
                 <!-- Connect -->
                 <div class="col-md-4 mb-3">
@@ -478,60 +693,14 @@
 
 @code {
     private ColorSettings? colorSettings;
-    private bool initialized = false;
+    private CareersPageSettings? careersSettings;
 
     protected override async Task OnInitializedAsync()
     {
-        // Load color settings (no JS interop)
+        // Load color settings (server-side)
         colorSettings = await ColorSettingsService.GetColorSettingsAsync();
-        ThemeService.OnChange += OnThemeChanged;
-    }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // Always restore dark mode setting on every render (for navigation)
-        string? darkModeValue = await JS.InvokeAsync<string?>("localStorage.getItem", "darkMode");
-        bool isDarkMode;
-        
-        if (darkModeValue != null)
-        {
-            // User has a saved preference
-            isDarkMode = darkModeValue == "true";
-        }
-        else
-        {
-            // No saved preference - check system preference
-            isDarkMode = await JS.InvokeAsync<bool>("GetSystemDarkModePreference");
-        }
-        
-        if (firstRender && !initialized)
-        {
-            initialized = true;
-            ThemeService.Initialize(isDarkMode);
-        }
-        else if (!firstRender)
-        {
-            // On navigation, update the service if it changed
-            ThemeService.IsDarkMode = isDarkMode;
-        }
-        
-        // Always apply the dark mode attribute
-        await JS.InvokeVoidAsync("UpdateDarkModeAttribute", isDarkMode);
-    }
-
-    private void OnThemeChanged()
-    {
-        // Apply the dark mode attribute whenever dark mode changes
-        _ = JS.InvokeVoidAsync("UpdateDarkModeAttribute", ThemeService.IsDarkMode);
-        StateHasChanged();
-    }
-
-    [Inject]
-    private IJSRuntime JS { get; set; } = null!;
-
-    ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        ThemeService.OnChange -= OnThemeChanged;
-        return ValueTask.CompletedTask;
+        // Load Careers page settings (server-side)
+        careersSettings = await CareersPageSettingsService.GetSettingsAsync();
     }
 }

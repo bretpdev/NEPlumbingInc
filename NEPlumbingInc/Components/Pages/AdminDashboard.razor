@@ -1,8 +1,39 @@
 @page "/admin-dashboard"
 @attribute [Authorize]
+@rendermode InteractiveServer
+
+@implements IAsyncDisposable
+
+@inject IMessageService MessageService
 
 <h3 class="mb-4">Admin Dashboard</h3>
 
+@if (!string.IsNullOrWhiteSpace(unreadCountError))
+{
+    <div class="alert alert-warning" role="alert">
+        Message unread count unavailable: @unreadCountError
+    </div>
+}
+
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>
+                    Messages
+                    <span class="badge rounded-pill bg-danger text-white ms-2">@unreadMessagesCount</span>
+                </strong>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleMessages">
+                    @(showMessages ? "Collapse" : "Open")
+                </button>
+            </div>
+            @if (showMessages)
+            {
+                <div class="card-body">
+                    <ManageMessages />
+                </div>
+            }
+        </div>
+    </div>
 <div class="row">
     <div class="col-12 mb-3">
         <div class="card">
@@ -41,6 +72,23 @@
     <div class="col-12 mb-3">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Careers</strong>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleCareers">
+                    @(showCareers ? "Collapse" : "Open")
+                </button>
+            </div>
+            @if (showCareers)
+            {
+                <div class="card-body">
+                    <ManageCareers />
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <strong>Special Offers</strong>
                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleSpecialOffers">
                     @(showSpecialOffers ? "Collapse" : "Open")
@@ -50,23 +98,6 @@
             {
                 <div class="card-body">
                     <ManageSpecialOffers />
-                </div>
-            }
-        </div>
-    </div>
-
-    <div class="col-12 mb-3">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <strong>Messages</strong>
-                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ToggleMessages">
-                    @(showMessages ? "Collapse" : "Open")
-                </button>
-            </div>
-            @if (showMessages)
-            {
-                <div class="card-body">
-                    <ManageMessages />
                 </div>
             }
         </div>
@@ -110,15 +141,94 @@
 @code {
     private bool showHomeContent;
     private bool showServices;
+    private bool showCareers;
     private bool showSpecialOffers;
     private bool showMessages;
     private bool showUsers;
     private bool showColors;
 
+    private int unreadMessagesCount;
+
+    private string? unreadCountError;
+
+    private PeriodicTimer? unreadTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await RefreshUnreadMessagesCountAsync();
+        }
+        catch (Exception ex)
+        {
+            // If unread count fails (e.g., transient DB issue), keep the dashboard interactive.
+            unreadCountError = ex.Message;
+            unreadMessagesCount = 0;
+        }
+
+        // Keep the badge up-to-date while the dashboard is open.
+        // This avoids needing to open/collapse Messages just to refresh the count.
+        unreadTimer = new PeriodicTimer(TimeSpan.FromSeconds(15));
+        _ = PollUnreadMessagesCountAsync(unreadTimer);
+    }
+
     private void ToggleHomeContent() => showHomeContent = !showHomeContent;
     private void ToggleServices() => showServices = !showServices;
+    private void ToggleCareers() => showCareers = !showCareers;
     private void ToggleSpecialOffers() => showSpecialOffers = !showSpecialOffers;
-    private void ToggleMessages() => showMessages = !showMessages;
+    private async Task ToggleMessages()
+    {
+        showMessages = !showMessages;
+
+        // When collapsing, refresh count to reflect anything that was marked read/deleted.
+        if (!showMessages)
+        {
+            await RefreshUnreadMessagesCountAsync();
+        }
+    }
     private void ToggleUsers() => showUsers = !showUsers;
     private void ToggleColors() => showColors = !showColors;
+
+    private async Task RefreshUnreadMessagesCountAsync()
+    {
+        unreadMessagesCount = await MessageService.GetUnreadCountAsync();
+        unreadCountError = null;
+    }
+
+    private async Task PollUnreadMessagesCountAsync(PeriodicTimer timer)
+    {
+        try
+        {
+            while (await timer.WaitForNextTickAsync())
+            {
+                await InvokeAsync(async () =>
+                {
+                    try
+                    {
+                        await RefreshUnreadMessagesCountAsync();
+                        StateHasChanged();
+                    }
+                    catch (Exception ex)
+                    {
+                        unreadCountError = ex.Message;
+                        unreadMessagesCount = 0;
+                        StateHasChanged();
+                    }
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            // Don't crash the circuit if background polling fails.
+            unreadCountError = ex.Message;
+            unreadMessagesCount = 0;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await Task.CompletedTask;
+        unreadTimer?.Dispose();
+        unreadTimer = null;
+    }
 }

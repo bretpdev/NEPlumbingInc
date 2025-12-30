@@ -1,6 +1,5 @@
 ﻿@page "/ne-underground"
 @inject NavigationManager NavManager
-@inject IDbContextFactory<AppDbContext> DbFactory
 
 <PageTitle>NE Underground Offer</PageTitle>
 
@@ -15,72 +14,65 @@
             Regular maintenance like this keeps your system running efficiently and extends its lifespan.
         </p>
 
-        <EditForm Model="@submission" OnValidSubmit="HandleSubmit" FormName="neUndergroundForm">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
+        <form method="post" action="/ne-underground/submit">
             <div class="mb-3">
                 <label for="name" class="form-label">Full Name</label>
-                <InputText id="name" class="form-control" @bind-Value="submission.FullName" />
-                <ValidationMessage For="@(() => submission.FullName)" />
+                <input id="name" name="FullName" class="form-control" value="@submission.FullName" required maxlength="100" />
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <InputText id="email" class="form-control" @bind-Value="submission.Email" />
-                <ValidationMessage For="@(() => submission.Email)" />
+                <input id="email" name="Email" type="email" class="form-control" value="@submission.Email" required />
             </div>
 
             <div class="mb-3">
                 <label for="phone" class="form-label">Phone</label>
-                <InputText id="phone" class="form-control" @bind-Value="submission.Phone" />
-                <ValidationMessage For="@(() => submission.Phone)" />
+                <input id="phone" name="Phone" type="tel" class="form-control" value="@submission.Phone" required />
             </div>
 
             <div class="mb-3">
                 <label for="zip" class="form-label">ZIP Code</label>
-                <InputText id="zip" class="form-control" @bind-Value="submission.ZipCode" />
-                <ValidationMessage For="@(() => submission.ZipCode)" />
+                <input id="zip" name="ZipCode" class="form-control" value="@submission.ZipCode" required />
             </div>
 
             <div class="mb-3">
                 <label for="notes" class="form-label">Notes</label>
-                <InputTextArea id="notes" class="form-control" @bind-Value="submission.Notes" />
+                <textarea id="notes" name="Notes" class="form-control">@submission.Notes</textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">Submit</button>
-        </EditForm>
+        </form>
 
-        @if (successMessage != null)
+        @if (showSuccess)
         {
-            <div class="alert alert-success mt-3">@successMessage</div>
+            <div class="alert alert-success mt-3">Thanks for joining NE Underground! We'll email your code shortly.</div>
+        }
+
+        @if (showLimit)
+        {
+            <div class="alert alert-warning mt-3">We're sorry — this exclusive offer has already been claimed.</div>
+        }
+
+        @if (showError)
+        {
+            <div class="alert alert-danger mt-3">An error occurred while processing your submission.</div>
         }
     </div>
 </div>
 
 @code {
     private UndergroundSubmission submission = new();
-    private string? successMessage;
+    private bool showSuccess;
+    private bool showLimit;
+    private bool showError;
 
-    private const int OfferLimit = 25;
-
-    private async Task HandleSubmit()
+    protected override void OnInitialized()
     {
-        using var db = await DbFactory.CreateDbContextAsync();
+        var uri = new Uri(NavManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
 
-        int currentCount = await db.UndergroundSubmissions.CountAsync();
-        if (currentCount >= OfferLimit)
-        {
-            successMessage = "We're sorry — this exclusive offer has already been claimed.";
-            return;
-        }
-
-        submission.SubmittedAt = DateTime.UtcNow;
-        db.UndergroundSubmissions.Add(submission);
-        await db.SaveChangesAsync();
-
-        successMessage = "Thanks for joining NE Underground! We'll email your code shortly.";
-        submission = new();
-        StateHasChanged();
+        showSuccess = query["sent"] == "1";
+        showLimit = query["limit"] == "1";
+        showError = query["error"] == "1";
     }
 }

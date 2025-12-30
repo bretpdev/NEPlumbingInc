@@ -1,5 +1,4 @@
 ﻿@page "/services"
-@rendermode InteractiveServer
 @inject IServiceManager ServiceManager
 
 <style>
@@ -224,14 +223,13 @@
         @foreach (var service in services)
         {
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 shadow-sm" @onclick="@(() => OpenModal(service))">
+                <div class="card service-card h-100 shadow-sm" role="button" tabindex="0" onclick="window.NePlumbingShowServiceModal && window.NePlumbingShowServiceModal(@service.Id)">
                     @if (!string.IsNullOrEmpty(service.ServiceImage))
                     {
                         <div class="image-container">
                             <img src="@service.ServiceImage" 
                                  class="service-image" 
-                                 alt="@service.ServiceName"
-                                 @onerror="@(e => Console.WriteLine($"Image failed to load: {service.ServiceImage}"))" />
+                                 alt="@service.ServiceName" />
                         </div>
                     }
                     else
@@ -250,107 +248,86 @@
     </div>
 </div>
 
-@if (selectedService != null)
+@foreach (var service in services)
 {
-    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.6);">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@selectedService.ServiceName</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="lead mb-4">@selectedService.ServiceDescription</p>
+    <template id="serviceModalBodyTemplate-@service.Id" data-title="@service.ServiceName">
+        <p class="lead mb-4">@service.ServiceDescription</p>
 
-                    @if (selectedService.SubServices?.Any() == true)
+        @if (service.SubServices?.Any() == true)
+        {
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Service Options & Pricing</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @foreach (var sub in service.SubServices)
                     {
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0">Service Options & Pricing</h5>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                @foreach (var sub in selectedService.SubServices)
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">@sub.Name</div>
+                                    @if (!string.IsNullOrEmpty(sub.Description))
+                                    {
+                                        <p class="mb-0 text-muted small">@sub.Description</p>
+                                    }
+                                </div>
+                                @if (sub.Price.HasValue)
                                 {
-                                    <li class="list-group-item">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div class="ms-2 me-auto">
-                                                <div class="fw-bold">@sub.Name</div>
-                                                @if (!string.IsNullOrEmpty(sub.Description))
-                                                {
-                                                    <p class="mb-0 text-muted small">@sub.Description</p>
-                                                }
-                                            </div>
-                                            @if (sub.Price.HasValue)
-                                            {
-                                                <div class="text-end">
-                                                    <span class="badge bg-primary rounded-pill fs-6">
-                                                        Starting at @($"${sub.Price.Value:N2}")
-                                                    </span>
-                                                </div>
-                                            }
-                                        </div>
-                                    </li>
+                                    <div class="text-end">
+                                        <span class="badge bg-primary rounded-pill fs-6">
+                                            Starting at @($"${sub.Price.Value:N2}")
+                                        </span>
+                                    </div>
                                 }
-                            </ul>
-                        </div>
+                            </div>
+                        </li>
                     }
-                    else
-                    {
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Contact us for detailed pricing information.
-                        </div>
-                    }
-                </div>
-                <div class="modal-footer flex-column align-items-stretch">
-                    <div class="text-muted small text-center mb-2">
-                        All prices shown are starting points. Final costs may vary based on requirements.
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <a href="/contact" class="btn btn-primary me-2">
-                            <i class="fas fa-envelope me-2"></i>
-                            @(selectedService.ConsultationType == ConsultationType.Inspection 
-                                ? "Schedule Inspection" 
-                                : "Schedule Consultation")
-                        </a>
-                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
-                    </div>
-                </div>
+                </ul>
             </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Contact us for detailed pricing information.
+            </div>
+        }
+    </template>
+
+    <template id="serviceModalFooterTemplate-@service.Id">
+        <div class="text-muted small text-center mb-2">
+            All prices shown are starting points. Final costs may vary based on requirements.
+        </div>
+        <div class="d-flex justify-content-end">
+            <a href="/messages?source=services&serviceId=@service.Id&service=@(System.Web.HttpUtility.UrlEncode(service.ServiceName))&type=@(service.ConsultationType == ConsultationType.Inspection ? "inspection" : "consultation")" class="btn btn-primary me-2" onclick="window.NePlumbingCloseServiceModal && window.NePlumbingCloseServiceModal()">
+                <i class="fas fa-envelope me-2"></i>
+                @(service.ConsultationType == ConsultationType.Inspection
+                    ? "Schedule Inspection"
+                    : "Schedule Consultation")
+            </a>
+            <button type="button" class="btn btn-secondary" onclick="window.NePlumbingCloseServiceModal && window.NePlumbingCloseServiceModal()">Close</button>
+        </div>
+    </template>
+}
+
+<div id="serviceModalContainer" class="modal fade" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.6); display:none;">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="serviceModalTitle" class="modal-title"></h5>
+                <button type="button" class="btn-close" onclick="window.NePlumbingCloseServiceModal && window.NePlumbingCloseServiceModal()"></button>
+            </div>
+            <div id="serviceModalBody" class="modal-body"></div>
+            <div class="modal-footer flex-column align-items-stretch" id="serviceModalFooter"></div>
         </div>
     </div>
-}
+</div>
 
 @code {
     private List<ServicesFormModel> services = new();
-    private ServicesFormModel? selectedService;
 
     protected override async Task OnInitializedAsync()
     {
         services = await ServiceManager.GetActiveServicesAsync();
-        
-        // Debug output
-        foreach (var service in services)
-        {
-            Console.WriteLine($"Service: {service.ServiceName}");
-            Console.WriteLine($"SubServices count: {service.SubServices?.Count ?? 0}");
-            if (service.SubServices != null)
-            {
-                foreach (var sub in service.SubServices)
-                {
-                    Console.WriteLine($"  - {sub.Name}: ${sub.Price}");
-                }
-            }
-        }
-    }
-
-    private void OpenModal(ServicesFormModel service)
-    {
-        selectedService = service;
-    }
-
-    private void CloseModal()
-    {
-        selectedService = null;
     }
 }

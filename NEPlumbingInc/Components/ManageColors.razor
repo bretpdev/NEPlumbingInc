@@ -72,109 +72,430 @@
         background-color: #3a3a3a;
         border-color: #555;
     }
+
+    .theme-preview {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: var(--page-bg-color);
+        color: var(--text-color);
+    }
+
+    .theme-preview .preview-navbar {
+        background: var(--surface-alt-color);
+        color: var(--text-color);
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--bs-border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .theme-preview .preview-navbar .brand {
+        font-weight: 700;
+    }
+
+    .theme-preview .preview-navbar .nav-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .theme-preview .preview-content {
+        padding: 1rem;
+    }
+
+    .theme-preview .preview-surface {
+        background: var(--surface-color);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .theme-preview .preview-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        background: var(--hero-badge-color);
+        color: #fff;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    .theme-preview .preview-link {
+        color: var(--bs-link-color);
+        text-decoration: underline;
+    }
+
+    .theme-preview .preview-link:hover {
+        color: var(--bs-link-hover-color);
+    }
+
+    .theme-preview .preview-btn-primary {
+        background: var(--button-color);
+        border: 1px solid var(--button-color);
+        color: #fff;
+        border-radius: 0.375rem;
+        padding: 0.4rem 0.75rem;
+        font-weight: 600;
+    }
+
+    .theme-preview .preview-btn-outline {
+        background: transparent;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 0.375rem;
+        padding: 0.4rem 0.75rem;
+        font-weight: 600;
+    }
+
+    .theme-preview .preview-input {
+        width: 100%;
+        background: var(--input-bg-color);
+        border: 1px solid var(--bs-border-color);
+        color: var(--text-color);
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+    }
 </style>
 
 <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header">
         <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Manage Site Colors</h5>
     </div>
     <div class="card-body">
         @if (colorSettings != null)
         {
-            <form @onsubmit="SaveColors">
+            <form @onsubmit="SaveColors" @onsubmit:preventDefault="true">
+                <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item">
+                        <button type="button"
+                                class="nav-link @(activePalette == "light" ? "active" : "")"
+                                @onclick="SetLightPalette">
+                            Light
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button"
+                                class="nav-link @(activePalette == "dark" ? "active" : "")"
+                                @onclick="SetDarkPalette">
+                            Dark
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="d-flex flex-wrap gap-2 align-items-end mb-3">
+                    <div>
+                        <small class="text-muted d-block">@(activePalette == "light" ? "Light" : "Dark") preset</small>
+                        <select class="form-select form-select-sm" style="min-width: 220px" @bind="selectedPresetId">
+                            @foreach (var preset in GetPresetsForActivePalette())
+                            {
+                                <option value="@preset.Id">@preset.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="ApplySelectedPreset">
+                        Apply preset
+                    </button>
+                    <div class="form-check ms-auto">
+                        <input class="form-check-input" type="checkbox" id="showAdvanced" @bind="showAdvanced" />
+                        <label class="form-check-label" for="showAdvanced">Show advanced (hex)</label>
+                    </div>
+                </div>
+
+                @if (activePalette == "light")
+                {
+                    <h6 class="mb-3">Light Mode Palette</h6>
+
                 <div class="row">
                     <div class="col-md-6">
-                        <h6 class="mb-3">Color Palette</h6>
-                        
                         <div class="color-input-wrapper">
                             <label for="primaryColor">Primary Color (Navbar/Footer)</label>
-                            <input type="color" class="color-input" id="primaryColor" 
+                            <input type="color" class="color-input" id="primaryColor"
                                    @bind="colorSettings.PrimaryColor" />
                         </div>
 
                         <div class="color-input-wrapper">
                             <label for="secondaryColor">Secondary Color</label>
-                            <input type="color" class="color-input" id="secondaryColor" 
+                            <input type="color" class="color-input" id="secondaryColor"
                                    @bind="colorSettings.SecondaryColor" />
                         </div>
 
                         <div class="color-input-wrapper">
                             <label for="accentColor">Accent Color</label>
-                            <input type="color" class="color-input" id="accentColor" 
+                            <input type="color" class="color-input" id="accentColor"
                                    @bind="colorSettings.AccentColor" />
                         </div>
 
                         <div class="color-input-wrapper">
                             <label for="textColor">Text Color</label>
-                            <input type="color" class="color-input" id="textColor" 
+                            <input type="color" class="color-input" id="textColor"
                                    @bind="colorSettings.TextColor" />
                         </div>
 
                         <div class="color-input-wrapper">
-                            <label for="bgColor">Light Background Color</label>
-                            <input type="color" class="color-input" id="bgColor" 
+                            <label for="bgColor">Background Color</label>
+                            <input type="color" class="color-input" id="bgColor"
                                    @bind="colorSettings.LightBgColor" />
                         </div>
 
                         <div class="color-input-wrapper">
                             <label for="heroBadgeColor">Hero Badge Background</label>
-                            <input type="color" class="color-input" id="heroBadgeColor" 
+                            <input type="color" class="color-input" id="heroBadgeColor"
                                    @bind="colorSettings.HeroBadgeColor" />
                         </div>
 
                         <div class="color-input-wrapper">
                             <label for="buttonColor">Button Color</label>
-                            <input type="color" class="color-input" id="buttonColor" 
+                            <input type="color" class="color-input" id="buttonColor"
                                    @bind="colorSettings.ButtonColor" />
                         </div>
-                    </div>
 
-                    <div class="col-md-6">
-                        <h6 class="mb-3">Color Codes (Hex)</h6>
-                        
-                        <div class="mb-2">
-                            <small class="text-muted">Primary Color:</small>
-                            <input type="text" class="form-control form-control-sm" 
-                                   @bind="colorSettings.PrimaryColor" placeholder="#0066CC" />
+                        <div class="color-input-wrapper">
+                            <label for="surfaceColor">Surface Color (Cards/Modals)</label>
+                            <input type="color" class="color-input" id="surfaceColor"
+                                   @bind="colorSettings.SurfaceColor" />
                         </div>
 
-                        <div class="mb-2">
-                            <small class="text-muted">Secondary Color:</small>
-                            <input type="text" class="form-control form-control-sm" 
-                                   @bind="colorSettings.SecondaryColor" placeholder="#005299" />
+                        <div class="color-input-wrapper">
+                            <label for="surfaceAltColor">Surface Alt (Headers/Footers)</label>
+                            <input type="color" class="color-input" id="surfaceAltColor"
+                                   @bind="colorSettings.SurfaceAltColor" />
                         </div>
 
-                        <div class="mb-2">
-                            <small class="text-muted">Accent Color:</small>
-                            <input type="text" class="form-control form-control-sm" 
-                                   @bind="colorSettings.AccentColor" placeholder="#003d7a" />
+                        <div class="color-input-wrapper">
+                            <label for="inputBgColor">Input Background</label>
+                            <input type="color" class="color-input" id="inputBgColor"
+                                   @bind="colorSettings.InputBgColor" />
                         </div>
 
-                        <div class="mb-2">
-                            <small class="text-muted">Text Color:</small>
-                            <input type="text" class="form-control form-control-sm" 
-                                   @bind="colorSettings.TextColor" placeholder="#212529" />
-                        </div>
-
-                        <div class="mb-2">
-                            <small class="text-muted">Light Background:</small>
-                            <input type="text" class="form-control form-control-sm" 
-                                   @bind="colorSettings.LightBgColor" placeholder="#f8f9fa" />
-                        </div>
-
-                        <div class="mb-2">
-                            <small class="text-muted">Hero Badge Background:</small>
-                            <input type="text" class="form-control form-control-sm" 
-                                   @bind="colorSettings.HeroBadgeColor" placeholder="#0056b3" />
-                        </div>
-
-                        <div class="mb-2">
-                            <small class="text-muted">Button Color:</small>
-                            <input type="text" class="form-control form-control-sm" 
-                                   @bind="colorSettings.ButtonColor" placeholder="#0066CC" />
+                        <div class="color-input-wrapper">
+                            <label for="borderColor">Border Color</label>
+                            <input type="color" class="color-input" id="borderColor"
+                                   @bind="colorSettings.BorderColor" />
                         </div>
                     </div>
+
+                    @if (showAdvanced)
+                    {
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <small class="text-muted">Primary Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.PrimaryColor" placeholder="#0066CC" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Secondary Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.SecondaryColor" placeholder="#005299" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Accent Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.AccentColor" placeholder="#003d7a" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Text Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.TextColor" placeholder="#212529" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Background:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.LightBgColor" placeholder="#f8f9fa" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Hero Badge Background:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.HeroBadgeColor" placeholder="#0056b3" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Button Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.ButtonColor" placeholder="#0066CC" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Surface Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.SurfaceColor" placeholder="#ffffff" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Surface Alt:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.SurfaceAltColor" placeholder="#f8f9fa" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Input Background:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.InputBgColor" placeholder="#ffffff" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Border Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.BorderColor" placeholder="#dee2e6" />
+                            </div>
+                        </div>
+                    }
                 </div>
+
+                }
+                else
+                {
+                    <h6 class="mb-3">Dark Mode Palette</h6>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="color-input-wrapper">
+                            <label for="darkPrimaryColor">Primary Color (Links/Highlights)</label>
+                            <input type="color" class="color-input" id="darkPrimaryColor"
+                                   @bind="colorSettings.DarkPrimaryColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkSecondaryColor">Secondary Color</label>
+                            <input type="color" class="color-input" id="darkSecondaryColor"
+                                   @bind="colorSettings.DarkSecondaryColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkAccentColor">Accent Color</label>
+                            <input type="color" class="color-input" id="darkAccentColor"
+                                   @bind="colorSettings.DarkAccentColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkTextColor">Text Color</label>
+                            <input type="color" class="color-input" id="darkTextColor"
+                                   @bind="colorSettings.DarkTextColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkBgColor">Background Color</label>
+                            <input type="color" class="color-input" id="darkBgColor"
+                                   @bind="colorSettings.DarkBgColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkHeroBadgeColor">Hero Badge Background</label>
+                            <input type="color" class="color-input" id="darkHeroBadgeColor"
+                                   @bind="colorSettings.DarkHeroBadgeColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkButtonColor">Button Color</label>
+                            <input type="color" class="color-input" id="darkButtonColor"
+                                   @bind="colorSettings.DarkButtonColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkSurfaceColor">Surface Color (Cards/Modals)</label>
+                            <input type="color" class="color-input" id="darkSurfaceColor"
+                                   @bind="colorSettings.DarkSurfaceColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkSurfaceAltColor">Surface Alt (Headers/Footers)</label>
+                            <input type="color" class="color-input" id="darkSurfaceAltColor"
+                                   @bind="colorSettings.DarkSurfaceAltColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkInputBgColor">Input Background</label>
+                            <input type="color" class="color-input" id="darkInputBgColor"
+                                   @bind="colorSettings.DarkInputBgColor" />
+                        </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkBorderColor">Border Color</label>
+                            <input type="color" class="color-input" id="darkBorderColor"
+                                   @bind="colorSettings.DarkBorderColor" />
+                        </div>
+                    </div>
+
+                    @if (showAdvanced)
+                    {
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <small class="text-muted">Primary Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkPrimaryColor" placeholder="#569cd6" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Secondary Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkSecondaryColor" placeholder="#4f8cc4" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Accent Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkAccentColor" placeholder="#9cdcfe" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Text Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkTextColor" placeholder="#d4d4d4" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Background:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkBgColor" placeholder="#1e1e1e" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Hero Badge Background:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkHeroBadgeColor" placeholder="#2d2d30" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Button Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkButtonColor" placeholder="#569cd6" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Surface Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkSurfaceColor" placeholder="#252526" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Surface Alt:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkSurfaceAltColor" placeholder="#2d2d30" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Input Background:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkInputBgColor" placeholder="#3c3c3c" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Border Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkBorderColor" placeholder="#3e3e42" />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                }
 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary me-2">
@@ -198,25 +519,47 @@
                 
                 <p class="mb-2"><small class="text-muted">Your site will update with these colors immediately:</small></p>
 
-                <div class="preview-card" style="background-color: @colorSettings.PrimaryColor; color: white; padding: 1rem;">
-                    <strong>Sample Header (Primary Color)</strong>
-                </div>
+                <div class="theme-preview" style="@GetPreviewCssVars()">
+                    <div class="preview-navbar">
+                        <div class="brand">N.E. Plumbing</div>
+                        <div class="nav-actions">
+                            <a class="preview-link" href="javascript:void(0)">Services</a>
+                            <a class="preview-link" href="javascript:void(0)">Contact</a>
+                            <button type="button" class="preview-btn-outline">Outline</button>
+                            <button type="button" class="preview-btn-primary">Primary</button>
+                        </div>
+                    </div>
+                    <div class="preview-content">
+                        <div class="preview-surface">
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; flex-wrap: wrap;">
+                                <div>
+                                    <strong>Headline</strong>
+                                    <span class="preview-badge">Hero Badge</span>
+                                    <div class="mt-1">
+                                        <small>
+                                            Preview text and a <a class="preview-link" href="javascript:void(0)">link</a>.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="preview-card">
-                    <p>Regular text will use color: <code>@colorSettings.TextColor</code></p>
-                    <span class="hero-badge" style="background-color: @colorSettings.HeroBadgeColor; color: white; padding: 0.5rem 1rem; border-radius: 2rem; display: inline-block;">
-                        Hero Badge
-                    </span>
-                </div>
+                        <div class="preview-surface">
+                            <label class="form-label">Sample input</label>
+                            <input class="preview-input" placeholder="Type here..." />
+                            <div class="mt-3 d-flex gap-2">
+                                <button type="button" class="preview-btn-primary">Submit</button>
+                                <button type="button" class="preview-btn-outline">Cancel</button>
+                            </div>
+                        </div>
 
-                <div class="preview-card">
-                    <button class="btn btn-sm" style="background-color: @colorSettings.ButtonColor; color: white; border: none;">
-                        Sample Button
-                    </button>
-                </div>
-
-                <div class="preview-card" style="background-color: @colorSettings.LightBgColor;">
-                    <p>Light background for cards and containers</p>
+                        <div class="preview-surface" style="margin-bottom: 0;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Card / panel</span>
+                                <span style="color: var(--secondary-color); font-weight: 600;">Secondary</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         }
@@ -230,6 +573,177 @@
 @code {
     private ColorSettings? colorSettings;
     private string message = "";
+    private string activePalette = "light";
+    private bool showAdvanced;
+
+    private string selectedPresetId = "default";
+
+    private void SetLightPalette() => activePalette = "light";
+    private void SetDarkPalette() => activePalette = "dark";
+
+    private sealed record ThemePreset(
+        string Id,
+        string Name,
+        string Primary,
+        string Secondary,
+        string Accent,
+        string Text,
+        string Background,
+        string HeroBadge,
+        string Button,
+        string Surface,
+        string SurfaceAlt,
+        string InputBg,
+        string Border);
+
+    private IReadOnlyList<ThemePreset> GetPresetsForActivePalette()
+    {
+        if (activePalette == "light")
+        {
+            return new List<ThemePreset>
+            {
+                new(
+                    "default",
+                    "Default (N.E. Plumbing)",
+                    "#0066CC",
+                    "#005299",
+                    "#003d7a",
+                    "#212529",
+                    "#f8f9fa",
+                    "#0056b3",
+                    "#0066CC",
+                    "#ffffff",
+                    "#f8f9fa",
+                    "#ffffff",
+                    "#dee2e6"),
+                new(
+                    "neutral",
+                    "Neutral (clean + minimal)",
+                    "#0d6efd",
+                    "#6c757d",
+                    "#0d6efd",
+                    "#212529",
+                    "#f8f9fa",
+                    "#0d6efd",
+                    "#0d6efd",
+                    "#ffffff",
+                    "#f8f9fa",
+                    "#ffffff",
+                    "#dee2e6"),
+            };
+        }
+
+        return new List<ThemePreset>
+        {
+            new(
+                "default",
+                "Default Dark (VS-style)",
+                "#569cd6",
+                "#4f8cc4",
+                "#9cdcfe",
+                "#d4d4d4",
+                "#1e1e1e",
+                "#2d2d30",
+                "#569cd6",
+                "#252526",
+                "#2d2d30",
+                "#3c3c3c",
+                "#3e3e42"),
+            new(
+                "oled",
+                "OLED Dark (deeper blacks)",
+                "#6cb6ff",
+                "#8b949e",
+                "#6cb6ff",
+                "#e6edf3",
+                "#0d1117",
+                "#161b22",
+                "#6cb6ff",
+                "#161b22",
+                "#0d1117",
+                "#0d1117",
+                "#30363d"),
+        };
+    }
+
+    private void ApplySelectedPreset()
+    {
+        if (colorSettings is null)
+        {
+            return;
+        }
+
+        var preset = GetPresetsForActivePalette().FirstOrDefault(p => p.Id == selectedPresetId)
+            ?? GetPresetsForActivePalette().First();
+
+        if (activePalette == "light")
+        {
+            colorSettings.PrimaryColor = preset.Primary;
+            colorSettings.SecondaryColor = preset.Secondary;
+            colorSettings.AccentColor = preset.Accent;
+            colorSettings.TextColor = preset.Text;
+            colorSettings.LightBgColor = preset.Background;
+            colorSettings.HeroBadgeColor = preset.HeroBadge;
+            colorSettings.ButtonColor = preset.Button;
+            colorSettings.SurfaceColor = preset.Surface;
+            colorSettings.SurfaceAltColor = preset.SurfaceAlt;
+            colorSettings.InputBgColor = preset.InputBg;
+            colorSettings.BorderColor = preset.Border;
+        }
+        else
+        {
+            colorSettings.DarkPrimaryColor = preset.Primary;
+            colorSettings.DarkSecondaryColor = preset.Secondary;
+            colorSettings.DarkAccentColor = preset.Accent;
+            colorSettings.DarkTextColor = preset.Text;
+            colorSettings.DarkBgColor = preset.Background;
+            colorSettings.DarkHeroBadgeColor = preset.HeroBadge;
+            colorSettings.DarkButtonColor = preset.Button;
+            colorSettings.DarkSurfaceColor = preset.Surface;
+            colorSettings.DarkSurfaceAltColor = preset.SurfaceAlt;
+            colorSettings.DarkInputBgColor = preset.InputBg;
+            colorSettings.DarkBorderColor = preset.Border;
+        }
+    }
+
+    private string GetPreviewCssVars()
+    {
+        if (colorSettings is null)
+        {
+            return string.Empty;
+        }
+
+        if (activePalette == "light")
+        {
+            return $"--primary-color:{colorSettings.PrimaryColor};" +
+                   $"--secondary-color:{colorSettings.SecondaryColor};" +
+                   $"--accent-color:{colorSettings.AccentColor};" +
+                   $"--text-color:{colorSettings.TextColor};" +
+                   $"--page-bg-color:{colorSettings.LightBgColor};" +
+                   $"--hero-badge-color:{colorSettings.HeroBadgeColor};" +
+                   $"--button-color:{colorSettings.ButtonColor};" +
+                   $"--surface-color:{colorSettings.SurfaceColor};" +
+                   $"--surface-alt-color:{colorSettings.SurfaceAltColor};" +
+                   $"--input-bg-color:{colorSettings.InputBgColor};" +
+                   $"--bs-border-color:{colorSettings.BorderColor};" +
+                   $"--bs-link-color:{colorSettings.PrimaryColor};" +
+                   $"--bs-link-hover-color:{colorSettings.AccentColor};";
+        }
+
+        return $"--primary-color:{colorSettings.DarkPrimaryColor};" +
+               $"--secondary-color:{colorSettings.DarkSecondaryColor};" +
+               $"--accent-color:{colorSettings.DarkAccentColor};" +
+               $"--text-color:{colorSettings.DarkTextColor};" +
+               $"--page-bg-color:{colorSettings.DarkBgColor};" +
+               $"--hero-badge-color:{colorSettings.DarkHeroBadgeColor};" +
+               $"--button-color:{colorSettings.DarkButtonColor};" +
+               $"--surface-color:{colorSettings.DarkSurfaceColor};" +
+               $"--surface-alt-color:{colorSettings.DarkSurfaceAltColor};" +
+               $"--input-bg-color:{colorSettings.DarkInputBgColor};" +
+               $"--bs-border-color:{colorSettings.DarkBorderColor};" +
+               $"--bs-link-color:{colorSettings.DarkPrimaryColor};" +
+               $"--bs-link-hover-color:{colorSettings.DarkAccentColor};";
+    }
 
     protected override async Task OnInitializedAsync()
     {

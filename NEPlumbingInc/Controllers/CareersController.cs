@@ -1,0 +1,89 @@
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using NEPlumbingInc.Models;
+using NEPlumbingInc.Services;
+
+namespace NEPlumbingInc.Controllers;
+
+public class CareersController(IMessageService messageService, IResumeStorageService resumeStorageService) : Controller
+{
+    private readonly IMessageService _messageService = messageService;
+    private readonly IResumeStorageService _resumeStorageService = resumeStorageService;
+
+    [HttpPost("/careers/submit")]
+    [RequestFormLimits(MultipartBodyLengthLimit = 10_485_760)]
+    [RequestSizeLimit(10_485_760)]
+    public async Task<IActionResult> Submit([FromForm] JobApplicationFormModel form, [FromForm] IFormFile? resume)
+    {
+        try
+        {
+            var messageText = BuildApplicationMessage(form);
+
+            var messageForm = new MessageFormModel
+            {
+                Name = form.Name,
+                Email = form.Email,
+                Phone = form.Phone,
+                Message = messageText
+            };
+
+            var created = await _messageService.CreateMessageAsync(messageForm, isSpecialOffer: false);
+
+            if (resume is not null && resume.Length > 0)
+            {
+                if (!IsAllowedResumeFile(resume.FileName))
+                    return Redirect("/careers?error=1");
+
+                if (resume.Length > 10_485_760)
+                    return Redirect("/careers?error=1");
+
+                var uploaded = await _resumeStorageService.UploadResumeAsync(created.Id, resume, HttpContext.RequestAborted);
+                await _messageService.AttachResumeAsync(created.Id, uploaded, HttpContext.RequestAborted);
+            }
+
+            return Redirect("/careers?sent=1");
+        }
+        catch
+        {
+            return Redirect("/careers?error=1");
+        }
+    }
+
+    private static bool IsAllowedResumeFile(string fileName)
+    {
+        var ext = Path.GetExtension(fileName);
+        if (string.IsNullOrWhiteSpace(ext)) return false;
+
+        return ext.Equals(".pdf", StringComparison.OrdinalIgnoreCase)
+               || ext.Equals(".doc", StringComparison.OrdinalIgnoreCase)
+               || ext.Equals(".docx", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string BuildApplicationMessage(JobApplicationFormModel form)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("Job Application");
+        sb.AppendLine();
+
+        if (!string.IsNullOrWhiteSpace(form.Position))
+            sb.AppendLine($"Position interested in: {form.Position}");
+
+        if (!string.IsNullOrWhiteSpace(form.YearsExperience))
+            sb.AppendLine($"Years of experience: {form.YearsExperience}");
+
+        sb.AppendLine($"Licensed/Certified: {(form.LicensedOrCertified ? "Yes" : "No")}");
+
+        if (!string.IsNullOrWhiteSpace(form.Availability))
+            sb.AppendLine($"Availability: {form.Availability}");
+
+        if (!string.IsNullOrWhiteSpace(form.PreferredContact))
+            sb.AppendLine($"Preferred contact method/time: {form.PreferredContact}");
+
+        sb.AppendLine();
+        sb.AppendLine("Additional details:");
+        sb.AppendLine(string.IsNullOrWhiteSpace(form.AdditionalDetails) ? "(none provided)" : form.AdditionalDetails.Trim());
+
+        return sb.ToString().TrimEnd();
+    }
+}

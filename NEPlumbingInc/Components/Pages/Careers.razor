@@ -1,0 +1,154 @@
+@page "/careers"
+@attribute [AllowAnonymous]
+
+@inject NavigationManager NavigationManager
+@inject ICareersPageSettingsService CareersPageSettingsService
+
+<PageTitle>Careers - N.E. Plumbing Inc.</PageTitle>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <h1 class="mb-3">Careers</h1>
+                    <p class="text-muted mb-4">
+                        We’re growing and looking for skilled, reliable plumbers to join N.E. Plumbing Inc.
+                        If you take pride in your work and want to be part of a team that values professionalism and quality,
+                        we’d love to hear from you.
+                    </p>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <h5 class="mb-2">What We’re Looking For</h5>
+                            <ul class="mb-0">
+                                @foreach (var item in GetBulletItems(settings?.LookingForText))
+                                {
+                                    <li>@item</li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="mb-2">Helpful To Include</h5>
+                            <ul class="mb-0">
+                                @foreach (var item in GetBulletItems(settings?.HelpfulToIncludeText))
+                                {
+                                    <li>@item</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    @if (showSuccess)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            Thanks for applying — we received your application and will reach out soon.
+                        </div>
+                    }
+
+                    @if (showError)
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            Something went wrong submitting your application. Please try again.
+                        </div>
+                    }
+
+                    <form method="post" action="/careers/submit" class="mt-4" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Full name</label>
+                                <input class="form-control" name="Name" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input class="form-control" name="Email" type="email" required />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Phone (optional)</label>
+                                <input class="form-control" name="Phone" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Position interested in (optional)</label>
+                                <input class="form-control" name="Position" placeholder="Service Plumber, Apprentice, Journeyman, etc." />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Years of experience (optional)</label>
+                                <input class="form-control" name="YearsExperience" placeholder="e.g., 3" />
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="licensedOrCertified" name="LicensedOrCertified" value="true" />
+                                    <label class="form-check-label" for="licensedOrCertified">
+                                        Licensed/Certified (if applicable)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Availability (optional)</label>
+                                <input class="form-control" name="Availability" placeholder="Weekdays, weekends, start date, etc." />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Best way/time to contact you (optional)</label>
+                                <input class="form-control" name="PreferredContact" placeholder="Call after 5pm, text anytime, etc." />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Additional details (optional)</label>
+                                <textarea class="form-control" name="AdditionalDetails" rows="5" placeholder="Tell us about your experience, what you’re looking for, and anything else we should know."></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Resume (optional)</label>
+                                <input class="form-control" type="file" name="resume" accept=".pdf,.doc,.docx" />
+                                <div class="form-text">Accepted: PDF, DOC, DOCX (max 10MB).</div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid d-sm-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Submit Application</button>
+                            <a class="btn btn-outline-secondary" href="/messages">General Contact</a>
+                        </div>
+                    </form>
+
+                    <hr class="my-4" />
+
+                    <p class="small text-muted mb-0">
+                        Prefer to call? <a href="tel:8016413246">(801) 641-3246</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool showSuccess;
+    private bool showError;
+    private CareersPageSettings? settings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        settings = await CareersPageSettingsService.GetSettingsAsync();
+
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        showSuccess = query["sent"] == "1";
+        showError = query["error"] == "1";
+    }
+
+    private static IEnumerable<string> GetBulletItems(string? newlineDelimitedText)
+    {
+        if (string.IsNullOrWhiteSpace(newlineDelimitedText))
+        {
+            return Array.Empty<string>();
+        }
+
+        return newlineDelimitedText
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x));
+    }
+}

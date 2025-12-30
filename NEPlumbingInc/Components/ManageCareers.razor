@@ -1,0 +1,143 @@
+@inject ICareersPageSettingsService CareersPageSettingsService
+@rendermode InteractiveServer
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h5 class="mb-0">Manage Careers</h5>
+    </div>
+    <div class="card-body">
+        @if (settings == null)
+        {
+            <p class="text-muted mb-0">Loading careers settings...</p>
+        }
+        else
+        {
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">@errorMessage</div>
+            }
+
+            @if (showSaved)
+            {
+                <div class="alert alert-success" role="alert">Saved.</div>
+            }
+
+            <form @onsubmit="SaveAsync">
+                <div class="mb-4">
+                    <h6 class="mb-2">Hiring Footer Block</h6>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="isHiringEnabled" @bind="settings.IsHiringEnabled" />
+                        <label class="form-check-label" for="isHiringEnabled">
+                            Show “Now Hiring” in the footer
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">What We’re Looking For</label>
+                        <textarea class="form-control" rows="8" @bind="settings.LookingForText"></textarea>
+                        <div class="form-text">One bullet per line.</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Helpful To Include</label>
+                        <textarea class="form-control" rows="8" @bind="settings.HelpfulToIncludeText"></textarea>
+                        <div class="form-text">One bullet per line.</div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <h6 class="mb-3">Preview</h6>
+                <div class="mb-3">
+                    <span class="me-2">Footer “Now Hiring”:</span>
+                    @if (settings.IsHiringEnabled)
+                    {
+                        <span class="badge bg-success">On</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Off</span>
+                    }
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="mb-2">What We’re Looking For</h6>
+                        <ul class="mb-0">
+                            @foreach (var item in GetBulletItems(settings.LookingForText))
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="mb-2">Helpful To Include</h6>
+                        <ul class="mb-0">
+                            @foreach (var item in GetBulletItems(settings.HelpfulToIncludeText))
+                            {
+                                <li>@item</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary" disabled="@isSaving">
+                        @(isSaving ? "Saving..." : "Save")
+                    </button>
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+@code {
+    private CareersPageSettings? settings;
+    private bool isSaving;
+    private bool showSaved;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        settings = await CareersPageSettingsService.GetSettingsAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        if (settings == null) return;
+
+        isSaving = true;
+        showSaved = false;
+        errorMessage = null;
+
+        try
+        {
+            await CareersPageSettingsService.UpdateSettingsAsync(settings);
+            settings = await CareersPageSettingsService.GetSettingsAsync();
+            showSaved = true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private static IEnumerable<string> GetBulletItems(string? newlineDelimitedText)
+    {
+        if (string.IsNullOrWhiteSpace(newlineDelimitedText))
+        {
+            return Array.Empty<string>();
+        }
+
+        return newlineDelimitedText
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+            .Select(x => x.Trim())
+            .Where(x => !string.IsNullOrWhiteSpace(x));
+    }
+}
