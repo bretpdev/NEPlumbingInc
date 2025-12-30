@@ -25,6 +25,10 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
+    - name: Clean workspace
+      run: rm -rf ./bin ./obj ./publish
+      working-directory: ./NEPlumbingInc
+
     # 3️⃣ Restore dependencies
     - name: Restore dependencies
       run: dotnet restore
@@ -33,7 +37,6 @@ jobs:
     # 4️⃣ Build and publish
     - name: Build and Publish
       run: |
-        rm -rf ./bin ./obj ./publish
         dotnet publish --configuration Release --no-restore --output ./publish
       working-directory: ./NEPlumbingInc
 
