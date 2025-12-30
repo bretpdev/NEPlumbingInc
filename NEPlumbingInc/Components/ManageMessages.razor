@@ -132,7 +132,20 @@
                     }
                     <p><strong>Date:</strong> @selectedMessage.CreatedAt.ToLocalTime().ToString("g")</p>
                     <hr />
-                    <p>@selectedMessage.Message</p>
+                    @if (IsJobApplication(selectedMessage))
+                    {
+                        var items = BuildJobApplicationBulletItems(selectedMessage.Message);
+                        <ul class="mb-0">
+                            @foreach (var item in items)
+                            {
+                                <li style="white-space: pre-wrap;">@item</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="mb-0" style="white-space: pre-wrap;">@selectedMessage.Message</p>
+                    }
                 </div>
             </div>
         </div>
@@ -147,6 +160,46 @@
     private static bool IsJobApplication(MessageViewModel message)
         => !string.IsNullOrWhiteSpace(message.Message)
            && message.Message.TrimStart().StartsWith("Job Application", StringComparison.OrdinalIgnoreCase);
+
+    private static IReadOnlyList<string> BuildJobApplicationBulletItems(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message)) return Array.Empty<string>();
+
+        var normalized = message.Replace("\r\n", "\n").Replace("\r", "\n");
+        var lines = normalized.Split('\n');
+
+        var items = new List<string>();
+        var additionalDetailsLines = new List<string>();
+        var inAdditionalDetails = false;
+
+        foreach (var rawLine in lines)
+        {
+            var line = rawLine.Trim();
+            if (string.IsNullOrWhiteSpace(line)) continue;
+
+            if (line.Equals("Job Application", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            if (line.Equals("Additional details:", StringComparison.OrdinalIgnoreCase))
+            {
+                inAdditionalDetails = true;
+                continue;
+            }
+
+            if (inAdditionalDetails)
+                additionalDetailsLines.Add(line);
+            else
+                items.Add(line);
+        }
+
+        if (additionalDetailsLines.Count > 0)
+        {
+            var details = string.Join("\n", additionalDetailsLines);
+            items.Add($"Additional details: {details}");
+        }
+
+        return items;
+    }
 
     protected override async Task OnInitializedAsync() => 
         await LoadMessages();
