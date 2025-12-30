@@ -1,15 +1,20 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NEPlumbingInc.Services;
 
 namespace NEPlumbingInc.Controllers;
 
 [Authorize(Roles = "Admin")]
 [ApiExplorerSettings(IgnoreApi = true)]
-public class AdminResumesController(IMessageService messageService, IResumeStorageService resumeStorageService) : Controller
+public class AdminResumesController(
+    IMessageService messageService,
+    IResumeStorageService resumeStorageService,
+    ILogger<AdminResumesController> logger) : Controller
 {
     private readonly IMessageService _messageService = messageService;
     private readonly IResumeStorageService _resumeStorageService = resumeStorageService;
+    private readonly ILogger<AdminResumesController> _logger = logger;
 
     [HttpGet("/admin/messages/{id:int}/resume")]
     public async Task<IActionResult> Download(int id, CancellationToken cancellationToken)
@@ -27,7 +32,22 @@ public class AdminResumesController(IMessageService messageService, IResumeStora
         }
         catch (FileNotFoundException)
         {
+            _logger.LogWarning(
+                "Resume blob not found. MessageId={MessageId} BlobName={BlobName} TraceId={TraceId}",
+                id,
+                message.ResumeBlobName,
+                HttpContext.TraceIdentifier);
             return NotFound();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Error downloading resume blob. MessageId={MessageId} BlobName={BlobName} TraceId={TraceId}",
+                id,
+                message.ResumeBlobName,
+                HttpContext.TraceIdentifier);
+            return StatusCode(500);
         }
     }
 }

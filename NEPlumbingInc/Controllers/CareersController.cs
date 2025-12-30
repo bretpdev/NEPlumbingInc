@@ -1,21 +1,28 @@
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NEPlumbingInc.Models;
 using NEPlumbingInc.Services;
 
 namespace NEPlumbingInc.Controllers;
 
-public class CareersController(IMessageService messageService, IResumeStorageService resumeStorageService) : Controller
+public class CareersController(
+    IMessageService messageService,
+    IResumeStorageService resumeStorageService,
+    ILogger<CareersController> logger) : Controller
 {
     private readonly IMessageService _messageService = messageService;
     private readonly IResumeStorageService _resumeStorageService = resumeStorageService;
+    private readonly ILogger<CareersController> _logger = logger;
 
     [HttpPost("/careers/submit")]
     [RequestFormLimits(MultipartBodyLengthLimit = 10_485_760)]
     [RequestSizeLimit(10_485_760)]
     public async Task<IActionResult> Submit([FromForm] JobApplicationFormModel form, [FromForm] IFormFile? resume)
     {
+        var traceId = HttpContext.TraceIdentifier;
+
         try
         {
             var messageText = BuildApplicationMessage(form);
@@ -33,10 +40,25 @@ public class CareersController(IMessageService messageService, IResumeStorageSer
             if (resume is not null && resume.Length > 0)
             {
                 if (!IsAllowedResumeFile(resume.FileName))
+                {
+                    _logger.LogWarning(
+                        "Rejected resume upload due to extension. TraceId={TraceId} MessageId={MessageId} FileName={FileName}",
+                        traceId,
+                        created.Id,
+                        resume.FileName);
                     return Redirect("/careers?error=1");
+                }
 
                 if (resume.Length > 10_485_760)
+                {
+                    _logger.LogWarning(
+                        "Rejected resume upload due to size. TraceId={TraceId} MessageId={MessageId} FileName={FileName} SizeBytes={SizeBytes}",
+                        traceId,
+                        created.Id,
+                        resume.FileName,
+                        resume.Length);
                     return Redirect("/careers?error=1");
+                }
 
                 var uploaded = await _resumeStorageService.UploadResumeAsync(created.Id, resume, HttpContext.RequestAborted);
                 await _messageService.AttachResumeAsync(created.Id, uploaded, HttpContext.RequestAborted);
@@ -44,9 +66,17 @@ public class CareersController(IMessageService messageService, IResumeStorageSer
 
             return Redirect("/careers?sent=1");
         }
-        catch
+        catch (Exception ex)
         {
-            return Redirect("/careers?error=1");
+            _logger.LogError(
+                ex,
+                "Error submitting careers application. TraceId={TraceId} HasResume={HasResume} ResumeFileName={ResumeFileName} ResumeSizeBytes={ResumeSizeBytes}",
+                traceId,
+                resume is not null && resume.Length > 0,
+                resume?.FileName,
+                resume?.Length);
+
+            return Redirect($"/careers?error=1&trace={Uri.EscapeDataString(traceId)}");
         }
     }
 
