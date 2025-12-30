@@ -16,18 +16,17 @@
                 <div class="card-body p-5">
                     @if (showSuccess)
                     {
-                        <div class="alert alert-success text-center mb-4">
+                        <div class="alert alert-success text-center mb-0">
                             Thanks! Your offer request was submitted.
                         </div>
                     }
                     else if (showError)
                     {
-                        <div class="alert alert-danger text-center mb-4">
+                        <div class="alert alert-danger text-center mb-0">
                             An error occurred while submitting your request.
                         </div>
                     }
-
-                    @if (isLoading)
+                    else if (isLoading)
                     {
                         <p class="text-muted mb-0">Loading offer...</p>
                     }
@@ -37,17 +36,20 @@
                         {
                             <div class="alert alert-warning text-center mb-4">@statusMessage</div>
                         }
-                        <div class="text-center">
-                            <h2 class="mb-3">@noOfferHeading</h2>
-                            @if (!string.IsNullOrWhiteSpace(noOfferDescription))
-                            {
-                                <p class="text-muted mb-3">@noOfferDescription</p>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(newsletterText))
-                            {
-                                <p class="mb-0">@newsletterText</p>
-                            }
-                        </div>
+                        @if (string.Equals(statusMessage, "This offer is no longer available.", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <div class="text-center">
+                                <h2 class="mb-3">@noOfferHeading</h2>
+                                @if (!string.IsNullOrWhiteSpace(noOfferDescription))
+                                {
+                                    <p class="text-muted mb-3">@noOfferDescription</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(newsletterText))
+                                {
+                                    <p class="mb-0">@newsletterText</p>
+                                }
+                            </div>
+                        }
                     }
                     else
                     {
@@ -127,6 +129,12 @@
 
         showSuccess = query["sent"] == "1";
         showError = query["error"] == "1";
+
+        if (showSuccess || showError)
+        {
+            isLoading = false;
+            return;
+        }
 
         settings = await SpecialOfferSettingsService.GetSettingsAsync();
         noOfferHeading = settings?.NoOfferHeading;

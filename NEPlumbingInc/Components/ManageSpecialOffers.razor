@@ -335,7 +335,7 @@
                         <i class="fas fa-undo me-2"></i>Reset to Defaults
                     </button>
                     <button type="button" class="btn btn-danger" @onclick="ResetOfferCount">
-                        <i class="fas fa-sync me-2"></i>Reset Offer Count
+                        <i class="fas fa-sync me-2"></i>Reset Offer Claims
                     </button>
                 </div>
 
@@ -418,12 +418,12 @@
 
     private async Task ResetOfferCount()
     {
-        if (await ConfirmAction("Are you sure you want to reset the offer count? This will clear all recorded offers."))
+        if (await ConfirmAction("Are you sure you want to reset offer claims? This clears all recorded offer clicks/claims, so customers may claim the offer again."))
         {
             try
             {
                 await SpecialOfferService.ResetOfferCountAsync();
-                message = "Offer count has been reset!";
+                message = "Offer claims have been reset!";
                 isError = false;
                 offersGiven = 0;
 
