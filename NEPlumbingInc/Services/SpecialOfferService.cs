@@ -10,6 +10,7 @@ public interface ISpecialOfferService
     Task<(bool hasAccess, string message)> CheckOfferAccessAsync(string? ipAddress);
     Task<int> GetOfferCountAsync();
     Task ResetOfferCountAsync();
+    Task StartNewCampaignAsync();
 }
 
 public class SpecialOfferService(AppDbContext context, IHttpContextAccessor httpContextAccessor, ISpecialOfferSettingsService settingsService) : ISpecialOfferService
@@ -17,6 +18,12 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
     private readonly AppDbContext _context = context;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly ISpecialOfferSettingsService _settingsService = settingsService;
+
+    private async Task<Guid> GetCampaignIdAsync()
+    {
+        var settings = await _settingsService.GetSettingsAsync();
+        return settings.CampaignId;
+    }
 
     public async Task<bool> IsOfferAvailableAsync()
     {
@@ -26,17 +33,20 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
         if (!settings.IsEnabled)
             return false;
 
-        var clickCount = await _context.SpecialOffers.CountAsync();
+        var clickCount = await _context.SpecialOffers
+            .CountAsync(o => o.CampaignId == settings.CampaignId);
         return clickCount < settings.MaxOffersLimit;
     }
 
     public async Task<bool> HasClickedBeforeAsync(string? ipAddress)
     {
         if (string.IsNullOrEmpty(ipAddress)) return false;
+
+        var campaignId = await GetCampaignIdAsync();
         
         // Check if they've not only clicked but also submitted the form
         var offer = await _context.SpecialOffers
-            .FirstOrDefaultAsync(o => o.IpAddress == ipAddress);
+            .FirstOrDefaultAsync(o => o.CampaignId == campaignId && o.IpAddress == ipAddress);
             
         return offer != null;
     }
@@ -55,8 +65,11 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
             return false;
         }
 
+        var campaignId = await GetCampaignIdAsync();
+
         var click = new SpecialOffer
         {
+            CampaignId = campaignId,
             ClickedAt = DateTime.UtcNow,
             IpAddress = ipAddress
         };
@@ -69,14 +82,16 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
     public async Task<bool> HasSubmittedFormAsync(string? ipAddress)
     {
         if (string.IsNullOrEmpty(ipAddress)) return false;
+        var campaignId = await GetCampaignIdAsync();
         return await _context.SpecialOffers
-            .AnyAsync(o => o.IpAddress == ipAddress && o.FormSubmitted);
+            .AnyAsync(o => o.CampaignId == campaignId && o.IpAddress == ipAddress && o.FormSubmitted);
     }
 
     public async Task<bool> RecordFormSubmissionAsync(string? ipAddress, MessageFormModel form)
     {
+        var campaignId = await GetCampaignIdAsync();
         var offer = await _context.SpecialOffers
-            .FirstOrDefaultAsync(o => o.IpAddress == ipAddress && !o.FormSubmitted);
+            .FirstOrDefaultAsync(o => o.CampaignId == campaignId && o.IpAddress == ipAddress && !o.FormSubmitted);
 
         if (offer == null) return false;
 
@@ -90,8 +105,10 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
         if (string.IsNullOrEmpty(ipAddress))
             return (false, "Unable to determine your location");
 
+        var campaignId = await GetCampaignIdAsync();
+
         var offer = await _context.SpecialOffers
-            .FirstOrDefaultAsync(o => o.IpAddress == ipAddress);
+            .FirstOrDefaultAsync(o => o.CampaignId == campaignId && o.IpAddress == ipAddress);
 
         if (offer == null)
             return (true, "Welcome to our special offer!");
@@ -104,7 +121,8 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
 
     public async Task<int> GetOfferCountAsync()
     {
-        return await _context.SpecialOffers.CountAsync();
+        var campaignId = await GetCampaignIdAsync();
+        return await _context.SpecialOffers.CountAsync(o => o.CampaignId == campaignId);
     }
 
     public async Task ResetOfferCountAsync()
@@ -112,5 +130,13 @@ public class SpecialOfferService(AppDbContext context, IHttpContextAccessor http
         var offers = await _context.SpecialOffers.ToListAsync();
         _context.SpecialOffers.RemoveRange(offers);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task StartNewCampaignAsync()
+    {
+        var settings = await _settingsService.GetSettingsAsync();
+        settings.CampaignId = Guid.NewGuid();
+        settings.UpdatedAt = DateTime.UtcNow;
+        await _settingsService.UpdateSettingsAsync(settings);
     }
 }

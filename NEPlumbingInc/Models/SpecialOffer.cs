@@ -3,6 +3,7 @@ namespace NEPlumbingInc.Models;
 public class SpecialOffer
 {
     public int Id { get; set; }
+    public Guid CampaignId { get; set; } = Guid.Empty;
     public string? IpAddress { get; set; }
     public DateTime ClickedAt { get; set; }
     public bool IsRead { get; set; }

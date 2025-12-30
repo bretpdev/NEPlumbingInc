@@ -29,6 +29,9 @@ public class SpecialOfferSettings
     [Required]
     public int MaxOffersLimit { get; set; } = 30;
 
+    // Identifies the current "offer campaign". When this changes, prior clicks/claims no longer block eligibility.
+    public Guid CampaignId { get; set; } = Guid.Empty;
+
     [Required]
     public string OfferTitle { get; set; } = "Exclusive Homeowner Offer";
 

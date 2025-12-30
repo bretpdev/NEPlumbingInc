@@ -334,6 +334,9 @@
                     <button type="button" class="btn btn-secondary me-2" @onclick="ResetSettings">
                         <i class="fas fa-undo me-2"></i>Reset to Defaults
                     </button>
+                    <button type="button" class="btn btn-outline-secondary me-2" @onclick="StartNewOffer">
+                        <i class="fas fa-sync me-2"></i>Start New Offer
+                    </button>
                     <button type="button" class="btn btn-danger" @onclick="ResetOfferCount">
                         <i class="fas fa-sync me-2"></i>Reset Offer Claims
                     </button>
@@ -434,6 +437,28 @@
             catch (Exception ex)
             {
                 message = $"Error resetting count: {ex.Message}";
+                isError = true;
+            }
+        }
+    }
+
+    private async Task StartNewOffer()
+    {
+        if (await ConfirmAction("Start a new offer? This makes everyone eligible again for the new offer campaign."))
+        {
+            try
+            {
+                await SpecialOfferService.StartNewCampaignAsync();
+                await LoadOfferCount();
+                message = "New offer campaign started!";
+                isError = false;
+
+                await Task.Delay(5000);
+                message = "";
+            }
+            catch (Exception ex)
+            {
+                message = $"Error starting new offer: {ex.Message}";
                 isError = true;
             }
         }

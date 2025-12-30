@@ -11,6 +11,9 @@ public class SpecialOfferSettingsService(AppDbContext context) : ISpecialOfferSe
 {
     private readonly AppDbContext _context = context;
 
+    private static Guid EnsureCampaignId(Guid campaignId)
+        => campaignId == Guid.Empty ? Guid.NewGuid() : campaignId;
+
     public async Task<SpecialOfferSettings> GetSettingsAsync()
     {
         var settings = await _context.SpecialOfferSettings.FirstOrDefaultAsync();
@@ -19,7 +22,15 @@ public class SpecialOfferSettingsService(AppDbContext context) : ISpecialOfferSe
         {
             // Create default settings if they don't exist
             settings = new SpecialOfferSettings();
+            settings.CampaignId = EnsureCampaignId(settings.CampaignId);
             _context.SpecialOfferSettings.Add(settings);
+            await _context.SaveChangesAsync();
+        }
+
+        if (settings.CampaignId == Guid.Empty)
+        {
+            settings.CampaignId = EnsureCampaignId(settings.CampaignId);
+            settings.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
 
@@ -47,6 +58,7 @@ public class SpecialOfferSettingsService(AppDbContext context) : ISpecialOfferSe
             existingSettings.NoOfferDescription = settings.NoOfferDescription;
             existingSettings.NewsletterText = settings.NewsletterText;
             existingSettings.MaxOffersLimit = settings.MaxOffersLimit;
+            existingSettings.CampaignId = EnsureCampaignId(settings.CampaignId);
             existingSettings.OfferTitle = settings.OfferTitle;
             existingSettings.OfferBody = settings.OfferBody;
             existingSettings.OfferFinePrint = settings.OfferFinePrint;
@@ -67,6 +79,7 @@ public class SpecialOfferSettingsService(AppDbContext context) : ISpecialOfferSe
         }
 
         var defaultSettings = new SpecialOfferSettings();
+        defaultSettings.CampaignId = EnsureCampaignId(defaultSettings.CampaignId);
         _context.SpecialOfferSettings.Add(defaultSettings);
         await _context.SaveChangesAsync();
     }
