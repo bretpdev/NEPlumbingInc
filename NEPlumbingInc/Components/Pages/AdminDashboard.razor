@@ -8,6 +8,13 @@
 
 <h3 class="mb-4">Admin Dashboard</h3>
 
+@if (!string.IsNullOrWhiteSpace(unreadCountError))
+{
+    <div class="alert alert-warning" role="alert">
+        Message unread count unavailable: @unreadCountError
+    </div>
+}
+
     <div class="col-12 mb-3">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -124,18 +131,27 @@
 
     private int unreadMessagesCount;
 
+    private string? unreadCountError;
+
     private PeriodicTimer? unreadTimer;
-    private CancellationTokenSource? unreadTimerCts;
 
     protected override async Task OnInitializedAsync()
     {
-        await RefreshUnreadMessagesCountAsync();
+        try
+        {
+            await RefreshUnreadMessagesCountAsync();
+        }
+        catch (Exception ex)
+        {
+            // If unread count fails (e.g., transient DB issue), keep the dashboard interactive.
+            unreadCountError = ex.Message;
+            unreadMessagesCount = 0;
+        }
 
         // Keep the badge up-to-date while the dashboard is open.
         // This avoids needing to open/collapse Messages just to refresh the count.
-        unreadTimerCts = new CancellationTokenSource();
         unreadTimer = new PeriodicTimer(TimeSpan.FromSeconds(15));
-        _ = PollUnreadMessagesCountAsync(unreadTimer, unreadTimerCts.Token);
+        _ = PollUnreadMessagesCountAsync(unreadTimer);
     }
 
     private void ToggleHomeContent() => showHomeContent = !showHomeContent;
@@ -157,36 +173,42 @@
     private async Task RefreshUnreadMessagesCountAsync()
     {
         unreadMessagesCount = await MessageService.GetUnreadCountAsync();
+        unreadCountError = null;
     }
 
-    private async Task PollUnreadMessagesCountAsync(PeriodicTimer timer, CancellationToken cancellationToken)
+    private async Task PollUnreadMessagesCountAsync(PeriodicTimer timer)
     {
         try
         {
-            while (await timer.WaitForNextTickAsync(cancellationToken))
+            while (await timer.WaitForNextTickAsync())
             {
                 await InvokeAsync(async () =>
                 {
-                    await RefreshUnreadMessagesCountAsync();
-                    StateHasChanged();
+                    try
+                    {
+                        await RefreshUnreadMessagesCountAsync();
+                        StateHasChanged();
+                    }
+                    catch (Exception ex)
+                    {
+                        unreadCountError = ex.Message;
+                        unreadMessagesCount = 0;
+                        StateHasChanged();
+                    }
                 });
             }
         }
-        catch (OperationCanceledException)
+        catch (Exception ex)
         {
-            // expected on dispose
+            // Don't crash the circuit if background polling fails.
+            unreadCountError = ex.Message;
+            unreadMessagesCount = 0;
         }
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (unreadTimerCts is not null)
-        {
-            await unreadTimerCts.CancelAsync();
-            unreadTimerCts.Dispose();
-            unreadTimerCts = null;
-        }
-
+        await Task.CompletedTask;
         unreadTimer?.Dispose();
         unreadTimer = null;
     }

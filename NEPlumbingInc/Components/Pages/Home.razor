@@ -16,16 +16,10 @@
 
     .hero-badge {
         background-color: var(--hero-badge-color);
-        color: white;
+        color: #ffffff;
         padding: 0.5rem 1rem;
         border-radius: 2rem;
         font-size: 0.9rem;
-    }
-
-    [data-dark-mode="true"] .hero-badge {
-        background-color: #1177bb !important;
-        color: #e0f0ff !important;
-        font-weight: 600;
     }
 
     .btn-primary {
@@ -45,14 +39,30 @@
     }
 
     .hero-image {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        height: auto;
         max-height: 600px;
-        width: 100%;
-        object-fit: cover;
+        width: auto;
+        object-fit: contain;
         border-radius: 1rem;
         border: none;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
         transition: transform 0.5s ease, box-shadow 0.5s ease;
         cursor: pointer;
+    }
+
+    @@media (max-width: 992px) {
+        .hero-image {
+            max-height: 420px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .hero-image {
+            max-height: 320px;
+        }
     }
 
     .hero-image:hover {
@@ -155,22 +165,18 @@
     .feature-badge {
         display: inline-flex;
         align-items: center;
-        background: rgba(0, 0, 0, 0.05);
+        background-color: var(--surface-alt-color);
+        border: 1px solid var(--bs-border-color);
         padding: 0.5rem 1rem;
         border-radius: 2rem;
         margin: 0.5rem;
-        color: #333;
+        color: var(--text-color);
         font-weight: 500;
-    }
-
-    [data-dark-mode="true"] .feature-badge {
-        background: #4a7ba7 !important;
-        color: #e0f0ff !important;
-        font-weight: 600;
     }
 
     .feature-badge i {
         margin-right: 0.5rem;
+        color: var(--primary-color);
     }
 
     .featured-services .card {
