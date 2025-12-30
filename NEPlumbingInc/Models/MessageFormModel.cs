@@ -11,6 +11,12 @@ public class MessageFormModel
 
     public string? Phone { get; set; }
 
+    public string? AddressLine1 { get; set; }
+    public string? AddressLine2 { get; set; }
+    public string? City { get; set; }
+    public string? State { get; set; }
+    public string? ZipCode { get; set; }
+
     [Required(ErrorMessage = "Message is required")]
     [StringLength(1000, ErrorMessage = "Message is too long")]
     public string Message { get; set; } = string.Empty;

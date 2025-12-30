@@ -12,6 +12,11 @@ public class SpecialOffer
     public string? Name { get; set; }
     public string? Email { get; set; }
     public string? Phone { get; set; }
+    public string? AddressLine1 { get; set; }
+    public string? AddressLine2 { get; set; }
+    public string? City { get; set; }
+    public string? State { get; set; }
+    public string? ZipCode { get; set; }
     public string? Message { get; set; }
     public const int MaxClicks = 30;
 
@@ -20,6 +25,11 @@ public class SpecialOffer
         Name = form.Name;
         Email = form.Email;
         Phone = form.Phone;
+        AddressLine1 = form.AddressLine1;
+        AddressLine2 = form.AddressLine2;
+        City = form.City;
+        State = form.State;
+        ZipCode = form.ZipCode;
         Message = form.Message;
         FormSubmitted = true;
         FormSubmittedAt = DateTime.UtcNow;

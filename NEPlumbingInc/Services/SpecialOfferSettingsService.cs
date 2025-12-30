@@ -62,6 +62,7 @@ public class SpecialOfferSettingsService(AppDbContext context) : ISpecialOfferSe
             existingSettings.OfferTitle = settings.OfferTitle;
             existingSettings.OfferBody = settings.OfferBody;
             existingSettings.OfferFinePrint = settings.OfferFinePrint;
+            existingSettings.RequireAddress = settings.RequireAddress;
             existingSettings.UpdatedAt = DateTime.UtcNow;
         }
 

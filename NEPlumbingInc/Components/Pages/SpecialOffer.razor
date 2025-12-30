@@ -87,6 +87,37 @@
                                 <input class="form-control" name="Phone" value="@form.Phone" />
                             </div>
 
+                            @if (settings?.RequireAddress == true)
+                            {
+                                <hr />
+                                <h5 class="mb-3">Mailing Address</h5>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Address line 1</label>
+                                    <input class="form-control" name="AddressLine1" value="@form.AddressLine1" required />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Address line 2 (optional)</label>
+                                    <input class="form-control" name="AddressLine2" value="@form.AddressLine2" />
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">City</label>
+                                        <input class="form-control" name="City" value="@form.City" required />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">State</label>
+                                        <input class="form-control" name="State" value="@form.State" required />
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">ZIP</label>
+                                        <input class="form-control" name="ZipCode" value="@form.ZipCode" required />
+                                    </div>
+                                </div>
+                            }
+
                             <div class="mb-3">
                                 <label class="form-label">Notes (optional)</label>
                                 <textarea class="form-control" name="Message" rows="4">@form.Message</textarea>

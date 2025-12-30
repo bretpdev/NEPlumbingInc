@@ -7,10 +7,12 @@ namespace NEPlumbingInc.Controllers;
 public class ContactController(
     IMessageService messageService,
     ISpecialOfferService specialOfferService,
+    ISpecialOfferSettingsService specialOfferSettingsService,
     IHttpContextAccessor httpContextAccessor) : Controller
 {
     private readonly IMessageService _messageService = messageService;
     private readonly ISpecialOfferService _specialOfferService = specialOfferService;
+    private readonly ISpecialOfferSettingsService _specialOfferSettingsService = specialOfferSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     [HttpPost("/messages/submit")]
@@ -51,6 +53,18 @@ public class ContactController(
     {
         try
         {
+            var settings = await _specialOfferSettingsService.GetSettingsAsync();
+            if (settings.RequireAddress)
+            {
+                if (string.IsNullOrWhiteSpace(form.AddressLine1)
+                    || string.IsNullOrWhiteSpace(form.City)
+                    || string.IsNullOrWhiteSpace(form.State)
+                    || string.IsNullOrWhiteSpace(form.ZipCode))
+                {
+                    return Redirect("/special-offer?error=1");
+                }
+            }
+
             await _messageService.CreateMessageAsync(form, isSpecialOffer: true);
 
             var submissionIp = ip

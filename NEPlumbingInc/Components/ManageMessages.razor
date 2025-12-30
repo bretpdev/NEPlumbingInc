@@ -120,6 +120,21 @@
                     {
                         <p><strong>Phone:</strong> @selectedMessage.Phone</p>
                     }
+                    @if (!string.IsNullOrWhiteSpace(selectedMessage.AddressLine1)
+                        || !string.IsNullOrWhiteSpace(selectedMessage.City)
+                        || !string.IsNullOrWhiteSpace(selectedMessage.State)
+                        || !string.IsNullOrWhiteSpace(selectedMessage.ZipCode))
+                    {
+                        <p class="mb-1"><strong>Address:</strong></p>
+                        <div class="mb-3" style="white-space: pre-wrap;">
+                            @selectedMessage.AddressLine1
+                            @if (!string.IsNullOrWhiteSpace(selectedMessage.AddressLine2))
+                            {
+                                <br />@selectedMessage.AddressLine2
+                            }
+                            <br />@selectedMessage.City, @selectedMessage.State @selectedMessage.ZipCode
+                        </div>
+                    }
                     @if (!string.IsNullOrWhiteSpace(selectedMessage.ResumeBlobName))
                     {
                         <p>

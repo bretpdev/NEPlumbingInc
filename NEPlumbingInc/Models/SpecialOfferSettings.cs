@@ -41,5 +41,7 @@ public class SpecialOfferSettings
     [Required]
     public string OfferFinePrint { get; set; } = "";
 
+    public bool RequireAddress { get; set; } = false;
+
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
