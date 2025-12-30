@@ -31,9 +31,8 @@ jobs:
     # 4️⃣ Build and publish
     - name: Build and Publish
       run: |
-        dotnet build --configuration Release --no-restore
-        rm -rf ./publish
-        dotnet publish --configuration Release --no-build --output ./publish
+        rm -rf ./bin ./obj ./publish
+        dotnet publish --configuration Release --output ./publish
       working-directory: ./NEPlumbingInc
 
     # 5️⃣ Login to Azure using service principal
