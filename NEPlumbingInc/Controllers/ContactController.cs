@@ -43,4 +43,29 @@ public class ContactController(
             return Redirect("/messages?error=1");
         }
     }
+
+    [HttpPost("/special-offer/claim")]
+    public async Task<IActionResult> ClaimSpecialOffer(
+        [FromForm] MessageFormModel form,
+        [FromForm] string? ip)
+    {
+        try
+        {
+            await _messageService.CreateMessageAsync(form, isSpecialOffer: true);
+
+            var submissionIp = ip
+                ?? _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+
+            if (!string.IsNullOrWhiteSpace(submissionIp))
+            {
+                await _specialOfferService.RecordFormSubmissionAsync(submissionIp, form);
+            }
+
+            return Redirect("/special-offer?sent=1");
+        }
+        catch
+        {
+            return Redirect("/special-offer?error=1");
+        }
+    }
 }

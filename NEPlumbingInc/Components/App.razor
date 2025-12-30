@@ -256,9 +256,9 @@
                     if (linkEl) {
                         const ip = data.ipAddress;
                         if (ip) {
-                            linkEl.href = '/messages?source=special-offer&ip=' + encodeURIComponent(ip);
+                            linkEl.href = '/special-offer?ip=' + encodeURIComponent(ip);
                         } else {
-                            linkEl.href = '/messages?source=special-offer';
+                            linkEl.href = '/special-offer';
                         }
                     }
                 } else {

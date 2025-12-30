@@ -29,5 +29,14 @@ public class SpecialOfferSettings
     [Required]
     public int MaxOffersLimit { get; set; } = 30;
 
+    [Required]
+    public string OfferTitle { get; set; } = "Exclusive Homeowner Offer";
+
+    [Required]
+    public string OfferBody { get; set; } = "Tell us a little about your project and we'll get in touch to help you claim this offer.";
+
+    [Required]
+    public string OfferFinePrint { get; set; } = "";
+
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

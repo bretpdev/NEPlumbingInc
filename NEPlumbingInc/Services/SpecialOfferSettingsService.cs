@@ -47,6 +47,9 @@ public class SpecialOfferSettingsService(AppDbContext context) : ISpecialOfferSe
             existingSettings.NoOfferDescription = settings.NoOfferDescription;
             existingSettings.NewsletterText = settings.NewsletterText;
             existingSettings.MaxOffersLimit = settings.MaxOffersLimit;
+            existingSettings.OfferTitle = settings.OfferTitle;
+            existingSettings.OfferBody = settings.OfferBody;
+            existingSettings.OfferFinePrint = settings.OfferFinePrint;
             existingSettings.UpdatedAt = DateTime.UtcNow;
         }
 

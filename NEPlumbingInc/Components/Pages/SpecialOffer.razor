@@ -1,0 +1,163 @@
+@page "/special-offer"
+@attribute [AllowAnonymous]
+@using NEPlumbingInc.Models
+@using NEPlumbingInc.Services
+@inject ISpecialOfferSettingsService SpecialOfferSettingsService
+@inject ISpecialOfferService SpecialOfferService
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+<PageTitle>Special Offer - NE Plumbing Inc.</PageTitle>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    @if (showSuccess)
+                    {
+                        <div class="alert alert-success text-center mb-4">
+                            Thanks! Your offer request was submitted.
+                        </div>
+                    }
+                    else if (showError)
+                    {
+                        <div class="alert alert-danger text-center mb-4">
+                            An error occurred while submitting your request.
+                        </div>
+                    }
+
+                    @if (isLoading)
+                    {
+                        <p class="text-muted mb-0">Loading offer...</p>
+                    }
+                    else if (!offerAvailable)
+                    {
+                        @if (!string.IsNullOrWhiteSpace(statusMessage))
+                        {
+                            <div class="alert alert-warning text-center mb-4">@statusMessage</div>
+                        }
+                        <div class="text-center">
+                            <h2 class="mb-3">@noOfferHeading</h2>
+                            @if (!string.IsNullOrWhiteSpace(noOfferDescription))
+                            {
+                                <p class="text-muted mb-3">@noOfferDescription</p>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(newsletterText))
+                            {
+                                <p class="mb-0">@newsletterText</p>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        @if (!string.IsNullOrWhiteSpace(statusMessage))
+                        {
+                            <div class="alert alert-info text-center mb-4">@statusMessage</div>
+                        }
+                        <div class="text-center mb-4">
+                            <h2 class="mb-2">@settings?.OfferTitle</h2>
+                            @if (!string.IsNullOrWhiteSpace(settings?.OfferBody))
+                            {
+                                <p class="text-muted" style="white-space: pre-wrap;">@settings?.OfferBody</p>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(settings?.OfferFinePrint))
+                            {
+                                <p class="small text-muted mb-0" style="white-space: pre-wrap;">@settings?.OfferFinePrint</p>
+                            }
+                        </div>
+
+                        <form method="post" action="/special-offer/claim">
+                            <input type="hidden" name="ip" value="@ipAddress" />
+
+                            <div class="mb-3">
+                                <label class="form-label">Name</label>
+                                <input class="form-control" name="Name" value="@form.Name" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input class="form-control" name="Email" type="email" value="@form.Email" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Phone (optional)</label>
+                                <input class="form-control" name="Phone" value="@form.Phone" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Notes (optional)</label>
+                                <textarea class="form-control" name="Message" rows="4">@form.Message</textarea>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">Claim Offer</button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private SpecialOfferSettings? settings;
+    private MessageFormModel form = new();
+
+    private bool isLoading = true;
+    private bool offerAvailable;
+    private string? ipAddress;
+
+    private bool showSuccess;
+    private bool showError;
+
+    private string? noOfferHeading;
+    private string? noOfferDescription;
+    private string? newsletterText;
+    private string? statusMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+        ipAddress = query["ip"]
+            ?? HttpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+
+        showSuccess = query["sent"] == "1";
+        showError = query["error"] == "1";
+
+        settings = await SpecialOfferSettingsService.GetSettingsAsync();
+        noOfferHeading = settings?.NoOfferHeading;
+        noOfferDescription = settings?.NoOfferDescription;
+        newsletterText = settings?.NewsletterText;
+
+        // Mirror the reveal behavior (record click if eligible, block if already claimed)
+        var (hasAccess, accessMessage) = await SpecialOfferService.CheckOfferAccessAsync(ipAddress);
+        statusMessage = accessMessage;
+        if (!hasAccess)
+        {
+            offerAvailable = false;
+            isLoading = false;
+            return;
+        }
+
+        var clickRecorded = await SpecialOfferService.RecordClickAsync(ipAddress);
+        if (!clickRecorded && !await SpecialOfferService.HasClickedBeforeAsync(ipAddress))
+        {
+            statusMessage = "This offer is no longer available.";
+            offerAvailable = false;
+            isLoading = false;
+            return;
+        }
+
+        offerAvailable = true;
+        isLoading = false;
+
+        if (string.IsNullOrWhiteSpace(form.Message) && !string.IsNullOrWhiteSpace(settings?.OfferTitle))
+        {
+            form.Message = $"Claiming offer: {settings.OfferTitle}";
+        }
+    }
+}
