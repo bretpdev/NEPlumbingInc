@@ -287,25 +287,28 @@
         </div>
 
         <!-- Hidden overlay that appears above everything -->
-        <div class="hidden-overlay">
-            <div class="overlay-content position-relative">
-                <button class="close-button" type="button" onclick="window.NePlumbingCloseSpeakeasy && window.NePlumbingCloseSpeakeasy()" aria-label="Close">&times;</button>
-                
-                <div id="specialOfferMessage" class="alert d-none" role="alert"></div>
+        @if (offerSettings?.IsEnabled == true)
+        {
+            <div class="hidden-overlay">
+                <div class="overlay-content position-relative">
+                    <button class="close-button" type="button" onclick="window.NePlumbingCloseSpeakeasy && window.NePlumbingCloseSpeakeasy()" aria-label="Close">&times;</button>
+                    
+                    <div id="specialOfferMessage" class="alert d-none" role="alert"></div>
 
-                <div id="specialOfferAvailable" class="d-none">
-                    <h2>@offerSettings?.HeadingText</h2>
-                    <p>@offerSettings?.DescriptionText</p>
-                    <a id="specialOfferLink" href="/special-offer" class="btn btn-light">@offerSettings?.ButtonText</a>
-                </div>
+                    <div id="specialOfferAvailable" class="d-none">
+                        <h2>@offerSettings?.HeadingText</h2>
+                        <p>@offerSettings?.DescriptionText</p>
+                        <a id="specialOfferLink" href="/special-offer" class="btn btn-light">@offerSettings?.ButtonText</a>
+                    </div>
 
-                <div id="specialOfferUnavailable" class="d-none">
-                    <h2>@offerSettings?.NoOfferHeading</h2>
-                    <p>@offerSettings?.NoOfferDescription</p>
-                    <p>@offerSettings?.NewsletterText</p>
+                    <div id="specialOfferUnavailable" class="d-none">
+                        <h2>@offerSettings?.NoOfferHeading</h2>
+                        <p>@offerSettings?.NoOfferDescription</p>
+                        <p>@offerSettings?.NewsletterText</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
     </div>
 </div>
 
