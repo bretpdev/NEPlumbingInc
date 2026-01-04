@@ -295,457 +295,427 @@
                 {
                     <h6 class="mb-3">Light Mode Palette</h6>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="border rounded p-3 mb-3">
-                            <label for="primaryColor" class="form-label fw-semibold mb-0">Links/Highlights (also Hero badge)</label>
-                            <small class="text-muted d-block mb-2">Used for link color, accents, and the hero badge color.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="primaryColor" @bind="colorSettings.PrimaryColor" />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <label for="primaryColor" class="form-label fw-semibold mb-0">Links/Highlights (also Hero badge)</label>
+                                <small class="text-muted d-block mb-2">Used for link color, accents, and the hero badge color.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="primaryColor" @bind="colorSettings.PrimaryColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="primaryColorHex">Hex</label>
+                                        <input id="primaryColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.PrimaryColor" placeholder="#0066CC" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="primaryColorHex">Hex</label>
-                                    <input id="primaryColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.PrimaryColor" placeholder="#0066CC" />
+                                <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
+                                    <a href="javascript:void(0)" style="color:@colorSettings.PrimaryColor; text-decoration:underline;">Link preview</a>
+                                    <span class="rounded-pill px-2 py-1" style="background:@colorSettings.PrimaryColor; color:#fff; font-weight:600;">Hero badge</span>
                                 </div>
                             </div>
-                            <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
-                                <a href="javascript:void(0)" style="color:@colorSettings.PrimaryColor; text-decoration:underline;">Link preview</a>
-                                <span class="rounded-pill px-2 py-1" style="background:@colorSettings.PrimaryColor; color:#fff; font-weight:600;">Hero badge</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="headerFooterBgColor" class="form-label fw-semibold mb-0">Header/Footer Background</label>
-                            <small class="text-muted d-block mb-2">Used for the navbar and footer background color.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="headerFooterBgColor" @bind="colorSettings.HeaderFooterBgColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="headerFooterBgColor" class="form-label fw-semibold mb-0">Header/Footer Background</label>
+                                <small class="text-muted d-block mb-2">Used for the navbar and footer background color.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="headerFooterBgColor" @bind="colorSettings.HeaderFooterBgColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="headerFooterBgColorHex">Hex</label>
+                                        <input id="headerFooterBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.HeaderFooterBgColor" placeholder="#0066CC" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="headerFooterBgColorHex">Hex</label>
-                                    <input id="headerFooterBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.HeaderFooterBgColor" placeholder="#0066CC" />
+                                <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
+                                    <span class="rounded px-2 py-1" style="background:@colorSettings.HeaderFooterBgColor; color:@colorSettings.HeaderFooterTextColor; font-weight:600;">Header/Footer</span>
                                 </div>
                             </div>
-                            <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
-                                <span class="rounded px-2 py-1" style="background:@colorSettings.HeaderFooterBgColor; color:@colorSettings.HeaderFooterTextColor; font-weight:600;">Header/Footer</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="secondaryColor" class="form-label fw-semibold mb-0">Secondary Color</label>
-                            <small class="text-muted d-block mb-2">Used for secondary accents and UI emphasis.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="secondaryColor" @bind="colorSettings.SecondaryColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="secondaryColor" class="form-label fw-semibold mb-0">Secondary Color</label>
+                                <small class="text-muted d-block mb-2">Used for secondary accents and UI emphasis.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="secondaryColor" @bind="colorSettings.SecondaryColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="secondaryColorHex">Hex</label>
+                                        <input id="secondaryColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.SecondaryColor" placeholder="#005299" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="secondaryColorHex">Hex</label>
-                                    <input id="secondaryColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.SecondaryColor" placeholder="#005299" />
+                                <div class="mt-2">
+                                    <span class="rounded-pill px-2 py-1" style="background:@colorSettings.SecondaryColor; color:#fff; font-weight:600;">Secondary</span>
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <span class="rounded-pill px-2 py-1" style="background:@colorSettings.SecondaryColor; color:#fff; font-weight:600;">Secondary</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="accentColor" class="form-label fw-semibold mb-0">Accent Color</label>
-                            <small class="text-muted d-block mb-2">Used for smaller accents, callouts, and decorative highlights.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="accentColor" @bind="colorSettings.AccentColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="accentColor" class="form-label fw-semibold mb-0">Accent Color</label>
+                                <small class="text-muted d-block mb-2">Used for smaller accents, callouts, and decorative highlights.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="accentColor" @bind="colorSettings.AccentColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="accentColorHex">Hex</label>
+                                        <input id="accentColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.AccentColor" placeholder="#003d7a" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="accentColorHex">Hex</label>
-                                    <input id="accentColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.AccentColor" placeholder="#003d7a" />
+                                <div class="mt-2">
+                                    <span class="rounded-pill px-2 py-1" style="background:@colorSettings.AccentColor; color:#fff; font-weight:600;">Accent</span>
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <span class="rounded-pill px-2 py-1" style="background:@colorSettings.AccentColor; color:#fff; font-weight:600;">Accent</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="textColor" class="form-label fw-semibold mb-0">Text Color</label>
-                            <small class="text-muted d-block mb-2">Default text color used across most pages and cards.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="textColor" @bind="colorSettings.TextColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="textColor" class="form-label fw-semibold mb-0">Text Color</label>
+                                <small class="text-muted d-block mb-2">Default text color used across most pages and cards.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="textColor" @bind="colorSettings.TextColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="textColorHex">Hex</label>
+                                        <input id="textColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.TextColor" placeholder="#212529" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="textColorHex">Hex</label>
-                                    <input id="textColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.TextColor" placeholder="#212529" />
+                                <div class="mt-2 small" style="color:@colorSettings.TextColor;">
+                                    Sample text preview
                                 </div>
                             </div>
-                            <div class="mt-2 small" style="color:@colorSettings.TextColor;">
-                                Sample text preview
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="bgColor" class="form-label fw-semibold mb-0">Background Color</label>
-                            <small class="text-muted d-block mb-2">Main page background behind everything.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="bgColor" @bind="colorSettings.LightBgColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="bgColor" class="form-label fw-semibold mb-0">Background Color</label>
+                                <small class="text-muted d-block mb-2">Main page background behind everything.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="bgColor" @bind="colorSettings.LightBgColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="bgColorHex">Hex</label>
+                                        <input id="bgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.LightBgColor" placeholder="#f8f9fa" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="bgColorHex">Hex</label>
-                                    <input id="bgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.LightBgColor" placeholder="#f8f9fa" />
+                                <div class="mt-2 rounded p-2" style="background:@colorSettings.LightBgColor; border:1px solid @colorSettings.BorderColor; color:@colorSettings.TextColor;">
+                                    Page background preview
                                 </div>
                             </div>
-                            <div class="mt-2 rounded p-2" style="background:@colorSettings.LightBgColor; border:1px solid @colorSettings.BorderColor; color:@colorSettings.TextColor;">
-                                Page background preview
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <div class="fw-semibold">Hero Badge</div>
-                            <small class="text-muted d-block mb-2">Matches Links/Highlights automatically.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-12">
-                                    <label class="form-label small text-muted mb-1">Hex</label>
-                                    <input type="text" class="form-control form-control-sm" value="@colorSettings.PrimaryColor" readonly />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="buttonColor" class="form-label fw-semibold mb-0">Button Color</label>
+                                <small class="text-muted d-block mb-2">Primary button background color.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="buttonColor" @bind="colorSettings.ButtonColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="buttonColorHex">Hex</label>
+                                        <input id="buttonColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.ButtonColor" placeholder="#0066CC" />
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm" style="background:@colorSettings.ButtonColor; border-color:@colorSettings.ButtonColor; color:#fff; font-weight:600;">Button</button>
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <span class="rounded-pill px-2 py-1" style="background:@colorSettings.PrimaryColor; color:#fff; font-weight:600;">Hero badge</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="buttonColor" class="form-label fw-semibold mb-0">Button Color</label>
-                            <small class="text-muted d-block mb-2">Primary button background color.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="buttonColor" @bind="colorSettings.ButtonColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="surfaceColor" class="form-label fw-semibold mb-0">Surface Color (Cards/Modals)</label>
+                                <small class="text-muted d-block mb-2">Background used for cards, panels, and modal surfaces sitting on the page background.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="surfaceColor" @bind="colorSettings.SurfaceColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="surfaceColorHex">Hex</label>
+                                        <input id="surfaceColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.SurfaceColor" placeholder="#ffffff" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="buttonColorHex">Hex</label>
-                                    <input id="buttonColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.ButtonColor" placeholder="#0066CC" />
+                                <div class="mt-2 rounded p-2" style="background:@colorSettings.SurfaceColor; border:1px solid @colorSettings.BorderColor; color:@colorSettings.TextColor;">
+                                    Card/surface preview
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <button type="button" class="btn btn-sm" style="background:@colorSettings.ButtonColor; border-color:@colorSettings.ButtonColor; color:#fff; font-weight:600;">Button</button>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="surfaceColor" class="form-label fw-semibold mb-0">Surface Color (Cards/Modals)</label>
-                            <small class="text-muted d-block mb-2">Background used for cards, panels, and modal surfaces sitting on the page background.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="surfaceColor" @bind="colorSettings.SurfaceColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="surfaceAltColor" class="form-label fw-semibold mb-0">Surface Alt (Secondary surfaces)</label>
+                                <small class="text-muted d-block mb-2">Alternate surface used for secondary sections (ex: table headers, light buttons, footers in some layouts).</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="surfaceAltColor" @bind="colorSettings.SurfaceAltColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="surfaceAltColorHex">Hex</label>
+                                        <input id="surfaceAltColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.SurfaceAltColor" placeholder="#f8f9fa" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="surfaceColorHex">Hex</label>
-                                    <input id="surfaceColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.SurfaceColor" placeholder="#ffffff" />
+                                <div class="mt-2 rounded p-2" style="background:@colorSettings.SurfaceAltColor; border:1px solid @colorSettings.BorderColor; color:@colorSettings.TextColor;">
+                                    Alt surface preview
                                 </div>
                             </div>
-                            <div class="mt-2 rounded p-2" style="background:@colorSettings.SurfaceColor; border:1px solid @colorSettings.BorderColor; color:@colorSettings.TextColor;">
-                                Card/surface preview
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="surfaceAltColor" class="form-label fw-semibold mb-0">Surface Alt (Secondary surfaces)</label>
-                            <small class="text-muted d-block mb-2">Alternate surface used for secondary sections (ex: table headers, light buttons, footers in some layouts).</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="surfaceAltColor" @bind="colorSettings.SurfaceAltColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="inputBgColor" class="form-label fw-semibold mb-0">Input Background</label>
+                                <small class="text-muted d-block mb-2">Background for form inputs and text fields.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="inputBgColor" @bind="colorSettings.InputBgColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="inputBgColorHex">Hex</label>
+                                        <input id="inputBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.InputBgColor" placeholder="#ffffff" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="surfaceAltColorHex">Hex</label>
-                                    <input id="surfaceAltColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.SurfaceAltColor" placeholder="#f8f9fa" />
+                                <div class="mt-2">
+                                    <input class="form-control form-control-sm" style="background:@colorSettings.InputBgColor; border-color:@colorSettings.BorderColor; color:@colorSettings.TextColor;" placeholder="Input preview" />
                                 </div>
                             </div>
-                            <div class="mt-2 rounded p-2" style="background:@colorSettings.SurfaceAltColor; border:1px solid @colorSettings.BorderColor; color:@colorSettings.TextColor;">
-                                Alt surface preview
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="inputBgColor" class="form-label fw-semibold mb-0">Input Background</label>
-                            <small class="text-muted d-block mb-2">Background for form inputs and text fields.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="inputBgColor" @bind="colorSettings.InputBgColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="borderColor" class="form-label fw-semibold mb-0">Border Color</label>
+                                <small class="text-muted d-block mb-2">Used for outlines on cards, inputs, and separators.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="borderColor" @bind="colorSettings.BorderColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="borderColorHex">Hex</label>
+                                        <input id="borderColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.BorderColor" placeholder="#dee2e6" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="inputBgColorHex">Hex</label>
-                                    <input id="inputBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.InputBgColor" placeholder="#ffffff" />
+                                <div class="mt-2 rounded p-2" style="border:2px solid @colorSettings.BorderColor; background:@colorSettings.SurfaceColor; color:@colorSettings.TextColor;">
+                                    Border preview
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <input class="form-control form-control-sm" style="background:@colorSettings.InputBgColor; border-color:@colorSettings.BorderColor; color:@colorSettings.TextColor;" placeholder="Input preview" />
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="borderColor" class="form-label fw-semibold mb-0">Border Color</label>
-                            <small class="text-muted d-block mb-2">Used for outlines on cards, inputs, and separators.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="borderColor" @bind="colorSettings.BorderColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="headerFooterTextColor" class="form-label fw-semibold mb-0">Header/Footer Text Color</label>
+                                <small class="text-muted d-block mb-2">Text color used on top of header/footer backgrounds.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="headerFooterTextColor" @bind="colorSettings.HeaderFooterTextColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="headerFooterTextColorHex">Hex</label>
+                                        <input id="headerFooterTextColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.HeaderFooterTextColor" placeholder="#ffffff" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="borderColorHex">Hex</label>
-                                    <input id="borderColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.BorderColor" placeholder="#dee2e6" />
+                                <div class="mt-2 rounded px-2 py-1" style="background:@colorSettings.HeaderFooterBgColor; color:@colorSettings.HeaderFooterTextColor; font-weight:600;">
+                                    Header/Footer text preview
                                 </div>
-                            </div>
-                            <div class="mt-2 rounded p-2" style="border:2px solid @colorSettings.BorderColor; background:@colorSettings.SurfaceColor; color:@colorSettings.TextColor;">
-                                Border preview
-                            </div>
-                        </div>
-
-                        <div class="border rounded p-3 mb-3">
-                            <label for="headerFooterTextColor" class="form-label fw-semibold mb-0">Header/Footer Text Color</label>
-                            <small class="text-muted d-block mb-2">Text color used on top of header/footer backgrounds.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="headerFooterTextColor" @bind="colorSettings.HeaderFooterTextColor" />
-                                </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="headerFooterTextColorHex">Hex</label>
-                                    <input id="headerFooterTextColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.HeaderFooterTextColor" placeholder="#ffffff" />
-                                </div>
-                            </div>
-                            <div class="mt-2 rounded px-2 py-1" style="background:@colorSettings.HeaderFooterBgColor; color:@colorSettings.HeaderFooterTextColor; font-weight:600;">
-                                Header/Footer text preview
                             </div>
                         </div>
                     </div>
-                </div>
-
                 }
                 else
                 {
                     <h6 class="mb-3">Dark Mode Palette</h6>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkPrimaryColor" class="form-label fw-semibold mb-0">Links/Highlights (also Hero badge)</label>
-                            <small class="text-muted d-block mb-2">Used for link color, accents, and the hero badge color.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkPrimaryColor" @bind="colorSettings.DarkPrimaryColor" />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkPrimaryColor" class="form-label fw-semibold mb-0">Links/Highlights (also Hero badge)</label>
+                                <small class="text-muted d-block mb-2">Used for link color, accents, and the hero badge color.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkPrimaryColor" @bind="colorSettings.DarkPrimaryColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkPrimaryColorHex">Hex</label>
+                                        <input id="darkPrimaryColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkPrimaryColor" placeholder="#569cd6" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkPrimaryColorHex">Hex</label>
-                                    <input id="darkPrimaryColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkPrimaryColor" placeholder="#569cd6" />
+                                <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
+                                    <a href="javascript:void(0)" style="color:@colorSettings.DarkPrimaryColor; text-decoration:underline;">Link preview</a>
+                                    <span class="rounded-pill px-2 py-1" style="background:@colorSettings.DarkPrimaryColor; color:#fff; font-weight:600;">Hero badge</span>
                                 </div>
                             </div>
-                            <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
-                                <a href="javascript:void(0)" style="color:@colorSettings.DarkPrimaryColor; text-decoration:underline;">Link preview</a>
-                                <span class="rounded-pill px-2 py-1" style="background:@colorSettings.DarkPrimaryColor; color:#fff; font-weight:600;">Hero badge</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkHeaderFooterBgColor" class="form-label fw-semibold mb-0">Header/Footer Background</label>
-                            <small class="text-muted d-block mb-2">Used for the navbar and footer background color.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkHeaderFooterBgColor" @bind="colorSettings.DarkHeaderFooterBgColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkHeaderFooterBgColor" class="form-label fw-semibold mb-0">Header/Footer Background</label>
+                                <small class="text-muted d-block mb-2">Used for the navbar and footer background color.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkHeaderFooterBgColor" @bind="colorSettings.DarkHeaderFooterBgColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkHeaderFooterBgColorHex">Hex</label>
+                                        <input id="darkHeaderFooterBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkHeaderFooterBgColor" placeholder="#2d2d30" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkHeaderFooterBgColorHex">Hex</label>
-                                    <input id="darkHeaderFooterBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkHeaderFooterBgColor" placeholder="#2d2d30" />
+                                <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
+                                    <span class="rounded px-2 py-1" style="background:@colorSettings.DarkHeaderFooterBgColor; color:@colorSettings.DarkHeaderFooterTextColor; font-weight:600;">Header/Footer</span>
                                 </div>
                             </div>
-                            <div class="mt-2 d-flex flex-wrap align-items-center gap-2">
-                                <span class="rounded px-2 py-1" style="background:@colorSettings.DarkHeaderFooterBgColor; color:@colorSettings.DarkHeaderFooterTextColor; font-weight:600;">Header/Footer</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkSecondaryColor" class="form-label fw-semibold mb-0">Secondary Color</label>
-                            <small class="text-muted d-block mb-2">Used for secondary accents and UI emphasis.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkSecondaryColor" @bind="colorSettings.DarkSecondaryColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkSecondaryColor" class="form-label fw-semibold mb-0">Secondary Color</label>
+                                <small class="text-muted d-block mb-2">Used for secondary accents and UI emphasis.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkSecondaryColor" @bind="colorSettings.DarkSecondaryColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkSecondaryColorHex">Hex</label>
+                                        <input id="darkSecondaryColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkSecondaryColor" placeholder="#4f8cc4" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkSecondaryColorHex">Hex</label>
-                                    <input id="darkSecondaryColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkSecondaryColor" placeholder="#4f8cc4" />
+                                <div class="mt-2">
+                                    <span class="rounded-pill px-2 py-1" style="background:@colorSettings.DarkSecondaryColor; color:#fff; font-weight:600;">Secondary</span>
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <span class="rounded-pill px-2 py-1" style="background:@colorSettings.DarkSecondaryColor; color:#fff; font-weight:600;">Secondary</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkAccentColor" class="form-label fw-semibold mb-0">Accent Color</label>
-                            <small class="text-muted d-block mb-2">Used for smaller accents, callouts, and decorative highlights.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkAccentColor" @bind="colorSettings.DarkAccentColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkAccentColor" class="form-label fw-semibold mb-0">Accent Color</label>
+                                <small class="text-muted d-block mb-2">Used for smaller accents, callouts, and decorative highlights.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkAccentColor" @bind="colorSettings.DarkAccentColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkAccentColorHex">Hex</label>
+                                        <input id="darkAccentColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkAccentColor" placeholder="#9cdcfe" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkAccentColorHex">Hex</label>
-                                    <input id="darkAccentColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkAccentColor" placeholder="#9cdcfe" />
+                                <div class="mt-2">
+                                    <span class="rounded-pill px-2 py-1" style="background:@colorSettings.DarkAccentColor; color:#fff; font-weight:600;">Accent</span>
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <span class="rounded-pill px-2 py-1" style="background:@colorSettings.DarkAccentColor; color:#fff; font-weight:600;">Accent</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkTextColor" class="form-label fw-semibold mb-0">Text Color</label>
-                            <small class="text-muted d-block mb-2">Default text color used across most pages and cards.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkTextColor" @bind="colorSettings.DarkTextColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkTextColor" class="form-label fw-semibold mb-0">Text Color</label>
+                                <small class="text-muted d-block mb-2">Default text color used across most pages and cards.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkTextColor" @bind="colorSettings.DarkTextColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkTextColorHex">Hex</label>
+                                        <input id="darkTextColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkTextColor" placeholder="#d4d4d4" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkTextColorHex">Hex</label>
-                                    <input id="darkTextColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkTextColor" placeholder="#d4d4d4" />
+                                <div class="mt-2 small" style="color:@colorSettings.DarkTextColor;">
+                                    Sample text preview
                                 </div>
                             </div>
-                            <div class="mt-2 small" style="color:@colorSettings.DarkTextColor;">
-                                Sample text preview
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkBgColor" class="form-label fw-semibold mb-0">Background Color</label>
-                            <small class="text-muted d-block mb-2">Main page background behind everything.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkBgColor" @bind="colorSettings.DarkBgColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkBgColor" class="form-label fw-semibold mb-0">Background Color</label>
+                                <small class="text-muted d-block mb-2">Main page background behind everything.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkBgColor" @bind="colorSettings.DarkBgColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkBgColorHex">Hex</label>
+                                        <input id="darkBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkBgColor" placeholder="#1e1e1e" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkBgColorHex">Hex</label>
-                                    <input id="darkBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkBgColor" placeholder="#1e1e1e" />
+                                <div class="mt-2 rounded p-2" style="background:@colorSettings.DarkBgColor; border:1px solid @colorSettings.DarkBorderColor; color:@colorSettings.DarkTextColor;">
+                                    Page background preview
                                 </div>
                             </div>
-                            <div class="mt-2 rounded p-2" style="background:@colorSettings.DarkBgColor; border:1px solid @colorSettings.DarkBorderColor; color:@colorSettings.DarkTextColor;">
-                                Page background preview
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <div class="fw-semibold">Hero Badge</div>
-                            <small class="text-muted d-block mb-2">Matches Links/Highlights automatically.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-12">
-                                    <label class="form-label small text-muted mb-1">Hex</label>
-                                    <input type="text" class="form-control form-control-sm" value="@colorSettings.DarkPrimaryColor" readonly />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkButtonColor" class="form-label fw-semibold mb-0">Button Color</label>
+                                <small class="text-muted d-block mb-2">Primary button background color.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkButtonColor" @bind="colorSettings.DarkButtonColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkButtonColorHex">Hex</label>
+                                        <input id="darkButtonColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkButtonColor" placeholder="#569cd6" />
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-sm" style="background:@colorSettings.DarkButtonColor; border-color:@colorSettings.DarkButtonColor; color:#fff; font-weight:600;">Button</button>
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <span class="rounded-pill px-2 py-1" style="background:@colorSettings.DarkPrimaryColor; color:#fff; font-weight:600;">Hero badge</span>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkButtonColor" class="form-label fw-semibold mb-0">Button Color</label>
-                            <small class="text-muted d-block mb-2">Primary button background color.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkButtonColor" @bind="colorSettings.DarkButtonColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkSurfaceColor" class="form-label fw-semibold mb-0">Surface Color (Cards/Modals)</label>
+                                <small class="text-muted d-block mb-2">Background used for cards, panels, and modal surfaces sitting on the page background.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkSurfaceColor" @bind="colorSettings.DarkSurfaceColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkSurfaceColorHex">Hex</label>
+                                        <input id="darkSurfaceColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkSurfaceColor" placeholder="#252526" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkButtonColorHex">Hex</label>
-                                    <input id="darkButtonColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkButtonColor" placeholder="#569cd6" />
+                                <div class="mt-2 rounded p-2" style="background:@colorSettings.DarkSurfaceColor; border:1px solid @colorSettings.DarkBorderColor; color:@colorSettings.DarkTextColor;">
+                                    Card/surface preview
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <button type="button" class="btn btn-sm" style="background:@colorSettings.DarkButtonColor; border-color:@colorSettings.DarkButtonColor; color:#fff; font-weight:600;">Button</button>
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkSurfaceColor" class="form-label fw-semibold mb-0">Surface Color (Cards/Modals)</label>
-                            <small class="text-muted d-block mb-2">Background used for cards, panels, and modal surfaces sitting on the page background.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkSurfaceColor" @bind="colorSettings.DarkSurfaceColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkSurfaceAltColor" class="form-label fw-semibold mb-0">Surface Alt (Secondary surfaces)</label>
+                                <small class="text-muted d-block mb-2">Alternate surface used for secondary sections (ex: table headers, light buttons, footers in some layouts).</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkSurfaceAltColor" @bind="colorSettings.DarkSurfaceAltColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkSurfaceAltColorHex">Hex</label>
+                                        <input id="darkSurfaceAltColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkSurfaceAltColor" placeholder="#2d2d30" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkSurfaceColorHex">Hex</label>
-                                    <input id="darkSurfaceColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkSurfaceColor" placeholder="#252526" />
+                                <div class="mt-2 rounded p-2" style="background:@colorSettings.DarkSurfaceAltColor; border:1px solid @colorSettings.DarkBorderColor; color:@colorSettings.DarkTextColor;">
+                                    Alt surface preview
                                 </div>
                             </div>
-                            <div class="mt-2 rounded p-2" style="background:@colorSettings.DarkSurfaceColor; border:1px solid @colorSettings.DarkBorderColor; color:@colorSettings.DarkTextColor;">
-                                Card/surface preview
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkSurfaceAltColor" class="form-label fw-semibold mb-0">Surface Alt (Secondary surfaces)</label>
-                            <small class="text-muted d-block mb-2">Alternate surface used for secondary sections (ex: table headers, light buttons, footers in some layouts).</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkSurfaceAltColor" @bind="colorSettings.DarkSurfaceAltColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkInputBgColor" class="form-label fw-semibold mb-0">Input Background</label>
+                                <small class="text-muted d-block mb-2">Background for form inputs and text fields.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkInputBgColor" @bind="colorSettings.DarkInputBgColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkInputBgColorHex">Hex</label>
+                                        <input id="darkInputBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkInputBgColor" placeholder="#3c3c3c" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkSurfaceAltColorHex">Hex</label>
-                                    <input id="darkSurfaceAltColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkSurfaceAltColor" placeholder="#2d2d30" />
+                                <div class="mt-2">
+                                    <input class="form-control form-control-sm" style="background:@colorSettings.DarkInputBgColor; border-color:@colorSettings.DarkBorderColor; color:@colorSettings.DarkTextColor;" placeholder="Input preview" />
                                 </div>
                             </div>
-                            <div class="mt-2 rounded p-2" style="background:@colorSettings.DarkSurfaceAltColor; border:1px solid @colorSettings.DarkBorderColor; color:@colorSettings.DarkTextColor;">
-                                Alt surface preview
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkInputBgColor" class="form-label fw-semibold mb-0">Input Background</label>
-                            <small class="text-muted d-block mb-2">Background for form inputs and text fields.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkInputBgColor" @bind="colorSettings.DarkInputBgColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkBorderColor" class="form-label fw-semibold mb-0">Border Color</label>
+                                <small class="text-muted d-block mb-2">Used for outlines on cards, inputs, and separators.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkBorderColor" @bind="colorSettings.DarkBorderColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkBorderColorHex">Hex</label>
+                                        <input id="darkBorderColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkBorderColor" placeholder="#3e3e42" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkInputBgColorHex">Hex</label>
-                                    <input id="darkInputBgColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkInputBgColor" placeholder="#3c3c3c" />
+                                <div class="mt-2 rounded p-2" style="border:2px solid @colorSettings.DarkBorderColor; background:@colorSettings.DarkSurfaceColor; color:@colorSettings.DarkTextColor;">
+                                    Border preview
                                 </div>
                             </div>
-                            <div class="mt-2">
-                                <input class="form-control form-control-sm" style="background:@colorSettings.DarkInputBgColor; border-color:@colorSettings.DarkBorderColor; color:@colorSettings.DarkTextColor;" placeholder="Input preview" />
-                            </div>
-                        </div>
 
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkBorderColor" class="form-label fw-semibold mb-0">Border Color</label>
-                            <small class="text-muted d-block mb-2">Used for outlines on cards, inputs, and separators.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkBorderColor" @bind="colorSettings.DarkBorderColor" />
+                            <div class="border rounded p-3 mb-3">
+                                <label for="darkHeaderFooterTextColor" class="form-label fw-semibold mb-0">Header/Footer Text Color</label>
+                                <small class="text-muted d-block mb-2">Text color used on top of header/footer backgrounds.</small>
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4">
+                                        <input type="color" class="color-input" id="darkHeaderFooterTextColor" @bind="colorSettings.DarkHeaderFooterTextColor" />
+                                    </div>
+                                    <div class="col-6 col-md-8">
+                                        <label class="form-label small text-muted mb-1" for="darkHeaderFooterTextColorHex">Hex</label>
+                                        <input id="darkHeaderFooterTextColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkHeaderFooterTextColor" placeholder="#ffffff" />
+                                    </div>
                                 </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkBorderColorHex">Hex</label>
-                                    <input id="darkBorderColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkBorderColor" placeholder="#3e3e42" />
+                                <div class="mt-2 rounded px-2 py-1" style="background:@colorSettings.DarkHeaderFooterBgColor; color:@colorSettings.DarkHeaderFooterTextColor; font-weight:600;">
+                                    Header/Footer text preview
                                 </div>
-                            </div>
-                            <div class="mt-2 rounded p-2" style="border:2px solid @colorSettings.DarkBorderColor; background:@colorSettings.DarkSurfaceColor; color:@colorSettings.DarkTextColor;">
-                                Border preview
-                            </div>
-                        </div>
-
-                        <div class="border rounded p-3 mb-3">
-                            <label for="darkHeaderFooterTextColor" class="form-label fw-semibold mb-0">Header/Footer Text Color</label>
-                            <small class="text-muted d-block mb-2">Text color used on top of header/footer backgrounds.</small>
-                            <div class="row g-2 align-items-end">
-                                <div class="col-6 col-md-4">
-                                    <input type="color" class="color-input" id="darkHeaderFooterTextColor" @bind="colorSettings.DarkHeaderFooterTextColor" />
-                                </div>
-                                <div class="col-6 col-md-8">
-                                    <label class="form-label small text-muted mb-1" for="darkHeaderFooterTextColorHex">Hex</label>
-                                    <input id="darkHeaderFooterTextColorHex" type="text" class="form-control form-control-sm" @bind="colorSettings.DarkHeaderFooterTextColor" placeholder="#ffffff" />
-                                </div>
-                            </div>
-                            <div class="mt-2 rounded px-2 py-1" style="background:@colorSettings.DarkHeaderFooterBgColor; color:@colorSettings.DarkHeaderFooterTextColor; font-weight:600;">
-                                Header/Footer text preview
                             </div>
                         </div>
                     </div>
-                </div>
-
                 }
 
                 <div class="mt-4">
