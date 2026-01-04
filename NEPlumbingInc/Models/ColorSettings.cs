@@ -24,6 +24,9 @@ public class ColorSettings
     public string HeroBadgeColor { get; set; } = "#0056b3";
 
     [Required]
+    public string HeaderFooterBgColor { get; set; } = "#0066CC";
+
+    [Required]
     public string ButtonColor { get; set; } = "#0066CC";
 
     [Required]
@@ -61,6 +64,9 @@ public class ColorSettings
 
     [Required]
     public string DarkHeroBadgeColor { get; set; } = "#2d2d30";
+
+    [Required]
+    public string DarkHeaderFooterBgColor { get; set; } = "#2d2d30";
 
     [Required]
     public string DarkButtonColor { get; set; } = "#569cd6";

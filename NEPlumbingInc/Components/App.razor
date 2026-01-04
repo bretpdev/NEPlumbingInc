@@ -23,13 +23,37 @@
             }
         })();
     </script>
+    <script>
+        // Apply the saved font as early as possible to avoid a flash.
+        (function () {
+            try {
+                var savedFont = localStorage.getItem('siteFontFamily');
+                if (savedFont) {
+                    document.documentElement.style.setProperty('--site-font-family', savedFont);
+                }
+            } catch (e) {
+                // ignore
+            }
+        })();
+
+        window.ApplySavedFontFromSettings = function () {
+            try {
+                var savedFont = localStorage.getItem('siteFontFamily');
+                if (savedFont) {
+                    document.documentElement.style.setProperty('--site-font-family', savedFont);
+                }
+            } catch (e) {
+                // ignore
+            }
+        };
+    </script>
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="NEPlumbingInc.styles.css" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260103" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Slab:wght@400;600;700&family=Raleway:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=Figtree:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Slab:wght@400;600;700&family=Raleway:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=Figtree:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&family=IM+Fell+English:ital,wght@0,400;1,400&family=Special+Elite&family=Comfortaa:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Patrick+Hand&family=Amatic+SC:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <!-- Browser theme color for Safari and Chrome -->
     <meta name="theme-color" content="#0066CC">
@@ -63,6 +87,15 @@
                 } catch (e) {
                     // ignore
                 }
+            },
+            savePreference: function (family) {
+                try {
+                    if (!family) return;
+                    localStorage.setItem('siteFontFamily', family);
+                    document.documentElement.style.setProperty('--site-font-family', family);
+                } catch (e) {
+                    // ignore
+                }
             }
         };
     </script>
@@ -78,6 +111,7 @@
                 // Use Blazor's enhanced navigation event to re-apply theme immediately.
                 window.Blazor.addEventListener('enhancedload', () => {
                     window.ApplyDarkModeFromSettings && window.ApplyDarkModeFromSettings();
+                    window.ApplySavedFontFromSettings && window.ApplySavedFontFromSettings();
                 });
             }
         } catch (e) {

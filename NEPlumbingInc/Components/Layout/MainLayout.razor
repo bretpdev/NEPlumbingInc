@@ -1,7 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @inject IColorSettingsService ColorSettingsService
 @inject ICareersPageSettingsService CareersPageSettingsService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
 
 <PageTitle>NE Plumbing Inc.</PageTitle>
 
@@ -13,7 +16,8 @@
         --light-accent-color: @(colorSettings?.AccentColor ?? "#003d7a");
         --light-text-color: @(colorSettings?.TextColor ?? "#212529");
         --light-bg-color: @(colorSettings?.LightBgColor ?? "#f8f9fa");
-        --light-hero-badge-color: @(colorSettings?.HeroBadgeColor ?? "#0056b3");
+        --light-hero-badge-color: @(colorSettings?.HeroBadgeColor ?? "#0066CC");
+        --light-header-footer-bg-color: @(colorSettings?.HeaderFooterBgColor ?? "#0066CC");
         --light-button-color: @(colorSettings?.ButtonColor ?? "#0066CC");
         --light-surface-color: @(colorSettings?.SurfaceColor ?? "#ffffff");
         --light-surface-alt-color: @(colorSettings?.SurfaceAltColor ?? "#f8f9fa");
@@ -28,7 +32,8 @@
         --dark-accent-color: @(colorSettings?.DarkAccentColor ?? "#9cdcfe");
         --dark-text-color: @(colorSettings?.DarkTextColor ?? "#d4d4d4");
         --dark-bg-color: @(colorSettings?.DarkBgColor ?? "#1e1e1e");
-        --dark-hero-badge-color: @(colorSettings?.DarkHeroBadgeColor ?? "#2d2d30");
+        --dark-hero-badge-color: @(colorSettings?.DarkHeroBadgeColor ?? "#569cd6");
+        --dark-header-footer-bg-color: @(colorSettings?.DarkHeaderFooterBgColor ?? "#2d2d30");
         --dark-button-color: @(colorSettings?.DarkButtonColor ?? "#569cd6");
         --dark-surface-color: @(colorSettings?.DarkSurfaceColor ?? "#252526");
         --dark-surface-alt-color: @(colorSettings?.DarkSurfaceAltColor ?? "#2d2d30");
@@ -41,12 +46,14 @@
         --accent-color: var(--light-accent-color);
         --text-color: var(--light-text-color);
         --page-bg-color: var(--light-bg-color);
-        --hero-badge-color: var(--light-hero-badge-color);
+        /* Hero badge always follows links/highlights */
+        --hero-badge-color: var(--primary-color);
         --button-color: var(--light-button-color);
         --surface-color: var(--light-surface-color);
         --surface-alt-color: var(--light-surface-alt-color);
         --input-bg-color: var(--light-input-bg-color);
         --header-footer-text-color: var(--light-header-footer-text-color);
+        --header-footer-bg-color: var(--light-header-footer-bg-color);
 
         --light-border-color: @(colorSettings?.BorderColor ?? "#dee2e6");
         --dark-border-color: @(colorSettings?.DarkBorderColor ?? "#3e3e42");
@@ -69,12 +76,14 @@
         --accent-color: var(--dark-accent-color);
         --text-color: var(--dark-text-color);
         --page-bg-color: var(--dark-bg-color);
-        --hero-badge-color: var(--dark-hero-badge-color);
+        /* Hero badge always follows links/highlights */
+        --hero-badge-color: var(--primary-color);
         --button-color: var(--dark-button-color);
         --surface-color: var(--dark-surface-color);
         --surface-alt-color: var(--dark-surface-alt-color);
         --input-bg-color: var(--dark-input-bg-color);
         --header-footer-text-color: var(--dark-header-footer-text-color);
+        --header-footer-bg-color: var(--dark-header-footer-bg-color);
 
         --bs-body-bg: var(--page-bg-color);
         --bs-body-color: var(--text-color);
@@ -121,6 +130,9 @@
         color: var(--header-footer-text-color) !important;
     }
 
+        header.navbar {
+            background-color: var(--header-footer-bg-color);
+        }
     footer,
     footer h1,
     footer h2,
@@ -135,6 +147,9 @@
         color: var(--header-footer-text-color) !important;
     }
 
+        footer {
+            background-color: var(--header-footer-bg-color);
+        }
     footer .btn-outline-light {
         color: var(--header-footer-text-color) !important;
         border-color: var(--header-footer-text-color) !important;
@@ -213,11 +228,11 @@
     /* Dark mode - Navigation */
     [data-dark-mode="true"] .navbar,
     [data-dark-mode="true"] .navbar-dark {
-        background-color: var(--surface-alt-color) !important;
+        background-color: var(--header-footer-bg-color) !important;
     }
 
     [data-dark-mode="true"] .nav-link {
-        color: var(--text-color) !important;
+        color: var(--header-footer-text-color) !important;
     }
 
     [data-dark-mode="true"] .nav-link:hover {
@@ -555,16 +570,16 @@
 
     /* Dark mode - Footer */
     [data-dark-mode="true"] footer {
-        background-color: #252526 !important;
-        color: #d4d4d4;
+        background-color: var(--header-footer-bg-color) !important;
+        color: var(--header-footer-text-color) !important;
     }
 
     [data-dark-mode="true"] footer a {
-        color: #569cd6;
+        color: var(--header-footer-text-color) !important;
     }
 
     [data-dark-mode="true"] footer a:hover {
-        color: #9cdcfe;
+        color: var(--accent-color) !important;
     }
 
     [data-dark-mode="true"] .border-secondary {
@@ -634,7 +649,7 @@
 </style>
 
 <div class="min-vh-100 d-flex flex-column">
-    <header class="navbar navbar-expand-lg navbar-dark w-100" style="background-color: var(--primary-color); padding: 0.5rem 1rem;">
+    <header class="navbar navbar-expand-lg navbar-dark w-100" style="background-color: var(--header-footer-bg-color); padding: 0.5rem 1rem;">
         <!-- Company Name -->
         <a class="navbar-brand flex-shrink-0" href="">NE Plumbing Inc.</a>
 
@@ -678,7 +693,7 @@
         @Body
     </main>
 
-    <footer class="text-white py-4 mt-auto" style="background-color: var(--primary-color);">
+    <footer class="text-white py-4 mt-auto" style="background-color: var(--header-footer-bg-color);">
         <div class="container">
             <div class="row text-center text-md-start">
                 <!-- About -->
@@ -730,7 +745,7 @@
 
             <hr class="border-secondary" />
 
-            <div class="text-center small">
+            <div class="text-center text-white small">
                 &copy; @(DateTime.Now.Year) NE Plumbing Inc. All rights reserved.
             </div>
         </div>
@@ -740,6 +755,8 @@
 @code {
     private ColorSettings? colorSettings;
     private CareersPageSettings? careersSettings;
+
+    private bool _disposed;
 
     private static string GetFontCssValue(string? fontFamily)
     {
@@ -764,6 +781,16 @@
             "Space Grotesk" => "'Space Grotesk'",
             "Playfair Display" => "'Playfair Display'",
             "Lora" => "'Lora'",
+            "Cinzel" => "'Cinzel'",
+            "Cormorant Garamond" => "'Cormorant Garamond'",
+            "Libre Baskerville" => "'Libre Baskerville'",
+            "IM Fell English" => "'IM Fell English'",
+            "Special Elite" => "'Special Elite'",
+            "Comfortaa" => "'Comfortaa'",
+            "Fredoka" => "'Fredoka'",
+            "Patrick Hand" => "'Patrick Hand'",
+            "Amatic SC" => "'Amatic SC'",
+            "Pacifico" => "'Pacifico'",
             _ => "'Inter'",
         };
     }
@@ -775,5 +802,50 @@
 
         // Load Careers page settings (server-side)
         careersSettings = await CareersPageSettingsService.GetSettingsAsync();
+
+        // Keep settings (and font) in sync across client-side navigation.
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ApplyFontToPageAsync();
+        }
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        try
+        {
+            // Refresh the settings so saved changes (like FontFamily) are respected everywhere.
+            colorSettings = await ColorSettingsService.GetColorSettingsAsync();
+            await ApplyFontToPageAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch
+        {
+            // Best-effort: navigation should continue even if settings reload fails.
+        }
+    }
+
+    private async Task ApplyFontToPageAsync()
+    {
+        var cssValue = GetFontCssValue(colorSettings?.FontFamily);
+        // Keep browser storage aligned with the DB value so the correct font
+        // applies immediately on future enhanced navigations and new sessions.
+        await JS.InvokeVoidAsync("nepFonts.savePreference", cssValue);
+    }
+
+    public void Dispose()
+    {
+        _disposed = true;
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }

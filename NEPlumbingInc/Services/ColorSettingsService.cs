@@ -20,7 +20,9 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
         AccentColor = "#003d7a",
         TextColor = "#212529",
         LightBgColor = "#f8f9fa",
-        HeroBadgeColor = "#0056b3",
+        // Hero badge follows the link/highlight color (PrimaryColor)
+        HeroBadgeColor = "#0066CC",
+        HeaderFooterBgColor = "#0066CC",
         ButtonColor = "#0066CC",
         SurfaceColor = "#ffffff",
         SurfaceAltColor = "#f8f9fa",
@@ -35,7 +37,9 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
         DarkAccentColor = "#9cdcfe",
         DarkTextColor = "#d4d4d4",
         DarkBgColor = "#1e1e1e",
-        DarkHeroBadgeColor = "#2d2d30",
+        // Hero badge follows the link/highlight color (DarkPrimaryColor)
+        DarkHeroBadgeColor = "#569cd6",
+        DarkHeaderFooterBgColor = "#2d2d30",
         DarkButtonColor = "#569cd6",
         DarkSurfaceColor = "#252526",
         DarkSurfaceAltColor = "#2d2d30",
@@ -59,6 +63,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
                 TextColor = DefaultSettings.TextColor,
                 LightBgColor = DefaultSettings.LightBgColor,
                 HeroBadgeColor = DefaultSettings.HeroBadgeColor,
+                HeaderFooterBgColor = DefaultSettings.HeaderFooterBgColor,
                 ButtonColor = DefaultSettings.ButtonColor,
                 SurfaceColor = DefaultSettings.SurfaceColor,
                 SurfaceAltColor = DefaultSettings.SurfaceAltColor,
@@ -72,6 +77,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
                 DarkTextColor = DefaultSettings.DarkTextColor,
                 DarkBgColor = DefaultSettings.DarkBgColor,
                 DarkHeroBadgeColor = DefaultSettings.DarkHeroBadgeColor,
+                DarkHeaderFooterBgColor = DefaultSettings.DarkHeaderFooterBgColor,
                 DarkButtonColor = DefaultSettings.DarkButtonColor,
                 DarkSurfaceColor = DefaultSettings.DarkSurfaceColor,
                 DarkSurfaceAltColor = DefaultSettings.DarkSurfaceAltColor,
@@ -80,6 +86,10 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
                 DarkHeaderFooterTextColor = DefaultSettings.DarkHeaderFooterTextColor,
                 UpdatedAt = DateTime.UtcNow
             };
+
+            // Keep badge synced to links/highlights.
+            settings.HeroBadgeColor = settings.PrimaryColor;
+            settings.DarkHeroBadgeColor = settings.DarkPrimaryColor;
             context.ColorSettings.Add(settings);
             await context.SaveChangesAsync();
         }
@@ -93,7 +103,14 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             settings.AccentColor = CoalesceColor(settings.AccentColor, DefaultSettings.AccentColor, ref changed);
             settings.TextColor = CoalesceColor(settings.TextColor, DefaultSettings.TextColor, ref changed);
             settings.LightBgColor = CoalesceColor(settings.LightBgColor, DefaultSettings.LightBgColor, ref changed);
-            settings.HeroBadgeColor = CoalesceColor(settings.HeroBadgeColor, DefaultSettings.HeroBadgeColor, ref changed);
+            settings.HeaderFooterBgColor = CoalesceColor(settings.HeaderFooterBgColor, DefaultSettings.HeaderFooterBgColor, ref changed);
+            // Force hero badge to follow PrimaryColor (links/highlights)
+            var desiredHero = settings.PrimaryColor;
+            if (!string.Equals(settings.HeroBadgeColor, desiredHero, StringComparison.OrdinalIgnoreCase))
+            {
+                settings.HeroBadgeColor = desiredHero;
+                changed = true;
+            }
             settings.ButtonColor = CoalesceColor(settings.ButtonColor, DefaultSettings.ButtonColor, ref changed);
             settings.SurfaceColor = CoalesceColor(settings.SurfaceColor, DefaultSettings.SurfaceColor, ref changed);
             settings.SurfaceAltColor = CoalesceColor(settings.SurfaceAltColor, DefaultSettings.SurfaceAltColor, ref changed);
@@ -107,7 +124,14 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             settings.DarkAccentColor = CoalesceColor(settings.DarkAccentColor, DefaultSettings.DarkAccentColor, ref changed);
             settings.DarkTextColor = CoalesceColor(settings.DarkTextColor, DefaultSettings.DarkTextColor, ref changed);
             settings.DarkBgColor = CoalesceColor(settings.DarkBgColor, DefaultSettings.DarkBgColor, ref changed);
-            settings.DarkHeroBadgeColor = CoalesceColor(settings.DarkHeroBadgeColor, DefaultSettings.DarkHeroBadgeColor, ref changed);
+            settings.DarkHeaderFooterBgColor = CoalesceColor(settings.DarkHeaderFooterBgColor, DefaultSettings.DarkHeaderFooterBgColor, ref changed);
+            // Force hero badge to follow DarkPrimaryColor (links/highlights)
+            var desiredDarkHero = settings.DarkPrimaryColor;
+            if (!string.Equals(settings.DarkHeroBadgeColor, desiredDarkHero, StringComparison.OrdinalIgnoreCase))
+            {
+                settings.DarkHeroBadgeColor = desiredDarkHero;
+                changed = true;
+            }
             settings.DarkButtonColor = CoalesceColor(settings.DarkButtonColor, DefaultSettings.DarkButtonColor, ref changed);
             settings.DarkSurfaceColor = CoalesceColor(settings.DarkSurfaceColor, DefaultSettings.DarkSurfaceColor, ref changed);
             settings.DarkSurfaceAltColor = CoalesceColor(settings.DarkSurfaceAltColor, DefaultSettings.DarkSurfaceAltColor, ref changed);
@@ -130,6 +154,10 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
     {
         using var context = await _contextFactory.CreateDbContextAsync();
         var existing = await context.ColorSettings.FirstOrDefaultAsync();
+
+        // Enforce: hero badge always matches link/highlight color
+        settings.HeroBadgeColor = settings.PrimaryColor;
+        settings.DarkHeroBadgeColor = settings.DarkPrimaryColor;
         
         if (existing != null)
         {
@@ -139,6 +167,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.TextColor = settings.TextColor;
             existing.LightBgColor = settings.LightBgColor;
             existing.HeroBadgeColor = settings.HeroBadgeColor;
+            existing.HeaderFooterBgColor = settings.HeaderFooterBgColor;
             existing.ButtonColor = settings.ButtonColor;
             existing.SurfaceColor = settings.SurfaceColor;
             existing.SurfaceAltColor = settings.SurfaceAltColor;
@@ -153,6 +182,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.DarkTextColor = settings.DarkTextColor;
             existing.DarkBgColor = settings.DarkBgColor;
             existing.DarkHeroBadgeColor = settings.DarkHeroBadgeColor;
+            existing.DarkHeaderFooterBgColor = settings.DarkHeaderFooterBgColor;
             existing.DarkButtonColor = settings.DarkButtonColor;
             existing.DarkSurfaceColor = settings.DarkSurfaceColor;
             existing.DarkSurfaceAltColor = settings.DarkSurfaceAltColor;
@@ -190,6 +220,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
                 TextColor = DefaultSettings.TextColor,
                 LightBgColor = DefaultSettings.LightBgColor,
                 HeroBadgeColor = DefaultSettings.HeroBadgeColor,
+                HeaderFooterBgColor = DefaultSettings.HeaderFooterBgColor,
                 ButtonColor = DefaultSettings.ButtonColor,
                 SurfaceColor = DefaultSettings.SurfaceColor,
                 SurfaceAltColor = DefaultSettings.SurfaceAltColor,
@@ -203,6 +234,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
                 DarkTextColor = DefaultSettings.DarkTextColor,
                 DarkBgColor = DefaultSettings.DarkBgColor,
                 DarkHeroBadgeColor = DefaultSettings.DarkHeroBadgeColor,
+                DarkHeaderFooterBgColor = DefaultSettings.DarkHeaderFooterBgColor,
                 DarkButtonColor = DefaultSettings.DarkButtonColor,
                 DarkSurfaceColor = DefaultSettings.DarkSurfaceColor,
                 DarkSurfaceAltColor = DefaultSettings.DarkSurfaceAltColor,
@@ -236,6 +268,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.TextColor = DefaultSettings.TextColor;
             existing.LightBgColor = DefaultSettings.LightBgColor;
             existing.HeroBadgeColor = DefaultSettings.HeroBadgeColor;
+            existing.HeaderFooterBgColor = DefaultSettings.HeaderFooterBgColor;
             existing.ButtonColor = DefaultSettings.ButtonColor;
             existing.SurfaceColor = DefaultSettings.SurfaceColor;
             existing.SurfaceAltColor = DefaultSettings.SurfaceAltColor;
@@ -250,6 +283,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.DarkTextColor = DefaultSettings.DarkTextColor;
             existing.DarkBgColor = DefaultSettings.DarkBgColor;
             existing.DarkHeroBadgeColor = DefaultSettings.DarkHeroBadgeColor;
+            existing.DarkHeaderFooterBgColor = DefaultSettings.DarkHeaderFooterBgColor;
             existing.DarkButtonColor = DefaultSettings.DarkButtonColor;
             existing.DarkSurfaceColor = DefaultSettings.DarkSurfaceColor;
             existing.DarkSurfaceAltColor = DefaultSettings.DarkSurfaceAltColor;
