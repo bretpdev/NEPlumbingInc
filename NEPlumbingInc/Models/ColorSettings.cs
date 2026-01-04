@@ -39,6 +39,9 @@ public class ColorSettings
     public string BorderColor { get; set; } = "#dee2e6";
 
     [Required]
+    public string HeaderFooterTextColor { get; set; } = "#ffffff";
+
+    [Required]
     public string DarkPrimaryColor { get; set; } = "#569cd6";
 
     [Required]
@@ -70,6 +73,9 @@ public class ColorSettings
 
     [Required]
     public string DarkBorderColor { get; set; } = "#3e3e42";
+
+    [Required]
+    public string DarkHeaderFooterTextColor { get; set; } = "#ffffff";
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }

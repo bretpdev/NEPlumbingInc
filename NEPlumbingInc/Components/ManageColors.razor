@@ -1,4 +1,5 @@
 @inject IColorSettingsService ColorSettingsService
+@inject ICareersPageSettingsService CareersPageSettingsService
 @rendermode InteractiveServer
 
 <style>
@@ -81,14 +82,8 @@
         color: var(--text-color);
     }
 
-    .theme-preview .preview-navbar {
-        background: var(--surface-alt-color);
-        color: var(--text-color);
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--bs-border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .theme-preview .min-vh-100 {
+        min-height: 0 !important;
     }
 
     .theme-preview .preview-navbar .brand {
@@ -275,6 +270,12 @@
                             <input type="color" class="color-input" id="borderColor"
                                    @bind="colorSettings.BorderColor" />
                         </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="headerFooterTextColor">Header/Footer Text Color</label>
+                            <input type="color" class="color-input" id="headerFooterTextColor"
+                                   @bind="colorSettings.HeaderFooterTextColor" />
+                        </div>
                     </div>
 
                     @if (showAdvanced)
@@ -344,6 +345,12 @@
                                 <small class="text-muted">Border Color:</small>
                                 <input type="text" class="form-control form-control-sm"
                                        @bind="colorSettings.BorderColor" placeholder="#dee2e6" />
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Header/Footer Text Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.HeaderFooterTextColor" placeholder="#ffffff" />
                             </div>
                         </div>
                     }
@@ -421,6 +428,12 @@
                             <input type="color" class="color-input" id="darkBorderColor"
                                    @bind="colorSettings.DarkBorderColor" />
                         </div>
+
+                        <div class="color-input-wrapper">
+                            <label for="darkHeaderFooterTextColor">Header/Footer Text Color</label>
+                            <input type="color" class="color-input" id="darkHeaderFooterTextColor"
+                                   @bind="colorSettings.DarkHeaderFooterTextColor" />
+                        </div>
                     </div>
 
                     @if (showAdvanced)
@@ -491,6 +504,12 @@
                                 <input type="text" class="form-control form-control-sm"
                                        @bind="colorSettings.DarkBorderColor" placeholder="#3e3e42" />
                             </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">Header/Footer Text Color:</small>
+                                <input type="text" class="form-control form-control-sm"
+                                       @bind="colorSettings.DarkHeaderFooterTextColor" placeholder="#ffffff" />
+                            </div>
                         </div>
                     }
                 </div>
@@ -520,45 +539,111 @@
                 <p class="mb-2"><small class="text-muted">Your site will update with these colors immediately:</small></p>
 
                 <div class="theme-preview" style="@GetPreviewCssVars()">
-                    <div class="preview-navbar">
-                        <div class="brand">NE Plumbing</div>
-                        <div class="nav-actions">
-                            <a class="preview-link" href="javascript:void(0)">Services</a>
-                            <a class="preview-link" href="javascript:void(0)">Contact</a>
-                            <button type="button" class="preview-btn-outline">Outline</button>
-                            <button type="button" class="preview-btn-primary">Primary</button>
-                        </div>
-                    </div>
-                    <div class="preview-content">
-                        <div class="preview-surface">
-                            <div style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; flex-wrap: wrap;">
-                                <div>
+                    <div class="min-vh-100 d-flex flex-column">
+                        <header class="navbar navbar-expand-lg navbar-dark w-100" style="background-color: var(--primary-color); padding: 0.5rem 1rem;">
+                            <a class="navbar-brand flex-shrink-0" href="javascript:void(0)">NE Plumbing Inc.</a>
+
+                            <div class="d-flex navbar-nav-center ms-3">
+                                <a class="nav-link text-white me-3" href="javascript:void(0)">
+                                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                                </a>
+                                <a class="nav-link text-white me-3" href="javascript:void(0)">
+                                    <span class="oi oi-plus" aria-hidden="true"></span> Services
+                                </a>
+                            </div>
+
+                            <div class="d-flex navbar-controls ms-auto">
+                                <button class="dark-mode-toggle" type="button" onclick="window.ToggleDarkMode && window.ToggleDarkMode()" title="Toggle dark mode">
+                                    <i class="fas fa-moon dark-mode-icon-moon" aria-hidden="true"></i>
+                                    <i class="fas fa-sun dark-mode-icon-sun" aria-hidden="true"></i>
+                                </button>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <a class="nav-link text-white" href="javascript:void(0)">
+                                        <span class="oi oi-account-logout" aria-hidden="true"></span> Admin dashboard
+                                    </a>
+                                    <a class="nav-link text-white" href="javascript:void(0)">
+                                        <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </header>
+
+                        <main class="container my-4 flex-grow-1">
+                            <div class="card">
+                                <div class="card-body">
                                     <strong>Headline</strong>
                                     <span class="preview-badge">Hero Badge</span>
-                                    <div class="mt-1">
-                                        <small>
-                                            Preview text and a <a class="preview-link" href="javascript:void(0)">link</a>.
-                                        </small>
+                                    <p class="mt-2 mb-2">
+                                        Preview text and a <a class="preview-link" href="javascript:void(0)">link</a>.
+                                    </p>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-primary btn-sm">Primary</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm">Outline</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm">Secondary</button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="preview-surface">
-                            <label class="form-label">Sample input</label>
-                            <input class="preview-input" placeholder="Type here..." />
-                            <div class="mt-3 d-flex gap-2">
-                                <button type="button" class="preview-btn-primary">Submit</button>
-                                <button type="button" class="preview-btn-outline">Cancel</button>
+                            <div class="card mt-3">
+                                <div class="card-body">
+                                    <label class="form-label">Sample input</label>
+                                    <input class="form-control" placeholder="Type here..." />
+                                </div>
                             </div>
-                        </div>
+                        </main>
 
-                        <div class="preview-surface" style="margin-bottom: 0;">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span>Card / panel</span>
-                                <span style="color: var(--secondary-color); font-weight: 600;">Secondary</span>
+                        <footer class="text-white py-4 mt-auto" style="background-color: var(--primary-color);">
+                            <div class="container">
+                                <div class="row text-center text-md-start">
+                                    <div class="col-md-4 mb-3">
+                                        <h5>About Us</h5>
+                                        <p class="mb-0">NE Plumbing Inc. brings 20+ years of experience in residential, commercial, and luxury plumbing. We’re proud to serve all of Utah with expert service and professionalism.</p>
+                                    </div>
+
+                                    @if (careersSettings?.IsHiringEnabled ?? true)
+                                    {
+                                        <div class="col-md-4 mb-3">
+                                            <h5>Now Hiring</h5>
+                                            <p class="mb-1">We're looking for skilled plumbers to join our team!</p>
+                                            <a href="javascript:void(0)" class="btn btn-outline-light btn-sm">Apply Now</a>
+                                        </div>
+                                    }
+
+                                    <div class="col-md-4 mb-3">
+                                        <h5>Connect With Us</h5>
+
+                                        <p class="mb-1">
+                                            <a href="javascript:void(0)" class="text-white text-decoration-none">
+                                                <i class="fab fa-instagram fa-lg me-2"></i>Instagram
+                                            </a>
+                                        </p>
+
+                                        <p class="mb-1">
+                                            <a href="javascript:void(0)" class="text-white text-decoration-none">
+                                                <i class="fas fa-phone fa-sm me-2"></i>(801) 641-3246
+                                            </a>
+                                        </p>
+
+                                        <p class="mb-0">
+                                            <a href="javascript:void(0)" class="text-white text-decoration-none">
+                                                <i class="fas fa-envelope fa-sm me-2"></i>neplumbinginc@gmail.com
+                                            </a>
+                                        </p>
+
+                                        <p class="mt-3">
+                                            <a href="javascript:void(0)" class="btn btn-outline-light btn-sm">Contact Us</a>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <hr class="border-secondary" />
+
+                                <div class="text-center small">
+                                    &copy; @(DateTime.Now.Year) NE Plumbing Inc. All rights reserved.
+                                </div>
                             </div>
-                        </div>
+                        </footer>
                     </div>
                 </div>
             </div>
@@ -572,6 +657,7 @@
 
 @code {
     private ColorSettings? colorSettings;
+    private CareersPageSettings? careersSettings;
     private string message = "";
     private CancellationTokenSource? clearMessageCts;
     private string activePalette = "light";
@@ -595,7 +681,8 @@
         string Surface,
         string SurfaceAlt,
         string InputBg,
-        string Border);
+        string Border,
+        string HeaderFooterText);
 
     private IReadOnlyList<ThemePreset> GetPresetsForActivePalette()
     {
@@ -616,7 +703,8 @@
                     "#ffffff",
                     "#f8f9fa",
                     "#ffffff",
-                    "#dee2e6"),
+                    "#dee2e6",
+                    "#ffffff"),
                 new(
                     "neutral",
                     "Neutral (clean + minimal)",
@@ -630,7 +718,8 @@
                     "#ffffff",
                     "#f8f9fa",
                     "#ffffff",
-                    "#dee2e6"),
+                    "#dee2e6",
+                    "#ffffff"),
             };
         }
 
@@ -649,7 +738,8 @@
                 "#252526",
                 "#2d2d30",
                 "#3c3c3c",
-                "#3e3e42"),
+                "#3e3e42",
+                "#ffffff"),
             new(
                 "oled",
                 "OLED Dark (deeper blacks)",
@@ -663,7 +753,8 @@
                 "#161b22",
                 "#0d1117",
                 "#0d1117",
-                "#30363d"),
+                "#30363d",
+                "#ffffff"),
         };
     }
 
@@ -690,6 +781,7 @@
             colorSettings.SurfaceAltColor = preset.SurfaceAlt;
             colorSettings.InputBgColor = preset.InputBg;
             colorSettings.BorderColor = preset.Border;
+            colorSettings.HeaderFooterTextColor = preset.HeaderFooterText;
         }
         else
         {
@@ -704,6 +796,7 @@
             colorSettings.DarkSurfaceAltColor = preset.SurfaceAlt;
             colorSettings.DarkInputBgColor = preset.InputBg;
             colorSettings.DarkBorderColor = preset.Border;
+            colorSettings.DarkHeaderFooterTextColor = preset.HeaderFooterText;
         }
     }
 
@@ -727,6 +820,7 @@
                    $"--surface-alt-color:{colorSettings.SurfaceAltColor};" +
                    $"--input-bg-color:{colorSettings.InputBgColor};" +
                    $"--bs-border-color:{colorSettings.BorderColor};" +
+                     $"--header-footer-text-color:{colorSettings.HeaderFooterTextColor};" +
                    $"--bs-link-color:{colorSettings.PrimaryColor};" +
                    $"--bs-link-hover-color:{colorSettings.AccentColor};";
         }
@@ -742,6 +836,7 @@
                $"--surface-alt-color:{colorSettings.DarkSurfaceAltColor};" +
                $"--input-bg-color:{colorSettings.DarkInputBgColor};" +
                $"--bs-border-color:{colorSettings.DarkBorderColor};" +
+             $"--header-footer-text-color:{colorSettings.DarkHeaderFooterTextColor};" +
                $"--bs-link-color:{colorSettings.DarkPrimaryColor};" +
                $"--bs-link-hover-color:{colorSettings.DarkAccentColor};";
     }
@@ -749,6 +844,7 @@
     protected override async Task OnInitializedAsync()
     {
         colorSettings = await ColorSettingsService.GetColorSettingsAsync();
+        careersSettings = await CareersPageSettingsService.GetSettingsAsync();
     }
 
     private async Task SaveColors()

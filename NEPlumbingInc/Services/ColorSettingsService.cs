@@ -25,6 +25,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
         SurfaceAltColor = "#f8f9fa",
         InputBgColor = "#ffffff",
         BorderColor = "#dee2e6",
+        HeaderFooterTextColor = "#ffffff",
 
         // Dark
         DarkPrimaryColor = "#569cd6",
@@ -38,6 +39,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
         DarkSurfaceAltColor = "#2d2d30",
         DarkInputBgColor = "#3c3c3c",
         DarkBorderColor = "#3e3e42",
+        DarkHeaderFooterTextColor = "#ffffff",
     };
 
     public async Task<ColorSettings> GetColorSettingsAsync()
@@ -60,6 +62,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
                 SurfaceAltColor = DefaultSettings.SurfaceAltColor,
                 InputBgColor = DefaultSettings.InputBgColor,
                 BorderColor = DefaultSettings.BorderColor,
+                HeaderFooterTextColor = DefaultSettings.HeaderFooterTextColor,
                 DarkPrimaryColor = DefaultSettings.DarkPrimaryColor,
                 DarkSecondaryColor = DefaultSettings.DarkSecondaryColor,
                 DarkAccentColor = DefaultSettings.DarkAccentColor,
@@ -71,6 +74,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
                 DarkSurfaceAltColor = DefaultSettings.DarkSurfaceAltColor,
                 DarkInputBgColor = DefaultSettings.DarkInputBgColor,
                 DarkBorderColor = DefaultSettings.DarkBorderColor,
+                DarkHeaderFooterTextColor = DefaultSettings.DarkHeaderFooterTextColor,
                 UpdatedAt = DateTime.UtcNow
             };
             context.ColorSettings.Add(settings);
@@ -92,6 +96,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             settings.SurfaceAltColor = CoalesceColor(settings.SurfaceAltColor, DefaultSettings.SurfaceAltColor, ref changed);
             settings.InputBgColor = CoalesceColor(settings.InputBgColor, DefaultSettings.InputBgColor, ref changed);
             settings.BorderColor = CoalesceColor(settings.BorderColor, DefaultSettings.BorderColor, ref changed);
+            settings.HeaderFooterTextColor = CoalesceColor(settings.HeaderFooterTextColor, DefaultSettings.HeaderFooterTextColor, ref changed);
 
             settings.DarkPrimaryColor = CoalesceColor(settings.DarkPrimaryColor, DefaultSettings.DarkPrimaryColor, ref changed);
             settings.DarkSecondaryColor = CoalesceColor(settings.DarkSecondaryColor, DefaultSettings.DarkSecondaryColor, ref changed);
@@ -104,6 +109,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             settings.DarkSurfaceAltColor = CoalesceColor(settings.DarkSurfaceAltColor, DefaultSettings.DarkSurfaceAltColor, ref changed);
             settings.DarkInputBgColor = CoalesceColor(settings.DarkInputBgColor, DefaultSettings.DarkInputBgColor, ref changed);
             settings.DarkBorderColor = CoalesceColor(settings.DarkBorderColor, DefaultSettings.DarkBorderColor, ref changed);
+            settings.DarkHeaderFooterTextColor = CoalesceColor(settings.DarkHeaderFooterTextColor, DefaultSettings.DarkHeaderFooterTextColor, ref changed);
 
             if (changed)
             {
@@ -134,6 +140,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.SurfaceAltColor = settings.SurfaceAltColor;
             existing.InputBgColor = settings.InputBgColor;
             existing.BorderColor = settings.BorderColor;
+            existing.HeaderFooterTextColor = settings.HeaderFooterTextColor;
 
             existing.DarkPrimaryColor = settings.DarkPrimaryColor;
             existing.DarkSecondaryColor = settings.DarkSecondaryColor;
@@ -146,6 +153,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.DarkSurfaceAltColor = settings.DarkSurfaceAltColor;
             existing.DarkInputBgColor = settings.DarkInputBgColor;
             existing.DarkBorderColor = settings.DarkBorderColor;
+            existing.DarkHeaderFooterTextColor = settings.DarkHeaderFooterTextColor;
             existing.UpdatedAt = DateTime.UtcNow;
             
             context.ColorSettings.Update(existing);
@@ -178,6 +186,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.SurfaceAltColor = DefaultSettings.SurfaceAltColor;
             existing.InputBgColor = DefaultSettings.InputBgColor;
             existing.BorderColor = DefaultSettings.BorderColor;
+            existing.HeaderFooterTextColor = DefaultSettings.HeaderFooterTextColor;
 
             existing.DarkPrimaryColor = DefaultSettings.DarkPrimaryColor;
             existing.DarkSecondaryColor = DefaultSettings.DarkSecondaryColor;
@@ -190,6 +199,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.DarkSurfaceAltColor = DefaultSettings.DarkSurfaceAltColor;
             existing.DarkInputBgColor = DefaultSettings.DarkInputBgColor;
             existing.DarkBorderColor = DefaultSettings.DarkBorderColor;
+            existing.DarkHeaderFooterTextColor = DefaultSettings.DarkHeaderFooterTextColor;
             existing.UpdatedAt = DateTime.UtcNow;
             
             context.ColorSettings.Update(existing);

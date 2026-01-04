@@ -18,6 +18,7 @@
         --light-surface-color: @(colorSettings?.SurfaceColor ?? "#ffffff");
         --light-surface-alt-color: @(colorSettings?.SurfaceAltColor ?? "#f8f9fa");
         --light-input-bg-color: @(colorSettings?.InputBgColor ?? "#ffffff");
+        --light-header-footer-text-color: @(colorSettings?.HeaderFooterTextColor ?? "#ffffff");
 
         /* Dark palette (admin-configurable) */
         --dark-primary-color: @(colorSettings?.DarkPrimaryColor ?? "#569cd6");
@@ -30,6 +31,7 @@
         --dark-surface-color: @(colorSettings?.DarkSurfaceColor ?? "#252526");
         --dark-surface-alt-color: @(colorSettings?.DarkSurfaceAltColor ?? "#2d2d30");
         --dark-input-bg-color: @(colorSettings?.DarkInputBgColor ?? "#3c3c3c");
+        --dark-header-footer-text-color: @(colorSettings?.DarkHeaderFooterTextColor ?? "#ffffff");
 
         /* Active palette (switches with data-dark-mode) */
         --primary-color: var(--light-primary-color);
@@ -42,6 +44,7 @@
         --surface-color: var(--light-surface-color);
         --surface-alt-color: var(--light-surface-alt-color);
         --input-bg-color: var(--light-input-bg-color);
+        --header-footer-text-color: var(--light-header-footer-text-color);
 
         --light-border-color: @(colorSettings?.BorderColor ?? "#dee2e6");
         --dark-border-color: @(colorSettings?.DarkBorderColor ?? "#3e3e42");
@@ -67,6 +70,7 @@
         --surface-color: var(--dark-surface-color);
         --surface-alt-color: var(--dark-surface-alt-color);
         --input-bg-color: var(--dark-input-bg-color);
+        --header-footer-text-color: var(--dark-header-footer-text-color);
 
         --bs-body-bg: var(--page-bg-color);
         --bs-body-color: var(--text-color);
@@ -98,6 +102,38 @@
     h1, h2, h3, h4, h5, h6,
     p {
         color: var(--text-color);
+    }
+
+    header.navbar,
+    header.navbar .navbar-brand,
+    header.navbar .nav-link,
+    header.navbar a {
+        color: var(--header-footer-text-color) !important;
+    }
+
+    footer,
+    footer h1,
+    footer h2,
+    footer h3,
+    footer h4,
+    footer h5,
+    footer h6,
+    footer p,
+    footer a,
+    footer small,
+    footer .text-white {
+        color: var(--header-footer-text-color) !important;
+    }
+
+    footer .btn-outline-light {
+        color: var(--header-footer-text-color) !important;
+        border-color: var(--header-footer-text-color) !important;
+    }
+
+    footer .btn-outline-light:hover {
+        background-color: var(--header-footer-text-color) !important;
+        border-color: var(--header-footer-text-color) !important;
+        color: var(--primary-color) !important;
     }
 
     .btn-primary {

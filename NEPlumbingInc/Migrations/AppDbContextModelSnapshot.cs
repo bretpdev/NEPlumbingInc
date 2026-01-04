@@ -333,6 +333,10 @@ namespace NEPlumbingInc.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DarkHeaderFooterTextColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DarkButtonColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -366,6 +370,10 @@ namespace NEPlumbingInc.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HeroBadgeColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HeaderFooterTextColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
