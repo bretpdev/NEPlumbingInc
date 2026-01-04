@@ -46,6 +46,43 @@
                 // ignore
             }
         };
+
+        // Some pages (like Careers) may be SSR-only. With enhanced navigation / browser scroll restoration,
+        // navigating from the bottom of a long page can land at the same scroll offset on the next page.
+        // Force Careers to open at the top.
+        window.NepScrollToTopIfCareers = function () {
+            try {
+                var path = (window.location && window.location.pathname || '').toLowerCase();
+                if (path !== '/careers') return;
+
+                try {
+                    if ('scrollRestoration' in history) {
+                        history.scrollRestoration = 'manual';
+                    }
+                } catch (e2) {
+                    // ignore
+                }
+
+                // Run a few times to win against restoration timing.
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () {
+                        window.scrollTo(0, 0);
+                    });
+                });
+                setTimeout(function () { window.scrollTo(0, 0); }, 0);
+                setTimeout(function () { window.scrollTo(0, 0); }, 50);
+            } catch (e) {
+                // ignore
+            }
+        };
+
+        try {
+            window.addEventListener('load', function () {
+                window.NepScrollToTopIfCareers && window.NepScrollToTopIfCareers();
+            });
+        } catch (e) {
+            // ignore
+        }
     </script>
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
@@ -113,6 +150,7 @@
                 window.Blazor.addEventListener('enhancedload', () => {
                     window.ApplyDarkModeFromSettings && window.ApplyDarkModeFromSettings();
                     window.ApplySavedFontFromSettings && window.ApplySavedFontFromSettings();
+                    window.NepScrollToTopIfCareers && window.NepScrollToTopIfCareers();
                 });
             }
         } catch (e) {
