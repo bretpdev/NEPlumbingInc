@@ -79,7 +79,7 @@
         pointer-events: none;
     }
 
-    .card-title {
+    .service-card .card-title {
         color: var(--primary-color);
         font-weight: 600;
         margin-bottom: 0.75rem;
@@ -91,7 +91,7 @@
         border-bottom-color: var(--primary-color);
     }
 
-    .card-text {
+    .service-card .card-text {
         color: #6c757d;
         font-size: 0.95rem;
         line-height: 1.5;
@@ -106,14 +106,14 @@
         transform: translateY(-2px);
     }
 
-    .card-body {
+    .service-card .card-body {
         padding: 1.5rem;  /* More generous padding */
         background: linear-gradient(180deg, #ffffff, #f8f9fa);
     }
 
     /* Dark mode styling */
     [data-dark-mode="true"] h1 {
-        color: #d4d4d4;
+        color: var(--text-color);
     }
 
     [data-dark-mode="true"] .service-card {
@@ -141,16 +141,16 @@
                saturate(1.05);
     }
 
-    [data-dark-mode="true"] .card-body {
+    [data-dark-mode="true"] .service-card .card-body {
         background: linear-gradient(180deg, #252526, #2a2a2a) !important;
         color: #d4d4d4;
     }
 
-    [data-dark-mode="true"] .card-title {
+    [data-dark-mode="true"] .service-card .card-title {
         color: var(--primary-color) !important;
     }
 
-    [data-dark-mode="true"] .card-text {
+    [data-dark-mode="true"] .service-card .card-text {
         color: #b8b8b8 !important;
     }
 
@@ -181,7 +181,7 @@
     }
 
     [data-dark-mode="true"] .modal-body .lead {
-        color: #d4d4d4;
+        color: var(--text-color);
     }
 
     [data-dark-mode="true"] .list-group-item {
@@ -210,9 +210,9 @@
     }
 
     [data-dark-mode="true"] .alert-info {
-        background-color: #1e3a4d !important;
+        background-color: var(--surface-alt-color) !important;
         border-color: var(--primary-color) !important;
-        color: #9cdcfe !important;
+        color: var(--text-color) !important;
     }
 </style>
 

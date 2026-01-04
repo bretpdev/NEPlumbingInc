@@ -1,32 +1,15 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e5a96;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#0d3d6b;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  
-  <!-- Background with gradient -->
-  <rect width="64" height="64" rx="10" fill="url(#blueGradient)"/>
-  
-  <!-- Pipe design forming "NE" concept -->
-  <g transform="translate(32, 32)">
-    <!-- Left vertical pipe (N shape) -->
-    <rect x="-14" y="-12" width="5" height="24" rx="2" fill="#ffffff"/>
-    
-    <!-- Diagonal connector (N diagonal) -->
-    <g transform="translate(-14, -12)">
-      <line x1="5" y1="0" x2="16" y2="24" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
-    </g>
-    
-    <!-- Right vertical pipe (N shape) -->
-    <rect x="2" y="-12" width="5" height="24" rx="2" fill="#ffffff"/>
-    
-    <!-- Water droplet accent (representing plumbing/water) -->
-    <g transform="translate(12, -8)">
-      <path d="M 0,-4 Q -3,0 0,4 Q 3,0 0,-4" fill="#ff6b9d" opacity="0.9"/>
-    </g>
+  <rect width="64" height="64" rx="12" fill="#ffffff" />
+  <rect x="2" y="2" width="60" height="60" rx="10" fill="none" stroke="#84662b" stroke-width="3" />
+
+  <g fill="none" stroke="#84662b" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- N -->
+    <path d="M16 48 V16 L30 48 V16" />
+
+    <!-- E -->
+    <path d="M38 16 V48" />
+    <path d="M38 16 H50" />
+    <path d="M38 32 H48" />
+    <path d="M38 48 H50" />
   </g>
-  
-  <!-- Optional: Company initial overlay could go here -->
 </svg>
