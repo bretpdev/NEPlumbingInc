@@ -4,6 +4,7 @@ public interface IColorSettingsService
 {
     Task<ColorSettings> GetColorSettingsAsync();
     Task<ColorSettings> UpdateColorSettingsAsync(ColorSettings settings);
+    Task UpdateFontFamilyAsync(string fontFamily);
     Task ResetToDefaultAsync();
 }
 
@@ -26,6 +27,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
         InputBgColor = "#ffffff",
         BorderColor = "#dee2e6",
         HeaderFooterTextColor = "#ffffff",
+        FontFamily = "Inter",
 
         // Dark
         DarkPrimaryColor = "#569cd6",
@@ -63,6 +65,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
                 InputBgColor = DefaultSettings.InputBgColor,
                 BorderColor = DefaultSettings.BorderColor,
                 HeaderFooterTextColor = DefaultSettings.HeaderFooterTextColor,
+                FontFamily = DefaultSettings.FontFamily,
                 DarkPrimaryColor = DefaultSettings.DarkPrimaryColor,
                 DarkSecondaryColor = DefaultSettings.DarkSecondaryColor,
                 DarkAccentColor = DefaultSettings.DarkAccentColor,
@@ -97,6 +100,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             settings.InputBgColor = CoalesceColor(settings.InputBgColor, DefaultSettings.InputBgColor, ref changed);
             settings.BorderColor = CoalesceColor(settings.BorderColor, DefaultSettings.BorderColor, ref changed);
             settings.HeaderFooterTextColor = CoalesceColor(settings.HeaderFooterTextColor, DefaultSettings.HeaderFooterTextColor, ref changed);
+            settings.FontFamily = CoalesceString(settings.FontFamily, DefaultSettings.FontFamily, ref changed);
 
             settings.DarkPrimaryColor = CoalesceColor(settings.DarkPrimaryColor, DefaultSettings.DarkPrimaryColor, ref changed);
             settings.DarkSecondaryColor = CoalesceColor(settings.DarkSecondaryColor, DefaultSettings.DarkSecondaryColor, ref changed);
@@ -141,6 +145,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.InputBgColor = settings.InputBgColor;
             existing.BorderColor = settings.BorderColor;
             existing.HeaderFooterTextColor = settings.HeaderFooterTextColor;
+            existing.FontFamily = settings.FontFamily;
 
             existing.DarkPrimaryColor = settings.DarkPrimaryColor;
             existing.DarkSecondaryColor = settings.DarkSecondaryColor;
@@ -168,6 +173,56 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
         return existing ?? settings;
     }
 
+    public async Task UpdateFontFamilyAsync(string fontFamily)
+    {
+        var normalized = string.IsNullOrWhiteSpace(fontFamily) ? DefaultSettings.FontFamily : fontFamily.Trim();
+
+        using var context = await _contextFactory.CreateDbContextAsync();
+        var existing = await context.ColorSettings.FirstOrDefaultAsync();
+
+        if (existing is null)
+        {
+            var settings = new ColorSettings
+            {
+                PrimaryColor = DefaultSettings.PrimaryColor,
+                SecondaryColor = DefaultSettings.SecondaryColor,
+                AccentColor = DefaultSettings.AccentColor,
+                TextColor = DefaultSettings.TextColor,
+                LightBgColor = DefaultSettings.LightBgColor,
+                HeroBadgeColor = DefaultSettings.HeroBadgeColor,
+                ButtonColor = DefaultSettings.ButtonColor,
+                SurfaceColor = DefaultSettings.SurfaceColor,
+                SurfaceAltColor = DefaultSettings.SurfaceAltColor,
+                InputBgColor = DefaultSettings.InputBgColor,
+                BorderColor = DefaultSettings.BorderColor,
+                HeaderFooterTextColor = DefaultSettings.HeaderFooterTextColor,
+                FontFamily = normalized,
+                DarkPrimaryColor = DefaultSettings.DarkPrimaryColor,
+                DarkSecondaryColor = DefaultSettings.DarkSecondaryColor,
+                DarkAccentColor = DefaultSettings.DarkAccentColor,
+                DarkTextColor = DefaultSettings.DarkTextColor,
+                DarkBgColor = DefaultSettings.DarkBgColor,
+                DarkHeroBadgeColor = DefaultSettings.DarkHeroBadgeColor,
+                DarkButtonColor = DefaultSettings.DarkButtonColor,
+                DarkSurfaceColor = DefaultSettings.DarkSurfaceColor,
+                DarkSurfaceAltColor = DefaultSettings.DarkSurfaceAltColor,
+                DarkInputBgColor = DefaultSettings.DarkInputBgColor,
+                DarkBorderColor = DefaultSettings.DarkBorderColor,
+                DarkHeaderFooterTextColor = DefaultSettings.DarkHeaderFooterTextColor,
+                UpdatedAt = DateTime.UtcNow,
+            };
+
+            context.ColorSettings.Add(settings);
+            await context.SaveChangesAsync();
+            return;
+        }
+
+        existing.FontFamily = normalized;
+        existing.UpdatedAt = DateTime.UtcNow;
+        context.ColorSettings.Update(existing);
+        await context.SaveChangesAsync();
+    }
+
     public async Task ResetToDefaultAsync()
     {
         using var context = await _contextFactory.CreateDbContextAsync();
@@ -187,6 +242,7 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
             existing.InputBgColor = DefaultSettings.InputBgColor;
             existing.BorderColor = DefaultSettings.BorderColor;
             existing.HeaderFooterTextColor = DefaultSettings.HeaderFooterTextColor;
+            existing.FontFamily = DefaultSettings.FontFamily;
 
             existing.DarkPrimaryColor = DefaultSettings.DarkPrimaryColor;
             existing.DarkSecondaryColor = DefaultSettings.DarkSecondaryColor;
@@ -208,6 +264,17 @@ public class ColorSettingsService(IDbContextFactory<AppDbContext> contextFactory
     }
 
     private static string CoalesceColor(string value, string fallback, ref bool changed)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        changed = true;
+        return fallback;
+    }
+
+    private static string CoalesceString(string value, string fallback, ref bool changed)
     {
         if (!string.IsNullOrWhiteSpace(value))
         {

@@ -377,6 +377,10 @@ namespace NEPlumbingInc.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FontFamily")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("InputBgColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

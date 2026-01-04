@@ -42,6 +42,9 @@ public class ColorSettings
     public string HeaderFooterTextColor { get; set; } = "#ffffff";
 
     [Required]
+    public string FontFamily { get; set; } = "Inter";
+
+    [Required]
     public string DarkPrimaryColor { get; set; } = "#569cd6";
 
     [Required]

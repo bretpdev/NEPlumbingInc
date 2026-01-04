@@ -27,6 +27,9 @@
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="NEPlumbingInc.styles.css" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260103" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Slab:wght@400;600;700&family=Raleway:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=Figtree:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <!-- Browser theme color for Safari and Chrome -->
     <meta name="theme-color" content="#0066CC">
@@ -37,6 +40,32 @@
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    <script>
+        window.nepFonts = window.nepFonts || {
+            isLoaded: function (family) {
+                try {
+                    if (!family) return false;
+                    if (!document.fonts || typeof document.fonts.check !== 'function') {
+                        return null; // unsupported
+                    }
+
+                    // Use a generic weight/size; if the face is available the check returns true.
+                    return document.fonts.check("16px " + family);
+                } catch (e) {
+                    return null;
+                }
+            },
+            setActiveFont: function (family) {
+                try {
+                    if (!family) return;
+                    // Override the CSS variable globally so layout/header/footer update immediately.
+                    document.documentElement.style.setProperty('--site-font-family', family);
+                } catch (e) {
+                    // ignore
+                }
+            }
+        };
+    </script>
     <script>
         // Blazor circuit handler for reconnection
         try {

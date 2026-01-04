@@ -1,5 +1,6 @@
 @inject IColorSettingsService ColorSettingsService
 @inject ICareersPageSettingsService CareersPageSettingsService
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <style>
@@ -80,6 +81,7 @@
         overflow: hidden;
         background: var(--page-bg-color);
         color: var(--text-color);
+        font-family: var(--site-font-family), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     .theme-preview .min-vh-100 {
@@ -155,14 +157,99 @@
     }
 </style>
 
-<div class="card shadow-sm">
-    <div class="card-header">
-        <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Manage Site Colors</h5>
+@if (colorSettings != null)
+{
+    <div class="card shadow-sm mb-3" style="@GetAdminFontStyle()">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-font me-2"></i>Typography</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-2">
+                <label for="fontFamily" class="form-label">Site Font</label>
+                <select id="fontFamily" class="form-select" @bind="colorSettings.FontFamily" @bind:after="OnFontChangedAsync">
+                    <option value="Inter">Inter</option>
+                    <option value="Manrope">Manrope</option>
+                    <option value="Nunito Sans">Nunito Sans</option>
+                    <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                    <option value="Poppins">Poppins</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Merriweather">Merriweather</option>
+                    <option value="Roboto Slab">Roboto Slab</option>
+                    <option value="Raleway">Raleway</option>
+                    <option value="DM Sans">DM Sans</option>
+                    <option value="Rubik">Rubik</option>
+                    <option value="Work Sans">Work Sans</option>
+                    <option value="Figtree">Figtree</option>
+                    <option value="Oswald">Oswald</option>
+                    <option value="Quicksand">Quicksand</option>
+                    <option value="Space Grotesk">Space Grotesk</option>
+                    <option value="Playfair Display">Playfair Display</option>
+                    <option value="Lora">Lora</option>
+                </select>
+                <small class="text-muted">Updates this page immediately (including header/footer) so you can preview. Use <strong>Save Font</strong> to apply site-wide.</small>
+
+                <div class="mt-1 small text-muted">
+                    <div>Selected: <strong>@(colorSettings.FontFamily)</strong></div>
+                    @if (isFontLoaded is true)
+                    {
+                        <div>Font file loaded: <strong>Yes</strong></div>
+                    }
+                    else if (isFontLoaded is false)
+                    {
+                        <div>Font file loaded: <strong>No</strong> (likely blocked; check network/adblock/CSP for fonts.googleapis.com + fonts.gstatic.com)</div>
+                    }
+                    else
+                    {
+                        <div>Font file loaded: <strong>Unknown</strong> (browser doesn’t support detection)</div>
+                    }
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-primary" @onclick="SaveFont">
+                    <i class="fas fa-save me-2"></i>Save Font
+                </button>
+            </div>
+
+            <div class="mt-3 p-3 rounded" style="background: var(--surface-color); border: 1px solid var(--bs-border-color); color: var(--text-color);">
+                <div class="d-flex flex-wrap align-items-end gap-3">
+                    <div style="font-size: 3rem; line-height: 1; font-weight: 700;">Aa</div>
+                    <div>
+                        <div class="fw-semibold" style="font-size: 1.25rem;">NE Plumbing Inc. — Typography Preview</div>
+                        <div class="text-muted">The quick brown fox jumps over the lazy dog. 0123456789</div>
+                    </div>
+                </div>
+
+                <hr style="border-color: var(--bs-border-color);" />
+
+                <p class="mb-2">
+                    This is sample body text to help you compare readability and personality.
+                    Here’s a <a href="javascript:void(0)" style="color: var(--bs-link-color);">link</a> and a few UI elements:
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-primary btn-sm">Primary</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm">Outline</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm">Secondary</button>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(fontMessage))
+            {
+                <div class="alert alert-success mt-3" role="alert">
+                    @fontMessage
+                </div>
+            }
+        </div>
     </div>
-    <div class="card-body">
-        @if (colorSettings != null)
-        {
+
+    <div class="card shadow-sm" style="@GetAdminFontStyle()">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Manage Site Colors</h5>
+        </div>
+        <div class="card-body">
             <form @onsubmit="SaveColors" @onsubmit:preventDefault="true">
+
                 <ul class="nav nav-tabs mb-3">
                     <li class="nav-item">
                         <button type="button"
@@ -525,10 +612,10 @@
                     </button>
                 </div>
 
-                @if (!string.IsNullOrEmpty(message))
+                @if (!string.IsNullOrEmpty(colorMessage))
                 {
                     <div class="alert alert-success mt-3" role="alert">
-                        @message
+                        @colorMessage
                     </div>
                 }
             </form>
@@ -647,21 +734,28 @@
                     </div>
                 </div>
             </div>
-        }
-        else
-        {
-            <p class="text-muted">Loading color settings...</p>
-        }
+        </div>
     </div>
-</div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p class="text-muted">Loading color settings...</p>
+        </div>
+    </div>
+}
 
 @code {
     private ColorSettings? colorSettings;
     private CareersPageSettings? careersSettings;
-    private string message = "";
+    private string fontMessage = "";
+    private string colorMessage = "";
     private CancellationTokenSource? clearMessageCts;
     private string activePalette = "light";
     private bool showAdvanced;
+
+    private bool? isFontLoaded;
 
     private string selectedPresetId = "default";
 
@@ -682,7 +776,8 @@
         string SurfaceAlt,
         string InputBg,
         string Border,
-        string HeaderFooterText);
+        string HeaderFooterText,
+        string FontFamily);
 
     private IReadOnlyList<ThemePreset> GetPresetsForActivePalette()
     {
@@ -704,7 +799,8 @@
                     "#f8f9fa",
                     "#ffffff",
                     "#dee2e6",
-                    "#ffffff"),
+                    "#ffffff",
+                    "Inter"),
                 new(
                     "neutral",
                     "Neutral (clean + minimal)",
@@ -719,7 +815,8 @@
                     "#f8f9fa",
                     "#ffffff",
                     "#dee2e6",
-                    "#ffffff"),
+                    "#ffffff",
+                    "Manrope"),
             };
         }
 
@@ -739,7 +836,8 @@
                 "#2d2d30",
                 "#3c3c3c",
                 "#3e3e42",
-                "#ffffff"),
+                "#ffffff",
+                "Inter"),
             new(
                 "oled",
                 "OLED Dark (deeper blacks)",
@@ -754,7 +852,8 @@
                 "#0d1117",
                 "#0d1117",
                 "#30363d",
-                "#ffffff"),
+                "#ffffff",
+                "Plus Jakarta Sans"),
         };
     }
 
@@ -767,6 +866,8 @@
 
         var preset = GetPresetsForActivePalette().FirstOrDefault(p => p.Id == selectedPresetId)
             ?? GetPresetsForActivePalette().First();
+
+        colorSettings.FontFamily = preset.FontFamily;
 
         if (activePalette == "light")
         {
@@ -807,6 +908,8 @@
             return string.Empty;
         }
 
+        var fontCssValue = GetFontCssValue(colorSettings.FontFamily);
+
         if (activePalette == "light")
         {
             return $"--primary-color:{colorSettings.PrimaryColor};" +
@@ -820,7 +923,8 @@
                    $"--surface-alt-color:{colorSettings.SurfaceAltColor};" +
                    $"--input-bg-color:{colorSettings.InputBgColor};" +
                    $"--bs-border-color:{colorSettings.BorderColor};" +
-                     $"--header-footer-text-color:{colorSettings.HeaderFooterTextColor};" +
+                                        $"--header-footer-text-color:{colorSettings.HeaderFooterTextColor};" +
+                                        $"--site-font-family:{fontCssValue};" +
                    $"--bs-link-color:{colorSettings.PrimaryColor};" +
                    $"--bs-link-hover-color:{colorSettings.AccentColor};";
         }
@@ -836,15 +940,82 @@
                $"--surface-alt-color:{colorSettings.DarkSurfaceAltColor};" +
                $"--input-bg-color:{colorSettings.DarkInputBgColor};" +
                $"--bs-border-color:{colorSettings.DarkBorderColor};" +
-             $"--header-footer-text-color:{colorSettings.DarkHeaderFooterTextColor};" +
+               $"--header-footer-text-color:{colorSettings.DarkHeaderFooterTextColor};" +
+               $"--site-font-family:{fontCssValue};" +
                $"--bs-link-color:{colorSettings.DarkPrimaryColor};" +
                $"--bs-link-hover-color:{colorSettings.DarkAccentColor};";
+    }
+
+    private static string GetFontCssValue(string? fontFamily)
+    {
+        return (fontFamily ?? "Inter") switch
+        {
+            "Inter" => "'Inter'",
+            "Manrope" => "'Manrope'",
+            "Nunito Sans" => "'Nunito Sans'",
+            "Plus Jakarta Sans" => "'Plus Jakarta Sans'",
+            "Poppins" => "'Poppins'",
+            "Montserrat" => "'Montserrat'",
+            "Merriweather" => "'Merriweather'",
+            "Roboto Slab" => "'Roboto Slab'",
+            "Raleway" => "'Raleway'",
+            "DM Sans" => "'DM Sans'",
+            "Rubik" => "'Rubik'",
+            "Work Sans" => "'Work Sans'",
+            "Figtree" => "'Figtree'",
+            "Oswald" => "'Oswald'",
+            "Quicksand" => "'Quicksand'",
+            "Space Grotesk" => "'Space Grotesk'",
+            "Playfair Display" => "'Playfair Display'",
+            "Lora" => "'Lora'",
+            _ => "'Inter'",
+        };
+    }
+
+    private string GetAdminFontStyle()
+    {
+        var fontCssValue = GetFontCssValue(colorSettings?.FontFamily);
+        return $"font-family: {fontCssValue}, system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif;";
     }
 
     protected override async Task OnInitializedAsync()
     {
         colorSettings = await ColorSettingsService.GetColorSettingsAsync();
         careersSettings = await CareersPageSettingsService.GetSettingsAsync();
+
+        await ApplyFontToPageAsync();
+        await UpdateFontLoadedStatusAsync();
+    }
+
+    private async Task OnFontChangedAsync()
+    {
+        await ApplyFontToPageAsync();
+        await UpdateFontLoadedStatusAsync();
+    }
+
+    private async Task ApplyFontToPageAsync()
+    {
+        if (colorSettings is null)
+        {
+            return;
+        }
+
+        var cssValue = GetFontCssValue(colorSettings.FontFamily);
+        await JS.InvokeVoidAsync("nepFonts.setActiveFont", cssValue);
+    }
+
+    private async Task UpdateFontLoadedStatusAsync()
+    {
+        if (colorSettings is null)
+        {
+            isFontLoaded = null;
+            return;
+        }
+
+        var cssValue = GetFontCssValue(colorSettings.FontFamily);
+
+        // JS expects a CSS font-family token like: 'Inter'
+        isFontLoaded = await JS.InvokeAsync<bool?>("nepFonts.isLoaded", cssValue);
     }
 
     private async Task SaveColors()
@@ -854,13 +1025,32 @@
             try
             {
                 await ColorSettingsService.UpdateColorSettingsAsync(colorSettings);
-                message = "Colors updated successfully! Refresh the page to see the changes everywhere.";
+                colorMessage = "Colors updated successfully! Refresh the page to see the changes everywhere.";
                 ScheduleClearMessage(TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
-                message = $"Error saving colors: {ex.Message}";
+                colorMessage = $"Error saving colors: {ex.Message}";
             }
+        }
+    }
+
+    private async Task SaveFont()
+    {
+        if (colorSettings is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await ColorSettingsService.UpdateFontFamilyAsync(colorSettings.FontFamily);
+            fontMessage = "Font updated successfully! Refresh the page to see the changes everywhere.";
+            ScheduleClearMessage(TimeSpan.FromSeconds(5));
+        }
+        catch (Exception ex)
+        {
+            fontMessage = $"Error saving font: {ex.Message}";
         }
     }
 
@@ -870,12 +1060,12 @@
         {
             await ColorSettingsService.ResetToDefaultAsync();
             colorSettings = await ColorSettingsService.GetColorSettingsAsync();
-            message = "Colors reset to defaults! Refresh the page to see the changes.";
+            colorMessage = "Colors reset to defaults! Refresh the page to see the changes.";
             ScheduleClearMessage(TimeSpan.FromSeconds(5));
         }
         catch (Exception ex)
         {
-            message = $"Error resetting colors: {ex.Message}";
+            colorMessage = $"Error resetting colors: {ex.Message}";
         }
     }
 
@@ -900,7 +1090,8 @@
             return;
         }
 
-        message = "";
+        fontMessage = "";
+        colorMessage = "";
         await InvokeAsync(StateHasChanged);
     }
 }

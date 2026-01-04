@@ -20,6 +20,8 @@
         --light-input-bg-color: @(colorSettings?.InputBgColor ?? "#ffffff");
         --light-header-footer-text-color: @(colorSettings?.HeaderFooterTextColor ?? "#ffffff");
 
+        --site-font-family: @GetFontCssValue(colorSettings?.FontFamily);
+
         /* Dark palette (admin-configurable) */
         --dark-primary-color: @(colorSettings?.DarkPrimaryColor ?? "#569cd6");
         --dark-secondary-color: @(colorSettings?.DarkSecondaryColor ?? "#4f8cc4");
@@ -93,6 +95,10 @@
     article {
         background-color: var(--page-bg-color);
         color: var(--text-color);
+    }
+
+    body {
+        font-family: var(--site-font-family), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     a {
@@ -734,6 +740,33 @@
 @code {
     private ColorSettings? colorSettings;
     private CareersPageSettings? careersSettings;
+
+    private static string GetFontCssValue(string? fontFamily)
+    {
+        // CSS value (include quotes when needed)
+        return (fontFamily ?? "Inter") switch
+        {
+            "Inter" => "'Inter'",
+            "Manrope" => "'Manrope'",
+            "Nunito Sans" => "'Nunito Sans'",
+            "Plus Jakarta Sans" => "'Plus Jakarta Sans'",
+            "Poppins" => "'Poppins'",
+            "Montserrat" => "'Montserrat'",
+            "Merriweather" => "'Merriweather'",
+            "Roboto Slab" => "'Roboto Slab'",
+            "Raleway" => "'Raleway'",
+            "DM Sans" => "'DM Sans'",
+            "Rubik" => "'Rubik'",
+            "Work Sans" => "'Work Sans'",
+            "Figtree" => "'Figtree'",
+            "Oswald" => "'Oswald'",
+            "Quicksand" => "'Quicksand'",
+            "Space Grotesk" => "'Space Grotesk'",
+            "Playfair Display" => "'Playfair Display'",
+            "Lora" => "'Lora'",
+            _ => "'Inter'",
+        };
+    }
 
     protected override async Task OnInitializedAsync()
     {
