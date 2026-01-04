@@ -3,6 +3,7 @@
 
 @inject NavigationManager NavigationManager
 @inject ICareersPageSettingsService CareersPageSettingsService
+@inject IJSRuntime JS
 
 <PageTitle>Careers - NE Plumbing Inc.</PageTitle>
 
@@ -137,6 +138,14 @@
         var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
         showSuccess = query["sent"] == "1";
         showError = query["error"] == "1";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("window.scrollTo", 0, 0);
+        }
     }
 
     private static IEnumerable<string> GetBulletItems(string? newlineDelimitedText)
