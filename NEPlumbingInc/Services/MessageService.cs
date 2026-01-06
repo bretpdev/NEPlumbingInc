@@ -68,7 +68,7 @@ public class MessageService(
         {
             Name = form.Name,
             Email = form.Email,
-            Phone = form.Phone,
+            Phone = string.IsNullOrWhiteSpace(form.Phone) ? null : form.Phone.Trim(),
             AddressLine1 = form.AddressLine1,
             AddressLine2 = form.AddressLine2,
             City = form.City,

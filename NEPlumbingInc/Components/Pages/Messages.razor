@@ -14,7 +14,7 @@
                         We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible.
                     </p>
 
-                    <form method="post" action="/messages/submit">
+                    <form method="post" action="/messages/submit" class="needs-validation" novalidate data-nep-validate="true">
                         <input type="hidden" name="source" value="@source" />
                         <input type="hidden" name="ip" value="@ipAddress" />
 
@@ -30,7 +30,8 @@
 
                         <div class="mb-3">
                             <label class="form-label">Phone</label>
-                            <input class="form-control" name="Phone" type="tel" autocomplete="tel" inputmode="tel" value="@form.Phone" required />
+                            <input class="form-control" name="Phone" type="tel" autocomplete="tel" inputmode="tel" value="@form.Phone" data-nep-phone="true" />
+                            <div class="invalid-feedback">Please enter a valid phone number (10-15 digits).</div>
                         </div>
 
                         <div class="mb-3">

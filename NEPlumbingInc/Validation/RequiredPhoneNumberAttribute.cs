@@ -12,9 +12,10 @@ public sealed class RequiredPhoneNumberAttribute : ValidationAttribute
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
+        // Phone is optional in the public forms; validate only when provided.
         if (value is not string phone || string.IsNullOrWhiteSpace(phone))
         {
-            return new ValidationResult(ErrorMessage);
+            return ValidationResult.Success;
         }
 
         var digitCount = 0;

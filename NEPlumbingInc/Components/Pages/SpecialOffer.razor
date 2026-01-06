@@ -69,7 +69,7 @@
                             }
                         </div>
 
-                        <form method="post" action="/special-offer/claim">
+                        <form method="post" action="/special-offer/claim" class="needs-validation" novalidate data-nep-validate="true">
                             <input type="hidden" name="ip" value="@ipAddress" />
 
                             <div class="mb-3">
@@ -84,7 +84,8 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Phone</label>
-                                <input class="form-control" name="Phone" type="tel" autocomplete="tel" inputmode="tel" value="@form.Phone" required />
+                                <input class="form-control" name="Phone" type="tel" autocomplete="tel" inputmode="tel" value="@form.Phone" data-nep-phone="true" />
+                                <div class="invalid-feedback">Please enter a valid phone number (10-15 digits).</div>
                             </div>
 
                             @if (settings?.RequireAddress == true)

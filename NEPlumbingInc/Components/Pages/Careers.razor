@@ -54,7 +54,7 @@
                         </div>
                     }
 
-                    <form method="post" action="/careers/submit" class="mt-4" enctype="multipart/form-data">
+                    <form method="post" action="/careers/submit" class="mt-4 needs-validation" novalidate data-nep-validate="true" enctype="multipart/form-data">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Full name</label>
@@ -67,7 +67,8 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">Phone</label>
-                                <input class="form-control" name="Phone" type="tel" autocomplete="tel" inputmode="tel" required />
+                                <input class="form-control" name="Phone" type="tel" autocomplete="tel" inputmode="tel" data-nep-phone="true" />
+                                <div class="invalid-feedback">Please enter a valid phone number (10-15 digits).</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Position interested in (optional)</label>

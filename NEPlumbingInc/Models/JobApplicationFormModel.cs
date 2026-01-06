@@ -12,7 +12,7 @@ public class JobApplicationFormModel
     public string Email { get; set; } = string.Empty;
 
     [RequiredPhoneNumber]
-    public string Phone { get; set; } = string.Empty;
+    public string? Phone { get; set; }
 
     public string? Position { get; set; }
 

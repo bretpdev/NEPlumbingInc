@@ -426,9 +426,80 @@
                 console.error('Error closing service modal:', e);
             }
         };
+
+        // Bootstrap-style client-side validation for plain HTML forms.
+        // Adds inline feedback and blocks submit when invalid.
+        window.NepWireUpClientValidation = function () {
+            try {
+                const forms = document.querySelectorAll('form[data-nep-validate="true"]');
+                forms.forEach(form => {
+                    if (form.dataset.nepWired === 'true') return;
+                    form.dataset.nepWired = 'true';
+
+                    const validatePhoneInput = (input) => {
+                        if (!input) return;
+
+                        const raw = (input.value || '').trim();
+                        if (!raw) {
+                            input.setCustomValidity('');
+                            return;
+                        }
+
+                        let digitCount = 0;
+                        let invalidChar = false;
+
+                        for (const ch of raw) {
+                            if (ch >= '0' && ch <= '9') {
+                                digitCount++;
+                                continue;
+                            }
+                            if (ch === ' ' || ch === '(' || ch === ')' || ch === '-' || ch === '.' || ch === '+') {
+                                continue;
+                            }
+                            invalidChar = true;
+                            break;
+                        }
+
+                        if (invalidChar || digitCount < 10 || digitCount > 15) {
+                            input.setCustomValidity('Please enter a valid phone number');
+                        } else {
+                            input.setCustomValidity('');
+                        }
+                    };
+
+                    const phoneInputs = form.querySelectorAll('input[data-nep-phone="true"]');
+                    phoneInputs.forEach(input => {
+                        validatePhoneInput(input);
+                        input.addEventListener('input', () => validatePhoneInput(input));
+                        input.addEventListener('blur', () => validatePhoneInput(input));
+                    });
+
+                    form.addEventListener('submit', (event) => {
+                        phoneInputs.forEach(input => validatePhoneInput(input));
+
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            } catch (e) {
+                console.error('Error wiring form validation:', e);
+            }
+        };
         
         // Back-compat: keep a direct call for any environments that don't fire the events above.
         window.ApplyDarkModeFromSettings();
+
+        try {
+            window.NepWireUpClientValidation();
+            document.addEventListener('enhancedload', window.NepWireUpClientValidation);
+            document.addEventListener('enhancednavigationend', window.NepWireUpClientValidation);
+        } catch (e) {
+            console.error('Error wiring form validation events:', e);
+        }
     </script>
 </body>
 

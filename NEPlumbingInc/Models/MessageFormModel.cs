@@ -10,7 +10,7 @@ public class MessageFormModel
     public string Email { get; set; } = string.Empty;
 
     [RequiredPhoneNumber]
-    public string Phone { get; set; } = string.Empty;
+    public string? Phone { get; set; }
 
     public string? AddressLine1 { get; set; }
     public string? AddressLine2 { get; set; }
