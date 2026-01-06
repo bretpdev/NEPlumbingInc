@@ -11,9 +11,14 @@ public interface IMessageService
     Task DeleteMessageAsync(int id);
 }
 
-public class MessageService(IDbContextFactory<AppDbContext> contextFactory) : IMessageService
+public class MessageService(
+    IDbContextFactory<AppDbContext> contextFactory,
+    IEmailService emailService,
+    ILogger<MessageService> logger) : IMessageService
 {
     private readonly IDbContextFactory<AppDbContext> _contextFactory = contextFactory;
+    private readonly IEmailService _emailService = emailService;
+    private readonly ILogger<MessageService> _logger = logger;
 
     public async Task<int> GetUnreadCountAsync()
     {
@@ -77,6 +82,17 @@ public class MessageService(IDbContextFactory<AppDbContext> contextFactory) : IM
 
         context.Messages.Add(message);
         await context.SaveChangesAsync();
+
+        // Email notifications are best-effort; never fail message creation if SMTP fails.
+        try
+        {
+            await _emailService.SendNewMessageNotificationAsync(form, isSpecialOffer);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send new message email notification. MessageId={MessageId}", message.Id);
+        }
+
         return message;
     }
 

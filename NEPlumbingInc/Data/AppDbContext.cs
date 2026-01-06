@@ -27,6 +27,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<ColorSettings> ColorSettings { get; set; }
     public DbSet<SpecialOfferSettings> SpecialOfferSettings { get; set; }
     public DbSet<CareersPageSettings> CareersPageSettings { get; set; }
+    public DbSet<MessageNotificationSettings> MessageNotificationSettings { get; set; }
     public DbSet<PageVisit> PageVisits { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
