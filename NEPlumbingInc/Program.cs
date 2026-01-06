@@ -48,6 +48,7 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IResumeStorageService, ResumeStorageService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IColorSettingsService, ColorSettingsService>();
+builder.Services.AddScoped<IWebsiteMetricsService, WebsiteMetricsService>();
 builder.Services.AddScoped<DarkModeService>();
 builder.Services.AddScoped<ThemeService>();
 builder.Services.AddScoped<HomePageContentService>();
@@ -86,6 +87,8 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.UseMiddleware<PageVisitLoggingMiddleware>();
 
 
 app.MapRazorComponents<App>()

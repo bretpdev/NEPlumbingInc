@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace NEPlumbingInc.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260106045851_AddPageVisits")]
+    partial class AddPageVisits
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -529,15 +532,9 @@ namespace NEPlumbingInc.Migrations
                     b.Property<DateTime>("VisitedAtUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("VisitorId")
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("VisitedAtUtc");
-
-                    b.HasIndex("VisitorId");
 
                     b.ToTable("PageVisits");
                 });

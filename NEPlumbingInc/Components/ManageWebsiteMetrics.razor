@@ -1,0 +1,143 @@
+@inject IWebsiteMetricsService WebsiteMetricsService
+
+<style>
+    /* Bootstrap tables default to dark text; override in dark mode using the app palette */
+    [data-dark-mode="true"] .manage-website-metrics .table {
+        color: var(--text-color);
+
+        --bs-table-bg: var(--surface-color);
+        --bs-table-striped-bg: var(--surface-alt-color);
+        --bs-table-striped-color: var(--text-color);
+        --bs-table-active-bg: var(--surface-alt-color);
+        --bs-table-active-color: var(--text-color);
+        --bs-table-hover-bg: var(--surface-alt-color);
+        --bs-table-hover-color: var(--text-color);
+        --bs-table-border-color: var(--bs-border-color);
+    }
+
+    [data-dark-mode="true"] .manage-website-metrics .table thead th {
+        color: var(--text-color);
+    }
+
+    [data-dark-mode="true"] .manage-website-metrics .table td,
+    [data-dark-mode="true"] .manage-website-metrics .table th {
+        border-color: var(--bs-border-color);
+    }
+</style>
+
+<div class="manage-website-metrics">
+    @if (loading)
+    {
+        <div>Loading metrics...</div>
+    }
+    else if (!string.IsNullOrWhiteSpace(error))
+    {
+        <div class="alert alert-warning" role="alert">
+            Metrics unavailable: @error
+        </div>
+    }
+    else if (summary is not null)
+    {
+        <div class="row g-3">
+            <div class="col-6 col-lg-3">
+                <div class="border rounded p-3 text-center">
+                    <div class="small text-muted">Visits Today</div>
+                    <div class="h4 mb-0">@summary.VisitsToday</div>
+                </div>
+            </div>
+        <div class="col-6 col-lg-3">
+            <div class="border rounded p-3 text-center">
+                <div class="small text-muted">Last 7 Days</div>
+                <div class="h4 mb-0">@summary.VisitsLast7Days</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="border rounded p-3 text-center">
+                <div class="small text-muted">Last 30 Days</div>
+                <div class="h4 mb-0">@summary.VisitsLast30Days</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="border rounded p-3 text-center">
+                <div class="small text-muted">All Time</div>
+                <div class="h4 mb-0">@summary.VisitsAllTime</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-1">
+        <div class="col-6 col-lg-3">
+            <div class="border rounded p-3 text-center">
+                <div class="small text-muted">Unique Visitors Today</div>
+                <div class="h4 mb-0">@summary.UniqueVisitorsToday</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="border rounded p-3 text-center">
+                <div class="small text-muted">Unique Visitors (7 Days)</div>
+                <div class="h4 mb-0">@summary.UniqueVisitorsLast7Days</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="border rounded p-3 text-center">
+                <div class="small text-muted">Unique Visitors (30 Days)</div>
+                <div class="h4 mb-0">@summary.UniqueVisitorsLast30Days</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="border rounded p-3 text-center">
+                <div class="small text-muted">Unique Visitors (All Time)</div>
+                <div class="h4 mb-0">@summary.UniqueVisitorsAllTime</div>
+            </div>
+        </div>
+    </div>
+
+        @if (summary.TopPagesLast30Days.Count > 0)
+        {
+            <div class="mt-4">
+                <strong>Top Pages (Last 30 Days)</strong>
+                <div class="table-responsive mt-2">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>Path</th>
+                                <th class="text-end">Visits</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in summary.TopPagesLast30Days)
+                            {
+                                <tr>
+                                    <td>@row.Path</td>
+                                    <td class="text-end">@row.Count</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private bool loading = true;
+    private string? error;
+    private WebsiteMetricsSummary? summary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            summary = await WebsiteMetricsService.GetSummaryAsync();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

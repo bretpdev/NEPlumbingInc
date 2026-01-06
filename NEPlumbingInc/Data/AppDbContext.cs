@@ -27,6 +27,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<ColorSettings> ColorSettings { get; set; }
     public DbSet<SpecialOfferSettings> SpecialOfferSettings { get; set; }
     public DbSet<CareersPageSettings> CareersPageSettings { get; set; }
+    public DbSet<PageVisit> PageVisits { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,5 +38,11 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             .HasMany(s => s.SubServices)
             .WithOne(s => s.Service)
             .HasForeignKey(s => s.ServiceId);
+
+        modelBuilder.Entity<PageVisit>()
+            .HasIndex(v => v.VisitedAtUtc);
+
+        modelBuilder.Entity<PageVisit>()
+            .HasIndex(v => v.VisitorId);
     }
 }
