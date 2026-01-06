@@ -18,3 +18,4 @@ global using NEPlumbingInc.Models;
 global using NEPlumbingInc.Components;
 global using NEPlumbingInc.Services;
 global using NEPlumbingInc.Middleware;
+global using NEPlumbingInc.Validation;

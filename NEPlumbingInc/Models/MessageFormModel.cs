@@ -9,7 +9,8 @@ public class MessageFormModel
     [EmailAddress(ErrorMessage = "Please enter a valid email address")]
     public string Email { get; set; } = string.Empty;
 
-    public string? Phone { get; set; }
+    [RequiredPhoneNumber]
+    public string Phone { get; set; } = string.Empty;
 
     public string? AddressLine1 { get; set; }
     public string? AddressLine2 { get; set; }

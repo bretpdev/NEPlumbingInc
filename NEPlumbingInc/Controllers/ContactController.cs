@@ -21,6 +21,11 @@ public class ContactController(
         [FromForm] string? source,
         [FromForm] string? ip)
     {
+        if (!ModelState.IsValid)
+        {
+            return Redirect("/messages?error=1");
+        }
+
         try
         {
             var isSpecialOffer = string.Equals(source, "special-offer", StringComparison.OrdinalIgnoreCase);
@@ -51,6 +56,11 @@ public class ContactController(
         [FromForm] MessageFormModel form,
         [FromForm] string? ip)
     {
+        if (!ModelState.IsValid)
+        {
+            return Redirect("/special-offer?error=1");
+        }
+
         try
         {
             var settings = await _specialOfferSettingsService.GetSettingsAsync();

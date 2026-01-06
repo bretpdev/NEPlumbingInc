@@ -11,7 +11,8 @@ public class JobApplicationFormModel
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
-    public string? Phone { get; set; }
+    [RequiredPhoneNumber]
+    public string Phone { get; set; } = string.Empty;
 
     public string? Position { get; set; }
 

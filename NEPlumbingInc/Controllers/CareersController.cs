@@ -23,6 +23,11 @@ public class CareersController(
     {
         var traceId = HttpContext.TraceIdentifier;
 
+        if (!ModelState.IsValid)
+        {
+            return Redirect("/careers?error=1");
+        }
+
         try
         {
             var messageText = BuildApplicationMessage(form);
